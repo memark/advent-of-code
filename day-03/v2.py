@@ -1,27 +1,18 @@
 def getAnswer(lines, right, down):
     yl = len(lines)
     xl = len(lines[0])
-
-    r = 0
-
-    xf = right
     yf = down
+    xf = right
 
-    n = 0
-    x = 0
-    y = 0
-
-    for n in range(1, yl // yf):
-
+    def stepIsTree(n):
         x = (n * xf) % xl
         y = (n * yf)
-
         c = lines[y][x]
+        return c == "#"
 
-        if c == "#":
-            r = r + 1
+    result = sum(stepIsTree(n) for n in range(1, yl // yf))
 
-    return r
+    return result
 
 
 if __name__ == "__main__":

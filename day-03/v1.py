@@ -14,10 +14,6 @@ r = 0
 xf = 1
 yf = 2
 
-n = 0
-x = 0
-y = 0
-
 print("yl // yf", yl // yf)
 
 for n in range(1, yl // yf + 1):
