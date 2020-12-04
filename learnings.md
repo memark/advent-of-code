@@ -27,4 +27,11 @@
 - while
 - pytest
 - import
-- __name__
+- **name**
+
+## Day 04
+
+- unit testing
+- the hell of untyped code
+- reading the instructions again when failing
+- multi-line strings
