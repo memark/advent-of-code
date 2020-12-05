@@ -12,13 +12,14 @@
 - print
 - for i in array
 - list comprehension
+- generator expression
+- next()
 
 ## Day 02
 
 - regex
-- min <= x <= max
+- a <= x <= b
 - methods
-- generator expression
 
 ## Day 03
 
@@ -33,5 +34,13 @@
 
 - unit testing
 - the hell of untyped code
-- reading the instructions again when failing
 - multi-line strings
+- reading the instructions again when failing
+
+## Day 05
+
+- convert binary to decimal
+- type annotations
+- lambda
+- convert list to string
+- separate terminal faster than vs code
