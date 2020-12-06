@@ -44,3 +44,10 @@
 - lambda
 - convert list to string
 - separate terminal faster than vs code
+
+## Day 06
+
+- functional style
+- repl
+- pip-tools
+- pipetools
