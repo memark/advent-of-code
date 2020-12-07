@@ -55,5 +55,10 @@
 ## Day 07
 
 - recursion
-- tuples
+- tuple
 - \*args
+
+## Day 08
+
+- named tuple
+- type alias
