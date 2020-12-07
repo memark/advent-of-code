@@ -51,3 +51,9 @@
 - repl
 - pip-tools
 - pipetools
+
+## Day 07
+
+- recursion
+- tuples
+- \*args
