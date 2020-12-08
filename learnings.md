@@ -62,3 +62,5 @@
 
 - named tuple
 - type alias
+
+## Day 09
