@@ -64,3 +64,5 @@
 - type alias
 
 ## Day 09
+
+## Day 10
