@@ -66,3 +66,8 @@
 ## Day 09
 
 ## Day 10
+
+## Day 11
+
+- Callable
+- default arguments
