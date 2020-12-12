@@ -2,8 +2,7 @@
     "python.pythonPath": "/Users/memark/Src/Python/advent-of-code-2020/venv/bin/python",
     "editor.colorDecorators": false,
     "files.exclude": {
-        "**/__pycache__": true,
-        "**/.pytest_cache": true,
+        "**/*cache*": true,
         "venv": true
     },
     "editor.formatOnPaste": false
