@@ -71,3 +71,14 @@
 
 - Callable
 - default arguments
+
+## Day 12
+
+## Day 13
+
+## Day 14
+
+- recursion in two dimensions
+- bin() and int(..., 2)
+- format(..., '#038b')
+- formatting and padding of bin numbers
