@@ -82,3 +82,9 @@
 - bin() and int(..., 2)
 - format(..., '#038b')
 - formatting and padding of bin numbers
+
+## Day 15
+
+## Day 16
+
+- filter dictionary
