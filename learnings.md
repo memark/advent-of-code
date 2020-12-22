@@ -63,18 +63,10 @@
 - named tuple
 - type alias
 
-## Day 09
-
-## Day 10
-
 ## Day 11
 
 - Callable
 - default arguments
-
-## Day 12
-
-## Day 13
 
 ## Day 14
 
@@ -83,12 +75,16 @@
 - format(..., '#038b')
 - formatting and padding of bin numbers
 
-## Day 15
-
 ## Day 16
 
 - filter dictionary
 
 ## Day 17
 
-- @cache vs @lru_cache
+- @cache and @lru_cache
+
+## Day 22
+
+- deque
+- cache with list parameter
+- 
