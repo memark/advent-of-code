@@ -88,3 +88,7 @@
 ## Day 16
 
 - filter dictionary
+
+## Day 17
+
+- @cache vs @lru_cache
