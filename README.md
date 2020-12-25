@@ -1,3 +1,3 @@
 # Advent-of-code-2020
 
-Trying to solve this year's problems in Python.
+I was new to Python when beginning this year's AoC. After 43 stars I feel I'm starting to know the language pretty well!
