@@ -49,30 +49,28 @@ def getAnswer_2(data: str) -> int:
 
 def getAnswer(data: str, *, isPartTwo: bool) -> int:
     [pk1, pk2] = [int(l) for l in data.splitlines()]
-
-    def get_loop_size(sn: int, pk: int):
-        v = 1
-        loop = 0
-        while v != pk:
-            loop += 1
-            v *= sn
-            v %= 20201227
-        return loop
-
-    lz1 = get_loop_size(7, pk1)
     lz2 = get_loop_size(7, pk2)
-
-    def get_enc_key(pk: int, lz: int):
-        v = 1
-        for _ in range(lz):
-            v *= pk
-            v %= 20201227
-        return v
-
     ek1 = get_enc_key(pk1, lz2)
-    ek2 = get_enc_key(pk2, lz1)
 
     return ek1
+
+
+def get_loop_size(sn: int, pk: int):
+    v = 1
+    loop = 0
+    while v != pk:
+        loop += 1
+        v *= sn
+        v %= 20201227
+    return loop
+
+
+def get_enc_key(pk: int, lz: int):
+    v = 1
+    for _ in range(lz):
+        v *= pk
+        v %= 20201227
+    return v
 
 
 def main() -> None:
