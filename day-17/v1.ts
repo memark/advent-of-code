@@ -22,9 +22,9 @@ for (const y of range(0, d.length)) {
   }
 }
 
-console.log(actives);
+// console.log(actives);
 
-const numCycles = 1;
+const numCycles = 6;
 
 const res = recurse(actives, numCycles);
 
@@ -33,7 +33,7 @@ console.log(res.size);
 type Coord = { x: number; y: number; z: number; w: number };
 
 function recurse(actives: Set<Coord>, maxCycles: number, cycle: number = 1) {
-  console.log("actives", actives);
+  //   console.log("actives", actives);
   if (cycle > maxCycles) return actives;
 
   const coordsToCheck = new Set<Coord>();
@@ -45,7 +45,9 @@ function recurse(actives: Set<Coord>, maxCycles: number, cycle: number = 1) {
   const newActives = new Set<Coord>();
   for (const c of Array.from(coordsToCheck))
     if (getNewState(c, actives)) newActives.add(c);
-  console.log("newActives", newActives);
+  //   console.log("newActives", newActives);
+
+  console.log(newActives.size);
 
   return recurse(newActives, maxCycles, cycle + 1);
 }
@@ -53,8 +55,9 @@ function recurse(actives: Set<Coord>, maxCycles: number, cycle: number = 1) {
 function getNewState(coord: Coord, actives: Set<Coord>) {
   let activeNeighbours = 0;
   for (const n of Array.from(getNeighbours(coord))) {
-    if (actives.has(n)) {
-      if (coord.z == 0 && coord.w == 0) console.log(coord, activeNeighbours);
+    // if (actives.has(n)) {
+    if (has(n, actives)) {
+      //   if (coord.z == 0 && coord.w == 0) console.log(coord, activeNeighbours);
       activeNeighbours++;
     }
   }
@@ -63,10 +66,18 @@ function getNewState(coord: Coord, actives: Set<Coord>) {
 
   // If a cube is active and exactly 2 or 3 of its neighbors are also active, the cube remains active.
   // Otherwise, the cube becomes inactive.
-  if (actives.has(coord)) return [2, 3].includes(activeNeighbours);
+  //   if (actives.has(coord)) return [2, 3].includes(activeNeighbours);
+  if (has(coord, actives)) return [2, 3].includes(activeNeighbours);
   // If a cube is inactive but exactly 3 of its neighbors are active, the cube becomes active.
   // Otherwise, the cube remains inactive.
   else return [3].includes(activeNeighbours);
+}
+
+function has(coord: Coord, actives: Set<Coord>) {
+  for (const a of Array.from(actives))
+    if (a.x == coord.x && a.y == coord.y && a.z == coord.z && a.w == coord.w)
+      return true;
+  return false;
 }
 
 function getNeighbours(coord: Coord) {
@@ -80,6 +91,11 @@ function getNeighbours(coord: Coord) {
   return res;
 }
 
-const a = [1, 2];
-const b = [1, 2];
-console.log(a == b);
+// const a = [1, 2];
+// const b = [1, 2];
+// // console.log(a == b);
+
+// const c = new Set([a]);
+// console.log(c);
+// console.log(c.has(a));
+// console.log(c.has(b));
