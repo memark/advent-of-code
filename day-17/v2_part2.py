@@ -60,18 +60,10 @@ def recurse(actives: set[Coord], maxCycles: int, cycle: int = 1):
     if cycle > maxCycles:
         return actives
 
-    tic = time.perf_counter()
     coordsToCheck = {aa for a in actives for aa in [a, *getNeighbours(a)]}
-    toc = time.perf_counter()
-    print(f'{cycle=}: getting coords to check took {(toc-tic)*1000:.0f} ms')
     print(f"{cycle=}: checking {len(coordsToCheck)} relevant coords")
 
-    tic = time.perf_counter()
     newActives = {c for c in coordsToCheck if getNewState(c, actives)}
-    toc = time.perf_counter()
-    print(f'{cycle=}: calculating new matrix took {(toc-tic)*1000:.0f} ms')
-
-    # printMatrix(newActives)
     print(
         f"{cycle=}: going from {len(actives)} to {len(newActives)} active cubes")
     print()
@@ -108,8 +100,8 @@ def main():
     # getAndPrintAndAssertAndTimeAnswer(getAnswer_1, sample_1)
     # getAndPrintAndAssertAndTimeAnswer(getAnswer_1, input)
 
-    # getAndPrintAndAssertAndTimeAnswer(getAnswer_2, sample_1)
-    getAndPrintAndAssertAndTimeAnswer(getAnswer_2, input, 2192)
+    getAndPrintAndAssertAndTimeAnswer(getAnswer_2, sample_1)
+    # getAndPrintAndAssertAndTimeAnswer(getAnswer_2, input, 2192)
 
 
 def getAndPrintAndAssertAndTimeAnswer(func: Callable[[str], int], data: str, expected: Optional[int] = None) -> None:
