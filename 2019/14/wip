@@ -1,0 +1,22 @@
+Tankar
+
+En fold är att göra samma operation om och om igen på en lista. Det är kanske inte fallet här, eftersom listan inte är i ordning osv.
+
+Fold kan funka för ingående ingredienser, men inte för hela processen. Den måste fortsätta att vara rekursiv, tills vi når FUEL.
+
+I en första variant ska jag ta hänsyn till både input- och output-faktorer. Först senare kollar jag på att lagra hur mycket som redan tillverkats av sånt som kan behövas fler gånger ("A" i exemplet).
+
+
+
+
+ok, dags för andra försöket
+
+* hitta reaktionen för det vi vill tillverka
+* räkna ut minsta inputmängden som behövs,
+    beaktat outputmängden
+* lagra överflödet i "globala tankar" Map[]
+
+
+
+
+gör om Chemical till C mm
