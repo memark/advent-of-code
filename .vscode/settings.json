@@ -13,5 +13,14 @@
         "editor.codeActionsOnSave": {
             "source.organizeImports": true
         }
-    }
+    },
+    "[typescript]": {
+        "editor.formatOnSave": true,
+    },
+    "deno.enable": true,
+    "deno.lint": true,
+    "deno.unstable": true,
+    "deno.codeLens.implementations": true,
+    "deno.codeLens.referencesAllFunctions": true,
+    "deno.suggest.completeFunctionCalls": true
 }
