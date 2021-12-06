@@ -22,5 +22,6 @@
     "deno.unstable": true,
     "deno.codeLens.implementations": true,
     "deno.codeLens.referencesAllFunctions": true,
-    "deno.suggest.completeFunctionCalls": true
+    "deno.suggest.completeFunctionCalls": true,
+    "deno.config": "tsconfig_deno.json"
 }
