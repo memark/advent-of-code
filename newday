@@ -1,0 +1,27 @@
+#!env -S deno run --unstable --allow-read --allow-write
+
+import {
+  ensureDirSync,
+  ensureFileSync,
+  existsSync,
+} from "https://deno.land/std@0.117.0/fs/mod.ts";
+import { copySync } from "https://deno.land/std@0.117.0/fs/copy.ts";
+import makeloc from "https://x.nest.land/dirname@1.1.2/mod.ts";
+
+const basePath = makeloc(import.meta).__dirname;
+const year = new Date().getFullYear();
+const date = new Date().getDate();
+
+const todayPath = `${basePath}/${year}/${date}`;
+const yesterdayPath = `${basePath}/${year}/${date - 1}`;
+
+if (existsSync(todayPath)) {
+  console.log(`Directory ${todayPath} already exists!`);
+} else {
+  ensureDirSync(todayPath);
+  copySync(yesterdayPath + "/v1.ts", todayPath + "/v1.ts");
+  ensureFileSync(todayPath + "/input.txt");
+  ensureFileSync(todayPath + "/example.txt");
+
+  console.log(`Created directory ${todayPath} with basic files!`);
+}
