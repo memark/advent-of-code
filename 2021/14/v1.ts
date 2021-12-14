@@ -12,108 +12,106 @@ const myMax = (n: number[]) => Math.max(...n);
 const myMin = (n: number[]) => Math.min(...n);
 const array0toN = (n: number) => [...Array(n).keys()];
 
+const fileNumber = 1;
+
 const files = ["input.txt", "example.txt"];
-const file = Deno.readTextFileSync(files[0]);
+const file = Deno.readTextFileSync(files[fileNumber]);
 
 const [top, bottom] = splitBy("\n\n")(file);
 
 const template = top as Input;
-log({ template });
+// log({ template });
 
 const rules = R.compose(
-  // R.map(r=>({r}))
+  R.fromPairs,
   R.map(splitBy(" -> ")),
   splitBy("\n"),
-)(bottom) as Rule[];
+)(bottom) as Record<string, string>;
 log({ rules });
 
 type Input = string;
 type Rule = [string, string];
 
-const runOneStep = (rules: Rule[]) =>
-  (input: Input) => {
-    const splitInput = input.split("");
-    const zippedInput = R.zipWith(
-      (a, b) => a + b,
-      splitInput.slice(0),
-      splitInput.slice(1),
-    );
-    // log({ zippedInput });
+const runSteps = (totalSteps: number, input: Input) => {
+  const resolveInput = (input: string, step: number): string => {
+    log({ step });
 
-    let res = input;
-    for (let i = 0; i < res.length; i++) {
-      const pair = res[i] + res[i + 1]; // slice!
-      const m = R.find((r) => r[0] === pair, rules)?.[1];
-      // log(m);
-      // log("before", { res });
-      if (m) {
-        // log(`Adding ${m} between ${res[i]} and ${res[i + 1]}`);
-        // res += input[i] + m + input[i + 1];
-        res = res.slice(0, i + 1) + m + res.slice(i + 1);
-        i++;
-      }
-      // log("after", { res });
+    // Om max rekursion, returnera input
+    if (step === totalSteps) {
+      return input;
     }
-    // log({ res });
-    return res;
+
+    // Dela upp i par
+    const pairs = R.map(
+      (i) => input.slice(i, i + 1 + 1),
+      array0toN(input.length - 1),
+    );
+    // log({ step }, { pairs });
+
+    // Skapa tripletter (genom att slå upp paret och infoga svaret i mitten)
+    const triplets = R.map((p) => p[0] + rules[p] + p[1], pairs);
+    // log({ step }, { triplets });
+
+    // Rekursera varje triplett
+    const recursed = R.map((t) => resolveInput(t, step + 1), triplets);
+    // log({ step }, { recursed });
+
+    // Klistra ihop paren
+    const [r, ...rs] = recursed;
+    const together = r + R.map((x) => x.slice(1), rs).join("");
+    // log({ step }, { together });
+
+    // log(
+    //   { step: totalSteps - step },
+    //   pairs,
+    //   "=>",
+    //   triplets,
+    //   "=>",
+    //   recursed,
+    //   "=>",
+    //   together,
+    // );
+
+    // Returnera resultatet
+    return together;
   };
 
-// log(runOneStep(rules)(template));
-// log(runOneStep(rules)(runOneStep(rules)(template)));
+  return resolveInput(input, 0);
+};
 
-part1();
-// part2();
-
-function part1() {
-  const polymer = R.reduce(
-    (prev, curr) => runOneStep(rules)(prev),
-    template,
-    array0toN(10),
-  );
-  log(polymer);
+const answerForSteps = (steps) => {
+  const polymer = runSteps(steps, template);
+  // log(polymer);
 
   const elements = R.uniq(polymer.split(""));
-  log({ elements });
+  // log({ elements });
 
   const counts = R.map(
     (e) => R.filter((p) => p === e, polymer.split("")).length,
     elements,
   );
-  log({ counts });
+  // log({ counts });
 
   const mostCommon = myMax(counts);
-  log({ mostCommon });
+  // log({ mostCommon });
   const leastCommon = myMin(counts);
-  log({ leastCommon });
+  // log({ leastCommon });
   const answer = mostCommon - leastCommon;
 
-  printSolution("1", answer); // 1488
+  return answer;
+};
+
+part1();
+// part2();
+
+function part1() {
+  const answer = answerForSteps(10);
+
+  printSolution("1", answer); // 1588, 3408
 }
 
 function part2() {
-  const answer = 42;
+  const answer = answerForSteps(40);
 
-  printSolution("2", "\n" + answer); //
-}
-
-function formatDots(dots, greenAndBlack = false) {
-  const maxCoordAtPos = (pos: number) =>
-    R.compose(
-      myMax,
-      R.map(index(pos)),
-    )(dots);
-  const maxX = maxCoordAtPos(0);
-  const maxY = maxCoordAtPos(1);
-
-  const filler = greenAndBlack ? " " : ".";
-  const matrix = createFilled2dArray(maxY + 1, maxX + 1, filler) as string[][];
-  dots.forEach((d) => matrix[d[1]][d[0]] = "#");
-
-  return (greenAndBlack ? green : R.identity)(
-    matrix.map((y) => y.join("")).join("\n"),
-  );
-}
-
-function createFilled2dArray(numRows, numColumnns, fillValue) {
-  return [...Array(numRows)].map(() => Array(numColumnns).fill(fillValue));
+  printSolution("2", "\n" + answer); // 2188189693529, ?
 }
