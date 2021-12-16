@@ -23,5 +23,8 @@
     "deno.codeLens.implementations": true,
     "deno.codeLens.referencesAllFunctions": true,
     "deno.suggest.completeFunctionCalls": true,
-    "deno.config": "tsconfig_deno.json"
+    "deno.config": "tsconfig_deno.json",
+    "deno.suggest.imports.hosts": {
+        "https://deno.land": true
+    }
 }
