@@ -15,7 +15,7 @@ const array0toN = (n: number) => [...Array(n).keys()];
 const parseBin = (s: string) => parseInt(s, 2);
 const parseHex = (s: string) => parseInt(s, 16);
 
-const fileNumber = 0;
+const fileNumber = 1;
 
 const files = ["input.txt", "example.txt"];
 const file = Deno.readTextFileSync(files[fileNumber]);
@@ -79,17 +79,37 @@ function recurse(
   if (currentCycle > maxCycles) return actives;
 
   const coordsToCheck = new Set<Coord>();
-  for (const a of Array.from(actives)) {
-    for (const aa of Array.from(getSelfAndNeighboursPlusExtra(a))) {
-      if (!has(aa, coordsToCheck)) coordsToCheck.add(aa);
+
+  const a = Array.from(actives);
+  const extra = 1;
+
+  const xStart = myMin(a.map((_) => _.x)) - extra;
+  const xEnd = myMax(a.map((_) => _.x)) + extra;
+  const yStart = myMin(a.map((_) => _.y)) - extra;
+  const yEnd = myMax(a.map((_) => _.y)) + extra;
+
+  for (let y = yStart; y <= yEnd; y++) {
+    for (let x = xStart; x <= xEnd; x++) {
+      // yRes += has({ x, y }, state) ? "#" : ".";
+      coordsToCheck.add({ x, y });
     }
   }
+
+  // for (const a of Array.from(actives)) {
+  //   for (const aa of Array.from(getSelfAndNeighboursPlusExtra(a))) {
+  //     if (!has(aa, coordsToCheck)) coordsToCheck.add(aa);
+  //   }
+  // }
   // console.log("coordsToCheck", coordsToCheck);
   // printState(coordsToCheck);
 
   const newActives = new Set<Coord>();
   for (const c of Array.from(coordsToCheck)) {
-    if (getNewState(c, actives) && !has(c, newActives)) newActives.add(c);
+    if (
+      getNewState(c, actives) && !has(c, newActives)
+    ) {
+      newActives.add(c);
+    }
   }
 
   // printState(newActives);
@@ -100,7 +120,7 @@ function recurse(
 }
 
 function getSelfAndNeighboursPlusExtra(coord: Coord) {
-  // Alla pixlar långt bort från våra byter state varje iteration pga algo[0] === "#".
+  // Alla pixlar långt bort från våra egna byter state varje iteration pga algo[0] === "#".
   const extra = 0;
   const res = new Set<Coord>();
   for (const y of range(coord.y - 1 - extra, coord.y + 1 + extra + 1)) {
@@ -111,19 +131,17 @@ function getSelfAndNeighboursPlusExtra(coord: Coord) {
   return res;
 }
 
-function getNewState(coord: Coord, actives: Set<Coord>) {
+function getNewState(coord: Coord, actives: Set<Coord> //, flippedCycle: boolean
+) {
   const san = Array.from(getSelfAndNeighbours(coord));
-  // if (san.length !== 9) throw Error();
-  // log({ san });
   let b = "";
   for (const n of san) {
-    // log({ n }, has(n, actives));
     b += has(n, actives) ? "1" : "0";
   }
-  // log({ b });
   const d = parseBin(b);
-  // log({ d });
-  // log(algo[d]);
+
+  // Detta gav en massa andra konstiga svar.
+  // return flippedCycle ? algo[d] === "." : algo[d] === "#";
   return algo[d] === "#";
 }
 
@@ -154,7 +172,7 @@ function part1() {
   printState(res);
   const answer = res.size;
 
-  printSolution("part1", answer); // 35, 4778 wrong, 4562 too low, 4928 too high, 5491 ?, 6186 ?, 6670 ?
+  printSolution("part1", answer); // 35, 4778 wrong, 4562 too low, 4928 too high, 5491 ?, 6186 ?, 6670 ? -- 4942 ?, 5486?
 }
 
 function part2() {
