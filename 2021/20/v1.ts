@@ -15,7 +15,7 @@ const array0toN = (n: number) => [...Array(n).keys()];
 const parseBin = (s: string) => parseInt(s, 2);
 const parseHex = (s: string) => parseInt(s, 16);
 
-const fileNumber = 1;
+const fileNumber = 0;
 
 const files = ["input.txt", "example.txt"];
 const file = Deno.readTextFileSync(files[fileNumber]);
@@ -26,26 +26,27 @@ const image = bottom.split("\n").map((l) => l.split(""));
 const algo = top.split("");
 if (algo.length !== 512) throw Error();
 
+// algo[0] = "#"; // HACK!!!
+
 type Coord = { x: number; y: number };
 
-const actives = new Set<Coord>();
+const actives: Coord[] = [];
 
 for (const y of range(0, image.length)) {
   for (const x of range(0, image[y].length)) {
     if (image[y][x] == "#") {
-      actives.add({ x, y });
+      actives.push({ x, y });
     }
   }
 }
 
-function printState(state: Set<Coord>) {
-  const a = Array.from(state);
+function printState(state: Coord[]) {
   const extraForPrint = 3;
 
-  const xStart = myMin(a.map((_) => _.x)) - extraForPrint;
-  const xEnd = myMax(a.map((_) => _.x)) + extraForPrint;
-  const yStart = myMin(a.map((_) => _.y)) - extraForPrint;
-  const yEnd = myMax(a.map((_) => _.y)) + extraForPrint;
+  const xStart = myMin(state.map((_) => _.x)) - extraForPrint;
+  const xEnd = myMax(state.map((_) => _.x)) + extraForPrint;
+  const yStart = myMin(state.map((_) => _.y)) - extraForPrint;
+  const yEnd = myMax(state.map((_) => _.y)) + extraForPrint;
 
   // log({ xStart, xEnd, yStart, yEnd });
 
@@ -71,49 +72,48 @@ function printState(state: Set<Coord>) {
 // log(res.size);
 
 function recurse(
-  actives: Set<Coord>,
+  actives: Coord[],
   maxCycles: number,
   currentCycle = 1,
-): Set<Coord> {
+): Coord[] {
   // console.log({ actives });
   if (currentCycle > maxCycles) return actives;
 
-  const coordsToCheck = new Set<Coord>();
+  const coordsToCheck: Coord[] = [];
 
-  const a = Array.from(actives);
   const extra = 1;
 
-  const xStart = myMin(a.map((_) => _.x)) - extra;
-  const xEnd = myMax(a.map((_) => _.x)) + extra;
-  const yStart = myMin(a.map((_) => _.y)) - extra;
-  const yEnd = myMax(a.map((_) => _.y)) + extra;
+  const xStart = myMin(actives.map((_) => _.x)) - extra;
+  const xEnd = myMax(actives.map((_) => _.x)) + extra;
+  const yStart = myMin(actives.map((_) => _.y)) - extra;
+  const yEnd = myMax(actives.map((_) => _.y)) + extra;
 
   for (let y = yStart; y <= yEnd; y++) {
     for (let x = xStart; x <= xEnd; x++) {
       // yRes += has({ x, y }, state) ? "#" : ".";
-      coordsToCheck.add({ x, y });
+      coordsToCheck.push({ x, y });
     }
   }
 
-  // for (const a of Array.from(actives)) {
-  //   for (const aa of Array.from(getSelfAndNeighboursPlusExtra(a))) {
+  // for (const a of actives) {
+  //   for (const aa of getSelfAndNeighboursPlusExtra(a)) {
   //     if (!has(aa, coordsToCheck)) coordsToCheck.add(aa);
   //   }
   // }
   // console.log("coordsToCheck", coordsToCheck);
   // printState(coordsToCheck);
 
-  const newActives = new Set<Coord>();
-  for (const c of Array.from(coordsToCheck)) {
+  const newActives: Coord[] = [];
+  for (const c of coordsToCheck) {
     if (
-      getNewState(c, actives) && !has(c, newActives)
+      getNewState(c, actives, currentCycle % 2 === 0) && !has(c, newActives)
     ) {
-      newActives.add(c);
+      newActives.push(c);
     }
   }
 
   // printState(newActives);
-  // log(Array.from(newActives).length);
+  // log(newActives.length);
   // log(newActives);
 
   return recurse(newActives, maxCycles, currentCycle + 1);
@@ -121,22 +121,33 @@ function recurse(
 
 function getSelfAndNeighboursPlusExtra(coord: Coord) {
   // Alla pixlar långt bort från våra egna byter state varje iteration pga algo[0] === "#".
-  const extra = 0;
-  const res = new Set<Coord>();
+  const extra = 2;
+  const res: Coord[] = [];
   for (const y of range(coord.y - 1 - extra, coord.y + 1 + extra + 1)) {
     for (const x of range(coord.x - 1 - extra, coord.x + 1 + extra + 1)) {
-      res.add({ x, y });
+      res.push({ x, y });
     }
   }
   return res;
 }
 
-function getNewState(coord: Coord, actives: Set<Coord> //, flippedCycle: boolean
-) {
-  const san = Array.from(getSelfAndNeighbours(coord));
+function getNewState(coord: Coord, actives: Coord[], flippedCycle: boolean) {
+  const extra = 1;
+
+  const xStart = myMin(actives.map((_) => _.x)) - extra;
+  const xEnd = myMax(actives.map((_) => _.x)) + extra;
+  const yStart = myMin(actives.map((_) => _.y)) - extra;
+  const yEnd = myMax(actives.map((_) => _.y)) + extra;
+
+  const san = getSelfAndNeighbours(coord);
   let b = "";
   for (const n of san) {
-    b += has(n, actives) ? "1" : "0";
+    if (n.x < xStart || n.x > xEnd || n.y < yStart || n.y > yEnd) {
+      b += !flippedCycle ? "1" : "0";
+    } else {
+      const h = has(n, actives);
+      b += h ? "1" : "0";
+    }
   }
   const d = parseBin(b);
 
@@ -146,17 +157,17 @@ function getNewState(coord: Coord, actives: Set<Coord> //, flippedCycle: boolean
 }
 
 function getSelfAndNeighbours(coord: Coord) {
-  const res = new Set<Coord>();
+  const res: Coord[] = [];
   for (const y of range(coord.y - 1, coord.y + 1 + 1)) {
     for (const x of range(coord.x - 1, coord.x + 1 + 1)) {
-      res.add({ x, y });
+      res.push({ x, y });
     }
   }
   return res;
 }
 
-function has(coord: Coord, actives: Set<Coord>) {
-  return R.any((a) => a.x == coord.x && a.y == coord.y, Array.from(actives));
+function has(coord: Coord, actives: Coord[]) {
+  return R.any((a) => a.x == coord.x && a.y == coord.y, actives);
 }
 
 function range(from: number, to: number): number[] {
@@ -170,9 +181,9 @@ part1();
 function part1() {
   const res = recurse(actives, 2);
   printState(res);
-  const answer = res.size;
+  const answer = res.length;
 
-  printSolution("part1", answer); // 35, 4778 wrong, 4562 too low, 4928 too high, 5491 ?, 6186 ?, 6670 ? -- 4942 ?, 5486?
+  printSolution("part1", answer); // 35, 4778 wrong, 4562 too low, 4928 too high, ?
 }
 
 function part2() {
