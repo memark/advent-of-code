@@ -23,6 +23,27 @@ const file = Deno.readTextFileSync(
 );
 log(file);
 
+const a = file.split("\n")[1].replaceAll("#", "").split("");
+const [h01, h02, h03, h04, h05, h06, h07, h08, h09, h10, h11] = a;
+log(a);
+
+const b = file.split("\n")[2].replaceAll("#", "").split("");
+log(b);
+const [r11, r21, r31, r41] = b;
+
+const c = file.split("\n")[3].replaceAll(" ", "").replaceAll("#", "").split("");
+log(c);
+const [r12, r22, r32, r42] = c;
+
+const m = new Map<any, any>();
+// m.set()
+
+interface Space {
+  location: [number, number];
+  name: string;
+  adjacentNames: string[];
+}
+
 log();
 // part1();
 // part2();
