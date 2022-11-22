@@ -142,3 +142,5 @@ node_modules
 
 .fake
 .ionide
+
+.DS_Store
