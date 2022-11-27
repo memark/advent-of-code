@@ -14,22 +14,23 @@ fn main() {
     println!("{}: {}", stringify!(part_2a), part_2a);
 }
 
-fn improve_polymer_and_react(file: &str) -> usize {
+pub fn improve_polymer_and_react(file: &str) -> usize {
     ('a'..='z')
         .map(|c| react(&remove_units(file, c)).len())
         .min()
         .unwrap()
 }
 
-fn react(polymer: &str) -> String {
+pub fn react(polymer: &str) -> String {
     let mut result = polymer.to_owned();
     let mut changed = true;
     while changed {
         changed = false;
         for c in ('a'..='z').chain('A'..='Z') {
             let from = [c, switch_case(c)].iter().collect::<String>();
-            if result.contains(&from) {
-                result = result.replace(&from, "");
+            let new_result = result.replace(&from, "");
+            if new_result.len() != result.len() {
+                result = new_result;
                 changed = true;
             }
         }
@@ -71,5 +72,13 @@ mod tests {
     fn part_2_examples() {
         assert_eq!(remove_units("dabAcCaCBAcCcaDA", 'a'), "dbcCCBcCcD");
         assert_eq!(react(&remove_units("dabAcCaCBAcCcaDA", 'a')), "dbCBcD");
+    }
+
+    #[test]
+    fn part_2_input() {
+        let file = fs::read_to_string("input").unwrap();
+        let file = file.trim();
+
+        assert_eq!(improve_polymer_and_react(file), 6918);
     }
 }
