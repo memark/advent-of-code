@@ -136,6 +136,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-01"
+version = "0.0.0"
+dependencies = [
+ "itertools",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "day-xx"
 version = "0.0.0"
 dependencies = [

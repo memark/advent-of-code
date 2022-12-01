@@ -1,0 +1,10 @@
+[package]
+name = "day-01"
+version = { workspace = true }
+edition = { workspace = true }
+
+[dependencies]
+itertools =  { workspace = true }
+
+[dev-dependencies]
+pretty_assertions =  { workspace = true }
