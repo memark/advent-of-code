@@ -1,5 +1,4 @@
-use itertools::Itertools;
-use std::fs;
+use std::{error::Error, fs, str::FromStr};
 use Outcome::*;
 use Shape::*;
 
@@ -11,28 +10,18 @@ fn main() {
 fn solve_part_1(input: &str) -> u32 {
     input
         .lines()
-        .map(|l| l.split(' ').collect_tuple::<(&str, &str)>().unwrap())
-        .map(|(elf, me)| {
-            let elf = Shape::from_abc(elf);
-            let me = Shape::from_xyz(me);
-            let outcome = Outcome::from_shapes(&elf, &me);
-
-            me.score() + outcome.score()
-        })
+        .map(|l| l.split_once(' ').unwrap())
+        .map(|(elf, me)| (elf.parse().unwrap(), me.parse().unwrap()))
+        .map(|(elf, me): (Shape, Shape)| me.score() + Outcome::for_me(&elf, &me).score())
         .sum()
 }
 
 fn solve_part_2(input: &str) -> u32 {
     input
         .lines()
-        .map(|l| l.split(' ').collect_tuple::<(&str, &str)>().unwrap())
-        .map(|(elf, outcome)| {
-            let elf = Shape::from_abc(elf);
-            let outcome = Outcome::from_xyz(outcome);
-            let me = &outcome.with_elf(&elf);
-
-            me.score() + outcome.score()
-        })
+        .map(|l| l.split_once(' ').unwrap())
+        .map(|(elf, outcome)| (elf.parse().unwrap(), outcome.parse().unwrap()))
+        .map(|(elf, outcome): (Shape, Outcome)| outcome.with_other(&elf).score() + outcome.score())
         .sum()
 }
 
@@ -42,25 +31,20 @@ enum Shape {
     Scissors,
 }
 
+impl FromStr for Shape {
+    type Err = Box<dyn Error>;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "A" | "X" => Ok(Rock),
+            "B" | "Y" => Ok(Paper),
+            "C" | "Z" => Ok(Scissors),
+            _ => panic!("Invalid shape: {}", s),
+        }
+    }
+}
+
 impl Shape {
-    fn from_abc(s: &str) -> Shape {
-        match s {
-            "A" => Rock,
-            "B" => Paper,
-            "C" => Scissors,
-            _ => panic!("{}", s),
-        }
-    }
-
-    fn from_xyz(s: &str) -> Shape {
-        match s {
-            "X" => Rock,
-            "Y" => Paper,
-            "Z" => Scissors,
-            _ => panic!("{}", s),
-        }
-    }
-
     fn score(&self) -> u32 {
         match self {
             Rock => 1,
@@ -76,9 +60,22 @@ enum Outcome {
     Win,
 }
 
+impl FromStr for Outcome {
+    type Err = Box<dyn Error>;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "X" => Ok(Lose),
+            "Y" => Ok(Draw),
+            "Z" => Ok(Win),
+            _ => panic!("{}", s),
+        }
+    }
+}
+
 impl Outcome {
-    fn from_shapes(elf: &Shape, me: &Shape) -> Self {
-        match (elf, &me) {
+    fn for_me(other: &Shape, me: &Shape) -> Self {
+        match (other, &me) {
             (Rock, Rock) => Draw,
             (Rock, Paper) => Win,
             (Rock, Scissors) => Lose,
@@ -93,32 +90,23 @@ impl Outcome {
         }
     }
 
-    fn with_elf(&self, elf: &Shape) -> Shape {
+    fn with_other(&self, other: &Shape) -> Shape {
         match self {
-            Lose => match elf {
+            Lose => match other {
                 Rock => Scissors,
                 Paper => Rock,
                 Scissors => Paper,
             },
-            Draw => match elf {
+            Draw => match other {
                 Rock => Rock,
                 Paper => Paper,
                 Scissors => Scissors,
             },
-            Win => match elf {
+            Win => match other {
                 Rock => Paper,
                 Paper => Scissors,
                 Scissors => Rock,
             },
-        }
-    }
-
-    fn from_xyz(s: &str) -> Outcome {
-        match s {
-            "X" => Lose,
-            "Y" => Draw,
-            "Z" => Win,
-            _ => panic!("{}", s),
         }
     }
 
