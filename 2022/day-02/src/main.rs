@@ -1,121 +1,134 @@
-#![allow(dead_code, unused_imports, unused_variables, unreachable_code)]
-
 use itertools::Itertools;
-use std::{fmt::Display, fs};
+use std::fs;
+use Outcome::*;
+use Shape::*;
 
 fn main() {
-    // println!("Part 1: {}", solve_part_1(&file("input")));
+    println!("Part 1: {}", solve_part_1(&file("input")));
     println!("Part 2: {}", solve_part_2(&file("input")));
 }
 
-fn solve_part_1(input: &str) -> i32 {
+fn solve_part_1(input: &str) -> u32 {
     input
-        .split('\n')
-        .map(|l| l.split(' ').collect_vec())
-        .map(|h| {
-            let elf = h[0];
-            let me = h[1];
-            // score for the shape you selected (1 for Rock, 2 for Paper, and 3 for Scissors)
-            let shape = match me {
-                "X" => 1,
-                "Y" => 2,
-                "Z" => 3,
+        .lines()
+        .map(|l| l.split(' ').collect_tuple::<(&str, &str)>().unwrap())
+        .map(|(elf, me)| {
+            let elf = Shape::from_abc(elf);
+            let me = Shape::from_xyz(me);
+            let outcome = Outcome::from_shapes(&elf, &me);
 
-                _ => panic!(),
-            };
-
-            // A rock, B paper, C scissor
-            // X rock, Y paper, Z scissor
-
-            // score for the outcome of the round (0 if you lost, 3 if the round was a draw, and 6 if you won)
-            let outcome = match (elf, me) {
-                ("A", "X") => 3,
-                ("A", "Y") => 6,
-                ("A", "Z") => 0,
-
-                ("B", "X") => 0,
-                ("B", "Y") => 3,
-                ("B", "Z") => 6,
-
-                ("C", "X") => 6,
-                ("C", "Y") => 0,
-                ("C", "Z") => 3,
-
-                _ => {
-                    println!("{:?}", (elf, me));
-                    panic!()
-                }
-            };
-
-            let score = shape + outcome;
-
-            println!("{:?} => {} + {} = {}", (me, elf), shape, outcome, score);
-
-            score
+            me.score() + outcome.score()
         })
         .sum()
 }
 
-fn solve_part_2(input: &str) -> i32 {
+fn solve_part_2(input: &str) -> u32 {
     input
-        .split('\n')
-        .map(|l| l.split(' ').collect_vec())
-        .map(|h| {
-            let elf = h[0];
-            let outcome = h[1];
+        .lines()
+        .map(|l| l.split(' ').collect_tuple::<(&str, &str)>().unwrap())
+        .map(|(elf, outcome)| {
+            let elf = Shape::from_abc(elf);
+            let outcome = Outcome::from_xyz(outcome);
+            let me = &outcome.with_elf(&elf);
 
-            // X means you need to lose, Y means you need to end the round in a draw, and Z means you need to win
-            // A rock, B paper, C scissor
-            // X rock, Y paper, Z scissor
-            let me = match outcome {
-                // lose
-                "X" => match elf {
-                    "A" => "Z",
-                    "B" => "X",
-                    "C" => "Y",
-                    _ => panic!(),
-                },
-
-                // draw
-                "Y" => match elf {
-                    "A" => "X",
-                    "B" => "Y",
-                    "C" => "Z",
-                    _ => panic!(),
-                },
-
-                // win
-                "Z" => match elf {
-                    "A" => "Y",
-                    "B" => "Z",
-                    "C" => "X",
-                    _ => panic!(),
-                },
-                _ => panic!(),
-            };
-            let outcome_score = match outcome {
-                "X" => 0,
-                "Y" => 3,
-                "Z" => 6,
-                _ => panic!(),
-            };
-
-            // score for the shape you selected (1 for Rock, 2 for Paper, and 3 for Scissors)
-            let shape = match me {
-                "X" => 1,
-                "Y" => 2,
-                "Z" => 3,
-
-                _ => panic!(),
-            };
-
-            let score = shape + outcome_score;
-
-            println!("{:?} => {} + {} = {}", (me, elf), shape, outcome, score);
-
-            score
+            me.score() + outcome.score()
         })
         .sum()
+}
+
+enum Shape {
+    Rock,
+    Paper,
+    Scissors,
+}
+
+impl Shape {
+    fn from_abc(s: &str) -> Shape {
+        match s {
+            "A" => Rock,
+            "B" => Paper,
+            "C" => Scissors,
+            _ => panic!("{}", s),
+        }
+    }
+
+    fn from_xyz(s: &str) -> Shape {
+        match s {
+            "X" => Rock,
+            "Y" => Paper,
+            "Z" => Scissors,
+            _ => panic!("{}", s),
+        }
+    }
+
+    fn score(&self) -> u32 {
+        match self {
+            Rock => 1,
+            Paper => 2,
+            Scissors => 3,
+        }
+    }
+}
+
+enum Outcome {
+    Lose,
+    Draw,
+    Win,
+}
+
+impl Outcome {
+    fn from_shapes(elf: &Shape, me: &Shape) -> Self {
+        match (elf, &me) {
+            (Rock, Rock) => Draw,
+            (Rock, Paper) => Win,
+            (Rock, Scissors) => Lose,
+
+            (Paper, Rock) => Lose,
+            (Paper, Paper) => Draw,
+            (Paper, Scissors) => Win,
+
+            (Scissors, Rock) => Win,
+            (Scissors, Paper) => Lose,
+            (Scissors, Scissors) => Draw,
+        }
+    }
+
+    fn with_elf(&self, elf: &Shape) -> Shape {
+        match self {
+            Lose => match elf {
+                Rock => Scissors,
+                Paper => Rock,
+                Scissors => Paper,
+            },
+            Draw => match elf {
+                Rock => Rock,
+                Paper => Paper,
+                Scissors => Scissors,
+            },
+            Win => match elf {
+                Rock => Paper,
+                Paper => Scissors,
+                Scissors => Rock,
+            },
+        }
+    }
+
+    fn from_xyz(s: &str) -> Outcome {
+        match s {
+            "X" => Lose,
+            "Y" => Draw,
+            "Z" => Win,
+            _ => panic!("{}", s),
+        }
+    }
+
+    fn score(&self) -> u32 {
+        match self {
+            Lose => 0,
+            Draw => 3,
+            Win => 6,
+        }
+    }
 }
 
 fn file(path: &str) -> String {
@@ -142,9 +155,8 @@ mod tests {
         assert_eq!(solve_part_2(&file("example_2")), 12);
     }
 
-    #[ignore]
     #[test]
     fn part_2_input() {
-        assert_eq!(solve_part_2(&file("input")), todo!());
+        assert_eq!(solve_part_2(&file("input")), 12_989);
     }
 }
