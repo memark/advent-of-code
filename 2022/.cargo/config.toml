@@ -1,0 +1,8 @@
+[term]
+quiet = true
+
+[alias]
+rr = "run -r"
+nt = "nextest run"
+wt =  ["watch", "-x", "test"]
+wnt = ["watch", "-x", "nextest run"]
