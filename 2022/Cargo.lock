@@ -144,6 +144,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-02"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "itertools",
+ "lazy_static",
+ "pretty_assertions",
+ "regex",
+]
+
+[[package]]
 name = "day-xx"
 version = "0.0.0"
 dependencies = [
