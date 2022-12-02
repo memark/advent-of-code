@@ -1,7 +1,7 @@
-#![allow(dead_code, unused_imports, unused_variables)]
+#![allow(dead_code, unreachable_code, unused_imports, unused_variables)]
 
 use itertools::Itertools;
-use std::{fmt::Display, fs};
+use std::fs;
 
 fn main() {
     println!("Part 1: {}", solve_part_1(&file("input")));
