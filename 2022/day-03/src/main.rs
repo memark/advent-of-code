@@ -1,5 +1,3 @@
-#![allow(dead_code, unreachable_code, unused_imports, unused_variables)]
-
 use itertools::Itertools;
 use std::fs;
 
@@ -8,38 +6,34 @@ fn main() {
     println!("Part 2: {}", solve_part_2(&file("input")));
 }
 
-fn solve_part_1(input: &str) -> i32 {
+fn solve_part_1(input: &str) -> u32 {
     input
         .lines()
         .map(|l| l.split_at(l.len() / 2))
         .map(|(s1, s2)| s1.chars().find(|c1| s2.chars().contains(c1)).unwrap())
-        .map(|c| {
-            if c.is_ascii_lowercase() {
-                (c as i32) - ('a' as i32) + 1
-            } else {
-                (c as i32) - ('A' as i32) + 27
-            }
-        })
-        .sum::<i32>()
+        .map(priority)
+        .sum()
 }
 
-fn solve_part_2(input: &str) -> i32 {
+fn solve_part_2(input: &str) -> u32 {
     input
         .lines()
-        .tuples::<(&str, &str, &str)>()
+        .tuples()
         .map(|(s1, s2, s3)| {
             s1.chars()
                 .find(|c1| s2.chars().contains(c1) && s3.chars().contains(c1))
                 .unwrap()
         })
-        .map(|c| {
-            if c.is_ascii_lowercase() {
-                (c as i32) - ('a' as i32) + 1
-            } else {
-                (c as i32) - ('A' as i32) + 27
-            }
-        })
-        .sum::<i32>()
+        .map(priority)
+        .sum()
+}
+
+fn priority(c: char) -> u32 {
+    if c.is_ascii_lowercase() {
+        (c as u32) - ('a' as u32) + 1
+    } else {
+        (c as u32) - ('A' as u32) + 27
+    }
 }
 
 fn file(path: &str) -> String {
@@ -58,7 +52,7 @@ mod tests {
 
     #[test]
     fn part_1_input() {
-        assert_eq!(solve_part_1(&file("input")), 7917);
+        assert_eq!(solve_part_1(&file("input")), 7_917);
     }
 
     #[test]
@@ -66,9 +60,8 @@ mod tests {
         assert_eq!(solve_part_2(&file("example_2")), 70);
     }
 
-    #[ignore]
     #[test]
     fn part_2_input() {
-        assert_eq!(solve_part_2(&file("input")), todo!());
+        assert_eq!(solve_part_2(&file("input")), 2_585);
     }
 }
