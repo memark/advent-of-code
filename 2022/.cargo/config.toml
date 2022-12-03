@@ -2,6 +2,7 @@
 quiet = true
 
 [alias]
+a = "add"
 rr = "run -r"
 nt = "nextest run"
 wt =  ["watch", "-x", "test"]
