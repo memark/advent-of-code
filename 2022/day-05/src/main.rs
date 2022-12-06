@@ -92,15 +92,15 @@ impl FromStr for Step {
     }
 }
 
-type Stack = Vec<Vec<char>>;
+type Stack = Vec<char>;
 
 trait CrateMover {
-    fn operate(&self, steps: &[Step], stacks: &[Vec<char>]) -> Vec<Vec<char>>;
+    fn operate(&self, steps: &[Step], stacks: &[Stack]) -> Vec<Stack>;
 }
 
 struct CrateMover9000;
 impl CrateMover for CrateMover9000 {
-    fn operate(&self, steps: &[Step], stacks: &[Vec<char>]) -> Vec<Vec<char>> {
+    fn operate(&self, steps: &[Step], stacks: &[Stack]) -> Vec<Stack> {
         let mut stacks = stacks.to_vec();
         for Step { count, from, to } in steps {
             for _ in 0..*count {
@@ -114,7 +114,7 @@ impl CrateMover for CrateMover9000 {
 
 struct CrateMover9001;
 impl CrateMover for CrateMover9001 {
-    fn operate(&self, steps: &[Step], stacks: &[Vec<char>]) -> Vec<Vec<char>> {
+    fn operate(&self, steps: &[Step], stacks: &[Stack]) -> Vec<Stack> {
         let mut stacks = stacks.to_vec();
         for Step { count, from, to } in steps {
             let mut temp = Vec::new();
