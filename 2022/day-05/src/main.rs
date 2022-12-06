@@ -92,6 +92,8 @@ impl FromStr for Step {
     }
 }
 
+type Stack = Vec<Vec<char>>;
+
 trait CrateMover {
     fn operate(&self, steps: &[Step], stacks: &[Vec<char>]) -> Vec<Vec<char>>;
 }
