@@ -11,4 +11,9 @@ lazy_static =  { workspace = true }
 regex =  { workspace = true }
 
 [dev-dependencies]
+bencher = "0.1.5"
 pretty_assertions =  { workspace = true }
+
+[[bench]]
+name = "bench"
+harness = false
