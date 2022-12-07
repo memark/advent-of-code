@@ -1,0 +1,18 @@
+$ cd /
+$ ls
+dir a
+dir b
+$ cd a
+$ ls
+1 f
+2 g
+62596 h.lst
+$ cd ..
+$ cd b
+$ ls
+dir a
+3 hej
+$ cd a
+$ ls
+4 j
+5 d.log
