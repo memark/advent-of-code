@@ -21,22 +21,20 @@ fn solve_part_2(input: &str) -> String {
 }
 
 fn solve_with_strategy(input: &str, crate_mover: impl CrateMover) -> String {
-    let (a, b) = input.split_once("\n\n").unwrap();
+    let (first_half, second_half) = input.split_once("\n\n").unwrap();
 
-    let stack_rows = a.lines().dropping_back(1).collect_vec();
-    let stack_header = a.lines().last().unwrap();
-
-    let step_rows = b.lines().collect_vec();
-
+    let stack_header = first_half.lines().last().unwrap();
     let num_stacks = get_num_stacks(stack_header);
-
+    let stack_rows = first_half.lines().dropping_back(1).collect_vec();
     let stacks = parse_stacks(num_stacks, &stack_rows);
+
+    let step_rows = second_half.lines().collect_vec();
     let steps = parse_steps(&step_rows);
 
     let stacks = crate_mover.operate(&steps, &stacks);
 
-    let top = stacks.iter().map(|s| s.last().unwrap()).collect::<String>();
-    top
+    let top_crates = stacks.iter().map(|s| s.last().unwrap()).collect::<String>();
+    top_crates
 }
 
 fn get_num_stacks(stack_header: &str) -> usize {
@@ -57,10 +55,9 @@ fn parse_stacks(num_stacks: usize, stack_rows: &[&str]) -> Vec<Vec<char>> {
                 .filter_map(|stack_row| {
                     let pos = 1 + stack_index * 4;
                     let c = stack_row.chars().nth(pos).unwrap();
-                    if c != ' ' {
-                        Some(c)
-                    } else {
-                        None
+                    match c {
+                        ' ' => None,
+                        _ => Some(c),
                     }
                 })
                 .collect_vec()
