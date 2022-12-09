@@ -1,3 +1,5 @@
+// https://adventofcode.com/2022/day/1
+
 use itertools::Itertools;
 use std::fs;
 

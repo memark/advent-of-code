@@ -1,3 +1,5 @@
+// https://adventofcode.com/2022/day/2
+
 use std::{error::Error, fs, str::FromStr};
 use Outcome::*;
 use Shape::*;

@@ -1,3 +1,5 @@
+// https://adventofcode.com/2022/day/4
+
 #![allow(dead_code, unreachable_code, unused_imports, unused_variables)]
 
 use itertools::Itertools;

@@ -1,3 +1,5 @@
+// https://adventofcode.com/2022/day/8
+
 use itertools::FoldWhile::{Continue, Done};
 use itertools::{iproduct, Itertools};
 

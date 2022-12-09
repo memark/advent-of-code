@@ -1,3 +1,5 @@
+// https://adventofcode.com/2022/day/6
+
 use itertools::Itertools;
 use std::{collections::VecDeque, fs};
 
