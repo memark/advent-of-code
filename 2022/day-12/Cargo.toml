@@ -1,0 +1,16 @@
+[package]
+name = "day-12"
+version = { workspace = true }
+edition = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+chrono =  { workspace = true }
+itertools.workspace = true
+# itertools =  { workspace = true }
+lazy_static =  { workspace = true }
+pathfinding = "4.0.0"
+regex =  { workspace = true }
+
+[dev-dependencies]
+pretty_assertions =  { workspace = true }
