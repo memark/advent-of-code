@@ -1,16 +1,18 @@
 #![allow(dead_code, unreachable_code, unused_imports, unused_variables)]
 
-use itertools::Itertools;
+use itertools::{iproduct, Itertools};
 use regex::Regex;
-use std::{collections::HashMap, fs};
+use std::{
+    collections::{HashMap, HashSet},
+    fs,
+    ops::RangeInclusive,
+};
 
 fn main() {
     println!("Part 1: {}", solve_part_1(&file("input"), 2000000));
-    // 1 => 4389717, not right
-    // 2 => 4787893, too low
-    // 4 => 5369857, too low
+    println!("Part 2: {}", solve_part_2(&file("input"), &(0..=4000000)));
 
-    // println!("Part 2: {}", solve_part_2(&file("input")));
+    let x = 0..=4000000;
 }
 
 fn solve_part_1(input: &str, y: i32) -> i32 {
@@ -25,7 +27,6 @@ fn solve_part_1(input: &str, y: i32) -> i32 {
     let lines = input
         .lines()
         .map(|l| {
-            // dbg!(l);
             let captures = re.captures(l).unwrap();
             Line {
                 sensor: (Coord {
@@ -39,12 +40,6 @@ fn solve_part_1(input: &str, y: i32) -> i32 {
             }
         })
         .collect_vec();
-    // dbg!(&lines);
-
-    // print_grid(&lines);
-
-    // OK, så nära varje sensor, på ett avstånd kortare än det till beacon, kan det inte finnas några andra beacons. Därför är alla koord kortare ogiltiga. Hitta alla koord som inte räknas bort pga detta. Troligen bäst att helt enkelt loopa över alla koord.
-    // Glöm inte varianten att använda ett HashSet idag, eller möjligen HashMap om man vill ha med typen.
 
     let sensors = lines.iter().map(|l| l.sensor).collect_vec();
     let beacons = lines.iter().map(|l| l.beacon).collect_vec();
@@ -60,7 +55,10 @@ fn solve_part_1(input: &str, y: i32) -> i32 {
     let x_max = **xs.iter().max().unwrap() * 5;
     let y_min = **ys.iter().min().unwrap() * 5;
     let y_max = **ys.iter().max().unwrap() * 5;
-    dbg!(x_min, x_max, y_min, y_max);
+    // dbg!(x_min, x_max, y_min, y_max);
+    if y == 2000000 {
+        dbg!("hej");
+    }
 
     let sensor_safe_zones = lines
         .iter()
@@ -69,21 +67,58 @@ fn solve_part_1(input: &str, y: i32) -> i32 {
             (l.sensor, d)
         })
         .collect::<HashMap<_, _>>();
+    if y == 2000000 {
+        dbg!("hej");
+    }
 
-    let is_sensor = |c: &Coord| sensors.iter().contains(c);
-    let is_beacon = |c: &Coord| beacons.iter().contains(c);
+    let sensors = lines.iter().map(|l| l.sensor).collect::<HashSet<_>>();
+    let beacons = lines.iter().map(|l| l.beacon).collect::<HashSet<_>>();
+    if y == 2000000 {
+        dbg!("hej");
+    }
+
+    let sensor_and_safe_dist = lines.iter().map(|l| {
+        let d = mh_dist(&l.sensor, &l.beacon) as i32;
+        (l.sensor, d)
+    });
+    if y == 2000000 {
+        dbg!("hej");
+    }
+
+    let safe_per_sensor = sensor_and_safe_dist.map(|(sensor, dist)| {
+        (
+            sensor,
+            iproduct!(
+                (sensor.x - dist..=sensor.x + dist),
+                (sensor.y - dist..=sensor.y + dist)
+            )
+            .map(|(x, y)| Coord { x, y })
+            .filter(move |&c| mh_dist(&sensor, &c) <= dist.clone()),
+        )
+    });
+    // dbg!(&safe_per_sensor);
+    if y == 2000000 {
+        dbg!("hej");
+    }
+
+    let all_safes = safe_per_sensor
+        .flat_map(|(sensor, coords)| coords)
+        .collect::<HashSet<_>>();
+    if y == 2000000 {
+        dbg!("hej");
+    }
 
     let safes = (x_min..=x_max)
         .filter(|&x| {
             let c = Coord { x, y };
 
-            let safe = sensor_safe_zones
-                .iter()
-                .any(|sz| mh_dist(sz.0, &c) <= *sz.1);
+            let safe = all_safes.clone().contains(&c);
+            // .iter()
+            // .any(|sz| mh_dist(sz.0, &c) <= *sz.1);
 
-            if is_sensor(&c) {
+            if sensors.iter().contains(&c) {
                 false
-            } else if is_beacon(&c) {
+            } else if beacons.iter().contains(&c) {
                 false
             } else if safe {
                 true
@@ -94,8 +129,83 @@ fn solve_part_1(input: &str, y: i32) -> i32 {
         .collect_vec();
 
     safes.len() as i32
+}
 
-    // 0
+fn solve_part_2(input: &str, r: &RangeInclusive<i32>) -> i32 {
+    let re =
+        Regex::new(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)")
+            .unwrap();
+
+    let lines = input
+        .lines()
+        .map(|l| {
+            let captures = re.captures(l).unwrap();
+            Line {
+                sensor: (Coord {
+                    x: captures[1].parse().unwrap(),
+                    y: captures[2].parse().unwrap(),
+                }),
+                beacon: (Coord {
+                    x: captures[3].parse().unwrap(),
+                    y: captures[4].parse().unwrap(),
+                }),
+            }
+        })
+        .collect_vec();
+
+    let sensors = lines.iter().map(|l| l.sensor).collect::<HashSet<_>>();
+    let beacons = lines.iter().map(|l| l.beacon).collect::<HashSet<_>>();
+
+    let sensor_and_safe_dist = lines
+        .iter()
+        .map(|l| {
+            let d = mh_dist(&l.sensor, &l.beacon) as i32;
+            (l.sensor, d)
+        })
+        .collect::<HashMap<_, _>>();
+
+    let safe_per_sensor = sensor_and_safe_dist
+        .iter()
+        .map(|(&sensor, &dist)| {
+            (
+                sensor,
+                iproduct!(
+                    (sensor.x - dist..=sensor.x + dist),
+                    (sensor.y - dist..=sensor.y + dist)
+                )
+                .map(|(x, y)| Coord { x, y })
+                .filter(|&c| mh_dist(&sensor, &c) <= dist)
+                .collect::<HashSet<_>>(),
+            )
+        })
+        .collect::<HashMap<_, _>>();
+    // dbg!(&safe_per_sensor);
+
+    let all_safes = safe_per_sensor
+        .iter()
+        .flat_map(|(sensor, coords)| coords)
+        .collect::<HashSet<_>>();
+
+    let unsafes = iproduct!(r.clone(), r.clone())
+        .map(|(x, y)| Coord { x, y })
+        .filter(|&c| {
+            if sensors.contains(&c) {
+                false
+            } else if beacons.contains(&c) {
+                false
+            } else if all_safes.contains(&c) {
+                false
+            } else {
+                true
+            }
+        })
+        .collect_vec();
+
+    // dbg!(&unsafes.len());
+
+    let safe = *unsafes.iter().exactly_one().unwrap();
+
+    safe.x * 4000000 + safe.y
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -103,12 +213,6 @@ struct Line {
     sensor: Coord,
     beacon: Coord,
 }
-
-// #[derive(Debug, Clone, Copy)]
-// struct Sensor(Coord);
-
-// #[derive(Debug, Clone, Copy)]
-// struct Beacon(Coord);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Coord {
@@ -132,15 +236,6 @@ fn print_grid(lines: &Vec<Line>) {
     let y_min = **ys.iter().min().unwrap();
     let y_max = **ys.iter().max().unwrap();
 
-    // let line = lines
-    //     .iter()
-    //     .find(|l| l.sensor == Coord { x: 8, y: 7 })
-    //     .unwrap();
-    // let s = line.sensor;
-    // let b = line.beacon;
-    // let d = mh_dist(&s, &b);
-    // dbg!(&d);
-
     let sensor_safe_zones = lines
         .iter()
         .map(|l| {
@@ -148,7 +243,6 @@ fn print_grid(lines: &Vec<Line>) {
             (l.sensor, d)
         })
         .collect::<HashMap<_, _>>();
-    // dbg!(&sensor_safe_zones);
 
     let is_sensor = |c: &Coord| sensors.iter().contains(c);
     let is_beacon = |c: &Coord| beacons.iter().contains(c);
@@ -160,13 +254,10 @@ fn print_grid(lines: &Vec<Line>) {
             let safe = sensor_safe_zones
                 .iter()
                 .any(|sz| mh_dist(sz.0, &c) <= *sz.1);
-            // dbg!(&safe);
-
             if is_sensor(&c) {
                 print!("S");
             } else if is_beacon(&c) {
                 print!("B");
-            // } else if mh_dist(&s, &Coord { x, y }) <= d {
             } else if safe {
                 print!("#");
             } else {
@@ -178,12 +269,8 @@ fn print_grid(lines: &Vec<Line>) {
     println!();
 }
 
-fn mh_dist(a: &Coord, b: &Coord) -> u32 {
-    (a.x - b.x).unsigned_abs() + (a.y - b.y).unsigned_abs()
-}
-
-fn solve_part_2(input: &str) -> i32 {
-    todo!()
+fn mh_dist(a: &Coord, b: &Coord) -> i32 {
+    ((a.x - b.x).unsigned_abs() + (a.y - b.y).unsigned_abs()) as i32
 }
 
 fn file(path: &str) -> String {
@@ -205,15 +292,14 @@ mod tests {
         assert_eq!(solve_part_1(&file("input"), 2000000), 5607466);
     }
 
-    #[ignore]
     #[test]
     fn part_2_examples() {
-        assert_eq!(solve_part_2(&file("example_2")), todo!());
+        assert_eq!(solve_part_2(&file("example_1"), &(0..=20)), 56000011);
     }
 
     #[ignore]
     #[test]
     fn part_2_input() {
-        assert_eq!(solve_part_2(&file("input")), todo!());
+        assert_eq!(solve_part_2(&file("input"), &(0..=4000000)), todo!());
     }
 }
