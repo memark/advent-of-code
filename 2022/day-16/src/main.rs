@@ -28,87 +28,155 @@ fn solve_part_1(input: &str) -> i32 {
     // är i rum AA
     let start = "AA";
 
-    let mut operations = Vec::<Operation>::new();
-    let mut results = Vec::<Vec<Operation>>::new();
+    // let mut operations = Vec::<Operation>::new();
+    // let mut results = Vec::<Vec<Operation>>::new();
 
-    let mut current = start;
+    // let mut current = start;
 
-    loop {
-        // if visited.len() + opened.len() >= 30 {
-        if operations.len() >= 30 {
-            results.push(operations);
-            break;
+    let mut stack = Vec::<Operation>::new();
+    stack.push(Move("AA".to_owned()));
+    let mut done = Vec::<Operation>::new();
+
+    while stack.len() > 0 {
+        let operation = stack.last().unwrap();
+
+        // if done.len() > 2 {
+        //     continue;
+        // }
+
+        // if done.contains(operation) {
+        if done.len() >= 3 {
+            println!("Node {operation:?} is finished");
+            println!("Visited {done:?} with length {}", done.len());
+            let p = calc_total_pressure(&done, &valves);
+            println!("Total pressure released: {p}");
+            stack.pop();
+        } else {
+            println!("Node {operation:?} is discovered");
+            done.push(operation.clone());
+
+            let all_operations = {
+                let v = match operation {
+                    Move(v) => v,
+                    Open(v) => v,
+                    Idle(v) => v,
+                };
+                let mut res = vec![];
+                // res.push(Idle(v.to_owned()));
+                // res.push(Open(v.to_owned()));
+                res.extend(valves[v].tunnels.iter().take(1).map(|t| Move(t.clone())));
+                res
+            };
+            println!("Stack before push: {stack:?}");
+            println!("New nodes: {all_operations:?}");
+            for op in all_operations {
+                stack.push(op);
+            }
+            println!("Stack after push: {stack:?}");
         }
 
-        let all_operations = {
-            let mut res = vec![];
-            res.push(Open(current.to_owned()));
-            res.extend(valves[current].tunnels.iter().map(|t| Move(t.clone())));
-            res
-        };
-
-        let possible_operations = all_operations
-            .iter()
-            .filter(|op| !operations.contains(op))
-            .collect_vec();
-        dbg!(possible_operations);
-
-        // * öppna ett valv
-        if valves[current].flow_rate > 0 && !operations.contains(&Open(current.to_owned())) {
-            operations.push(Open(current.to_owned()));
-            println!("Open {current}");
-
-            continue;
-        }
-        // * gå genom en tunnel
-        else if let Some(next_t) = valves[current]
-            .tunnels
-            .iter()
-            .find(|t| !operations.contains(&Move((*t).to_owned())))
         {
-            current = next_t;
-            operations.push(Move(current.to_owned()));
-            println!("Move {current}");
+            // if visited.len() >= 30 {
+            //     results.push(visited);
+            //     break;
+            // }
 
-            continue;
-        }
-        // * gör ingenting.
-        else {
-            operations.push(Idle());
-            println!("Idle");
+            // let all_operations = {
+            //     let mut res = vec![];
+            //     res.push(Open(current.to_owned()));
+            //     res.extend(valves[current].tunnels.iter().map(|t| Move(t.clone())));
+            //     res
+            // };
 
-            continue;
+            // let possible_operations = all_operations
+            //     .iter()
+            //     .filter(|op| !visited.contains(op))
+            //     .collect_vec();
+            // dbg!(possible_operations);
+
+            // // * öppna ett valv
+            // if valves[current].flow_rate > 0 && !visited.contains(&Open(current.to_owned())) {
+            //     visited.push(Open(current.to_owned()));
+            //     println!("Open {current}");
+
+            //     continue;
+            // }
+            // // * gå genom en tunnel
+            // else if let Some(next_t) = valves[current]
+            //     .tunnels
+            //     .iter()
+            //     .find(|t| !visited.contains(&Move((*t).to_owned())))
+            // {
+            //     current = next_t;
+            //     visited.push(Move(current.to_owned()));
+            //     println!("Move {current}");
+
+            //     continue;
+            // }
+            // // * gör ingenting.
+            // else {
+            //     visited.push(Idle());
+            //     println!("Idle");
+
+            //     continue;
+            // }
         }
     }
 
-    // // 30 min på mej
-    // for min in 1..=30 {
-    //     println!("== Minute {min} ==");
+    {
+        // // 30 min på mej
+        // for min in 1..=30 {
+        //     println!("== Minute {min} ==");
 
-    //     // Man kan varje minut göra
-    //     // * öppna ett valv
-    //     // * gå genom en tunnel
+        //     // Man kan varje minut göra
+        //     // * öppna ett valv
+        //     // * gå genom en tunnel
 
-    //     if open.len() == 0 {
-    //         println!("No valves are open.");
-    //     } else {
-    //         let vs = valves.iter().map(|v| &v.name).join(", ");
-    //         let p = 0;
-    //         println!("Valves {vs:#?} are open, releasing {p} pressure.");
-    //     }
+        //     if open.len() == 0 {
+        //         println!("No valves are open.");
+        //     } else {
+        //         let vs = valves.iter().map(|v| &v.name).join(", ");
+        //         let p = 0;
+        //         println!("Valves {vs:#?} are open, releasing {p} pressure.");
+        //     }
 
-    //     println!();
-    // }
+        //     println!();
+        // }
+    }
 
     0
 }
 
+fn calc_total_pressure(operations: &Vec<Operation>, valves: &HashMap<String, Valve>) -> u32 {
+    let mut a = 0;
+    let mut open = vec![];
+
+    for op in operations {
+        match op {
+            Move(_) => {}
+            Open(v) => open.push(v),
+            Idle(_) => {}
+        };
+        let mut b = 0;
+        for o in &open {
+            let v = &valves[o.to_owned()];
+            b += v.flow_rate as u32;
+        }
+        // dbg!(b);
+        a += b;
+    }
+
+    // dbg!(a);
+
+    a.into()
+}
+
 use Operation::*;
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum Operation {
     Move(String),
     Open(String),
-    Idle(),
+    Idle(String),
 }
 
 type Name = String;
