@@ -38,41 +38,41 @@ fn solve_part_1(input: &str) -> i32 {
     let mut done = Vec::<Operation>::new();
 
     while stack.len() > 0 {
-        let operation = stack.last().unwrap();
+        let operation = &stack.last().unwrap().clone();
 
-        // if done.len() > 2 {
-        //     continue;
-        // }
+        // println!("Node {operation:?} is discovered");
+        done.push(operation.clone());
+
+        let all_operations = {
+            let v = match operation {
+                Move(v) => v,
+                Open(v) => v,
+                Idle(v) => v,
+            };
+            let mut res = vec![];
+            // res.push(Idle(v.to_owned()));
+            // res.push(Open(v.to_owned()));
+            res.extend(valves[v].tunnels.iter().take(1).map(|t| Move(t.clone())));
+            res
+        };
+        println!("Stack before push: {stack:?}");
+        println!("New nodes: {all_operations:?}");
+        for op in all_operations {
+            stack.push(op);
+        }
+        // println!("Stack after push: {stack:?}");
+
+        if done.len() > 3 {
+            break;
+        }
 
         // if done.contains(operation) {
         if done.len() >= 3 {
-            println!("Node {operation:?} is finished");
+            println!("Node {:?} is finished", &operation);
             println!("Visited {done:?} with length {}", done.len());
             let p = calc_total_pressure(&done, &valves);
-            println!("Total pressure released: {p}");
+            // println!("Total pressure released: {p}");
             stack.pop();
-        } else {
-            println!("Node {operation:?} is discovered");
-            done.push(operation.clone());
-
-            let all_operations = {
-                let v = match operation {
-                    Move(v) => v,
-                    Open(v) => v,
-                    Idle(v) => v,
-                };
-                let mut res = vec![];
-                // res.push(Idle(v.to_owned()));
-                // res.push(Open(v.to_owned()));
-                res.extend(valves[v].tunnels.iter().take(1).map(|t| Move(t.clone())));
-                res
-            };
-            println!("Stack before push: {stack:?}");
-            println!("New nodes: {all_operations:?}");
-            for op in all_operations {
-                stack.push(op);
-            }
-            println!("Stack after push: {stack:?}");
         }
 
         {
