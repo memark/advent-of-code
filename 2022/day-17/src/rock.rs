@@ -1,9 +1,8 @@
 use crate::coord::Coord;
-use itertools::Itertools;
-use std::{str::FromStr, string::ParseError};
+use itertools::{iproduct, Itertools};
+use std::{collections::HashSet, hash::Hash, str::FromStr, string::ParseError};
 
-// Prova [[bool; 4]; 4] ?
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Rock(Vec<Vec<bool>>);
 
 impl FromStr for Rock {
@@ -31,74 +30,74 @@ impl FromStr for Rock {
 
 impl Rock {
     pub fn covers_relative_coord(&self, c: Coord) -> bool {
-        self.relative_coords().contains(&c)
-    }
-
-    pub fn relative_coords(&self) -> Vec<Coord> {
-        let mut res = vec![];
-        for y in 0..4 {
-            for x in 0..4 {
-                // TODO: Reverse
-                // TODO: Use iproduct and iter
+        iproduct!(0..4, 0..4)
+            .filter_map(|(x, y)| {
                 if y < self.0.len() && x < self.0[y].len() && self.0[y][x] {
-                    res.push(Coord::new(x as i32, y as i32))
+                    Some(Coord::new(x as i32, y as i32))
+                } else {
+                    None
                 }
-            }
-        }
-        res
+            })
+            .contains(&c)
     }
 
-    pub fn real_coords(&self, upper_left: Coord) -> Vec<Coord> {
-        self.relative_coords()
-            .iter()
-            .map(|rc| *rc + upper_left)
-            .collect_vec()
+    pub fn real_coords(&self, upper_left: Coord) -> HashSet<Coord> {
+        iproduct!(0..4, 0..4)
+            .filter_map(|(x, y)| {
+                if y < self.0.len() && x < self.0[y].len() && self.0[y][x] {
+                    Some(Coord::new(x as i32, y as i32))
+                } else {
+                    None
+                }
+            })
+            .map(|rc| rc + upper_left)
+            .collect()
     }
 
-    pub fn stream() -> impl Iterator<Item = Rock> {
+    pub fn rocks() -> Vec<Rock> {
         [
-            rock_1_data,
-            rock_2_data,
-            rock_3_data,
-            rock_4_data,
-            rock_5_data,
+            ROCK_1_DATA,
+            ROCK_2_DATA,
+            ROCK_3_DATA,
+            ROCK_4_DATA,
+            ROCK_5_DATA,
         ]
-        .into_iter()
+        .iter()
         .map(|r| r.parse::<Rock>().unwrap())
-        .cycle()
+        .collect_vec()
     }
 }
 
-static rock_1_data: &str = "
+static ROCK_1_DATA: &str = "
 ####
 ";
 
-static rock_2_data: &str = "
+static ROCK_2_DATA: &str = "
 .#.
 ###
 .#.
 ";
 
 // Invertera denna i koden istället...
-// static rock_3_data: &str = "
+// static ROCK_3_DATA: &str = "
 // ..#
 // ..#
 // ###
 // ";
-static rock_3_data: &str = "
+static ROCK_3_DATA: &str = "
 ###
 ..#
 ..#
 ";
 
-static rock_4_data: &str = "
+static ROCK_4_DATA: &str = "
 #
 #
 #
 #
 ";
 
-static rock_5_data: &str = "
+static ROCK_5_DATA: &str = "
 ##
 ##
 ";

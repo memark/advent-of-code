@@ -1,12 +1,12 @@
 #![allow(
     dead_code,
     unreachable_code,
-    unused_imports,
+//     unused_imports,
     unused_variables,
-    non_upper_case_globals,
-    unused_parens,
-    unused_mut,
-    unused_assignments
+//     non_upper_case_globals,
+//     unused_parens,
+//     unused_mut,
+//     unused_assignments
 )]
 
 mod coord;
@@ -14,15 +14,12 @@ mod jet;
 mod rock;
 
 use coord::*;
-use itertools::{iproduct, Itertools};
+use itertools::Itertools;
 use jet::*;
 use rock::*;
 use std::{
-    cmp::max,
     collections::{HashMap, HashSet},
     fs,
-    str::FromStr,
-    string::ParseError,
 };
 
 fn main() {
@@ -59,7 +56,8 @@ fn calc_height(input: &str, number_of_rocks: i32) -> i32 {
     let jet_pattern = input.parse::<JetPattern>().unwrap();
 
     let mut jet_stream = jet_pattern.stream();
-    let mut rock_stream = Rock::stream();
+    let rock_types = Rock::rocks();
+    let mut rock_stream = rock_types.iter().cycle();
 
     let mut stationary_rocks = Vec::<RockPos>::new();
     let mut stationary_rocks_coords = HashSet::<Coord>::new();
