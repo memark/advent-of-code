@@ -356,6 +356,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-18"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "itertools",
+ "lazy_static",
+ "pathfinding",
+ "pretty_assertions",
+ "regex",
+]
+
+[[package]]
 name = "day-5"
 version = "0.0.0"
 dependencies = [
