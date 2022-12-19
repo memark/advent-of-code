@@ -1,0 +1,15 @@
+[package]
+name = "day-19"
+version = { workspace = true }
+edition = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+chrono =  { workspace = true }
+itertools =  { workspace = true }
+lazy_static =  { workspace = true }
+rayon = "1.6.1"
+regex =  { workspace = true }
+
+[dev-dependencies]
+pretty_assertions =  { workspace = true }
