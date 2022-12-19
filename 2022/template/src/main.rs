@@ -5,15 +5,15 @@ use std::fs;
 
 fn main() {
     println!("Part 1: {}", solve_part_1(&file("input")));
-    println!("Part 2: {}", solve_part_2(&file("input")));
+    // println!("Part 2: {}", solve_part_2(&file("input")));
 }
 
 fn solve_part_1(input: &str) -> i32 {
-    todo!()
+    0
 }
 
 fn solve_part_2(input: &str) -> i32 {
-    todo!()
+    0
 }
 
 fn file(path: &str) -> String {
@@ -25,7 +25,6 @@ mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
-    #[ignore]
     #[test]
     fn part_1_examples() {
         assert_eq!(solve_part_1(&file("example_1")), todo!());
@@ -40,7 +39,7 @@ mod tests {
     #[ignore]
     #[test]
     fn part_2_examples() {
-        assert_eq!(solve_part_2(&file("example_2")), todo!());
+        assert_eq!(solve_part_2(&file("example_1")), todo!());
     }
 
     #[ignore]
