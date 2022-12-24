@@ -10,22 +10,27 @@
 )]
 
 use colored::Colorize;
-use itertools::{iproduct, Itertools};
+use itertools::{iproduct, Either, Itertools};
 use std::{
     collections::{HashMap, HashSet},
     fs,
-    ops::Not,
+    ops::{Not, Range, RangeBounds},
 };
 
 fn main() {
-    // println!("Part 1: {}", solve_part_1(&file("example_2")));
-    // println!("Part 1: {}", solve_part_1(&file("example_1")));
     println!("Part 1: {}", solve_part_1(&file("input")));
-
-    // println!("Part 2: {}", solve_part_2(&file("input")));
+    println!("Part 2: {}", solve_part_2(&file("input")));
 }
 
 fn solve_part_1(input: &str) -> i32 {
+    do_some_iterations(input, Some(10))
+}
+
+fn solve_part_2(input: &str) -> i32 {
+    do_some_iterations(input, None)
+}
+
+fn do_some_iterations(input: &str, iterations: Option<usize>) -> i32 {
     // The scan shows Elves # and empty ground .
     // outside your scan, more empty ground extends a long way in every direction.
 
@@ -49,9 +54,12 @@ fn solve_part_1(input: &str) -> i32 {
     let meta_dirs = [N_ISH, S_ISH, W_ISH, E_ISH];
     let meta_dirs_map = HashMap::from([(N_ISH, N), (S_ISH, S), (W_ISH, W), (E_ISH, E)]);
 
-    // let mut curr_meta_dirs = meta_dirs.iter().cycle();
+    let range = match iterations {
+        Some(n) => Either::Left(1..=n),
+        None => Either::Right(1..),
+    };
 
-    for i in 1.. {
+    for i in range {
         println!("\n== Begin round {} == ", i.to_string().bold());
 
         // During the first half of each round, each Elf considers the eight positions adjacent to themself. If no other Elves are in one of those eight positions, the Elf does not do anything during this round.
@@ -60,7 +68,7 @@ fn solve_part_1(input: &str) -> i32 {
                 EIGHT
                     .iter()
                     // Hade varit fint med en plus-metod än gång för alla.
-                    .all(|d| !elves.contains(&(e.0 + d.0, e.1 + d.1)))
+                    .all(|d| !elves.contains(&(e.0 + d.0, e.0 + d.1)))
             });
         // dbg!(&alone_elves);
         println!("Alone elves:");
@@ -70,12 +78,6 @@ fn solve_part_1(input: &str) -> i32 {
         println!("Not alone elves:");
         print_map(&not_alone_elves);
 
-        // let meta_dirs = match i {
-        //     1 => [N_ISH, S_ISH, W_ISH, E_ISH],
-        //     2 => [S_ISH, W_ISH, E_ISH, N_ISH],
-        //     3 => [W_ISH, E_ISH, N_ISH, S_ISH],
-        //     _ => panic!(),
-        // };
         let meta_dirs = {
             let mut temp = [N_ISH, S_ISH, W_ISH, E_ISH];
             temp.rotate_left((i - 1) % 4);
@@ -201,7 +203,6 @@ fn print_map(elves: &Map) {
     let max_x = elves.iter().map(|(x, _)| x).max().unwrap() + 1;
     let min_y = elves.iter().map(|(_, y)| y).min().unwrap() - 1;
     let max_y = elves.iter().map(|(_, y)| y).max().unwrap() + 1;
-    // dbg!(min_x, max_x, min_y, max_y);
 
     for y in min_y..=max_y {
         for x in min_x..=max_x {
@@ -226,7 +227,6 @@ fn print_directions(elves_with_directions: &HashMap<Coord, Option<Coord>>) {
     let max_x = elves.iter().map(|(x, _)| x).max().unwrap() + 1;
     let min_y = elves.iter().map(|(_, y)| y).min().unwrap() - 1;
     let max_y = elves.iter().map(|(_, y)| y).max().unwrap() + 1;
-    // dbg!(min_x, max_x, min_y, max_y);
 
     for y in min_y..=max_y {
         for x in min_x..=max_x {
@@ -258,7 +258,6 @@ fn print_proposed_destinations(destinations: &Vec<Coord>) {
     let max_x = destinations.iter().map(|(x, _)| x).max().unwrap() + 1;
     let min_y = destinations.iter().map(|(_, y)| y).min().unwrap() - 1;
     let max_y = destinations.iter().map(|(_, y)| y).max().unwrap() + 1;
-    // dbg!(min_x, max_x, min_y, max_y);
 
     for y in min_y..=max_y {
         for x in min_x..=max_x {
@@ -296,10 +295,6 @@ const N_ISH: [Coord; 3] = [NW, N, NE];
 const E_ISH: [Coord; 3] = [NE, E, SE];
 const S_ISH: [Coord; 3] = [SE, S, SW];
 const W_ISH: [Coord; 3] = [SW, W, NW];
-
-fn solve_part_2(input: &str) -> i32 {
-    0
-}
 
 fn file(path: &str) -> String {
     fs::read_to_string(path).unwrap().trim().to_owned()
