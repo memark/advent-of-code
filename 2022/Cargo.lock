@@ -481,6 +481,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-24"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "colored",
+ "itertools",
+ "lazy_static",
+ "pretty_assertions",
+ "regex",
+]
+
+[[package]]
 name = "day-5"
 version = "0.0.0"
 dependencies = [
