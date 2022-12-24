@@ -17,7 +17,7 @@ fn solve_part_2(input: &str) -> i32 {
 }
 
 fn file(path: &str) -> String {
-    fs::read_to_string(path).unwrap().trim().to_owned()
+    fs::read_to_string(path).unwrap().trim_end().to_owned()
 }
 
 #[cfg(test)]
