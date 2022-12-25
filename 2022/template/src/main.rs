@@ -4,7 +4,10 @@ use itertools::Itertools;
 use std::fs;
 
 fn main() {
-    println!("Part 1: {}", solve_part_1(&file("input")));
+    println!("Part 1: {}", solve_part_1(&file("example_1")));
+    // println!("Part 1: {}", solve_part_1(&file("input")));
+
+    // println!("Part 2: {}", solve_part_2(&file("example_1")));
     // println!("Part 2: {}", solve_part_2(&file("input")));
 }
 
