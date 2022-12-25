@@ -12,14 +12,14 @@
 use colored::Colorize;
 use itertools::{iproduct, Itertools};
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{HashMap, HashSet, VecDeque},
     fs,
 };
 
 fn main() {
-    // println!("Part 1: {}", solve_part_1(&file("example_2")));
+    println!("Part 1: {}", solve_part_1(&file("example_2")));
 
-    println!("Part 1: {}", solve_part_1(&file("input")));
+    // println!("Part 1: {}", solve_part_1(&file("input")));
     // println!("Part 2: {}", solve_part_2(&file("input")));
 }
 
@@ -53,9 +53,9 @@ fn solve_part_1(input: &str) -> u32 {
 
     // panic!();
 
-    let mut queue: Vec<(State, char)> = Vec::new();
+    let mut queue: VecDeque<(State, char)> = VecDeque::new();
 
-    queue.push((
+    queue.push_back((
         State {
             minute: 1,
             me: start,
@@ -63,7 +63,7 @@ fn solve_part_1(input: &str) -> u32 {
         },
         'v',
     ));
-    queue.push((
+    queue.push_back((
         State {
             minute: 1,
             me: start,
@@ -76,8 +76,10 @@ fn solve_part_1(input: &str) -> u32 {
 
     let mut results = vec![];
 
-    while let Some(item) = queue.pop() {
+    while let Some(item) = queue.pop_front() {
         // dbg!(&queue);
+
+        // dbg!(queue.len());
 
         let (
             State {
@@ -92,17 +94,20 @@ fn solve_part_1(input: &str) -> u32 {
 
         let (mx, my) = me;
         let new_me = match operation {
-            '>' if mx == x_len - 2 => continue,
+            '>' if mx >= x_len - 2 => continue,
             '>' => (mx + 1, my),
 
-            'v' if my == y_len - 2 && (mx, my + 1) != end => continue,
+            'v' if my >= y_len - 2 && (mx, my + 1) != end => continue,
             'v' => (mx, my + 1),
 
-            '<' if mx == 1 => continue,
+            '<' if mx <= 1 => continue,
             '<' => (mx - 1, my),
 
-            '^' if my == 1 => continue,
-            '^' => (mx, my - 1),
+            '^' if my <= 1 => continue,
+            '^' => {
+                // dbg!(mx, my);
+                (mx, my - 1)
+            }
 
             'w' => (mx, my),
 
@@ -140,9 +145,11 @@ fn solve_part_1(input: &str) -> u32 {
             // continue;
         }
 
+        let best_minute = *results.iter().min().unwrap_or(&5000);
+
         if new_me == end {
             // Reached the goal.
-            if minute < *results.iter().min().unwrap_or(&5000) {
+            if minute < best_minute {
                 dbg!(&minute);
             }
             results.push(minute);
@@ -153,13 +160,23 @@ fn solve_part_1(input: &str) -> u32 {
             continue;
         }
 
+        if minute > best_minute {
+            // We didn't get there in time.
+            continue;
+        }
+
         // Hitta möjliga vägar att gå.
         // Skapa operationer och pusha till kön.
         // Kanske kan jag bara pusha alla fyra varianterna och hantera dem ovan såsom misslyckade?
 
+        // Idéer
+        // * pusha bara sådana vägar som är möjliga, syftar på
+        // * * väggar
+        // * * snöstormar i närheten av mej
+
         // dbg!(&queue);
         for c in ['>', 'v', '<', '^', 'w'] {
-            queue.push((
+            queue.push_front((
                 State {
                     minute: minute + 1,
                     me: new_me,
@@ -169,6 +186,28 @@ fn solve_part_1(input: &str) -> u32 {
             ));
         }
         // dbg!(&queue);
+
+        // let (mx, my) = new_me;
+
+        // if
+
+        let new_me = match operation {
+            '>' if mx == x_len - 2 => continue,
+            '>' => (mx + 1, my),
+
+            'v' if my == y_len - 2 && (mx, my + 1) != end => continue,
+            'v' => (mx, my + 1),
+
+            '<' if mx == 1 => continue,
+            '<' => (mx - 1, my),
+
+            '^' if my == 1 => continue,
+            '^' => (mx, my - 1),
+
+            'w' => (mx, my),
+
+            _ => panic!(),
+        };
 
         // println!("\nMinute {minute}:");
         // print_map(&new_me, &start, &end, &new_blizzards, x_len, y_len);
