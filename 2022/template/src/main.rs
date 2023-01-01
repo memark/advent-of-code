@@ -4,11 +4,11 @@ use itertools::Itertools;
 use std::fs;
 
 fn main() {
-    println!("Part 1: {}", solve_part_1(&file("example_1")));
-    // println!("Part 1: {}", solve_part_1(&file("input")));
+    println!("Part 1: {}", solve_part_1(include_str!("../example_1")));
+    // println!("Part 1: {}", solve_part_1(include_str!("../input")));
 
-    // println!("Part 2: {}", solve_part_2(&file("example_1")));
-    // println!("Part 2: {}", solve_part_2(&file("input")));
+    // println!("Part 2: {}", solve_part_2(include_str!("../example_1")));
+    // println!("Part 2: {}", solve_part_2(include_str!("../input")));
 }
 
 fn solve_part_1(input: &str) -> i32 {
@@ -19,10 +19,6 @@ fn solve_part_2(input: &str) -> i32 {
     0
 }
 
-fn file(path: &str) -> String {
-    fs::read_to_string(path).unwrap().trim_end().to_owned()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -30,24 +26,24 @@ mod tests {
 
     #[test]
     fn part_1_examples() {
-        assert_eq!(solve_part_1(&file("example_1")), todo!());
+        assert_eq!(solve_part_1(include_str!("../example_1")), todo!());
     }
 
     #[ignore]
     #[test]
     fn part_1_input() {
-        assert_eq!(solve_part_1(&file("input")), todo!());
+        assert_eq!(solve_part_1(include_str!("../input")), todo!());
     }
 
     #[ignore]
     #[test]
     fn part_2_examples() {
-        assert_eq!(solve_part_2(&file("example_1")), todo!());
+        assert_eq!(solve_part_2(include_str!("../example_1")), todo!());
     }
 
     #[ignore]
     #[test]
     fn part_2_input() {
-        assert_eq!(solve_part_2(&file("input")), todo!());
+        assert_eq!(solve_part_2(include_str!("../input")), todo!());
     }
 }
