@@ -10,7 +10,8 @@
 )]
 
 use colored::Colorize;
-use itertools::{iproduct, Either, Itertools};
+use either::Either;
+use itertools::{iproduct, Itertools};
 use std::{
     collections::{HashMap, HashSet},
     fs,
