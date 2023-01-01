@@ -504,6 +504,7 @@ dependencies = [
  "pretty_assertions",
  "regex",
  "rstest",
+ "rstest_reuse",
 ]
 
 [[package]]
@@ -928,6 +929,17 @@ dependencies = [
  "rustc_version",
  "syn",
  "unicode-ident",
+]
+
+[[package]]
+name = "rstest_reuse"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9b5aed35457441e7e0db509695ba3932d4c47e046777141c167efe584d0ec17"
+dependencies = [
+ "quote",
+ "rustc_version",
+ "syn",
 ]
 
 [[package]]

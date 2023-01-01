@@ -54,32 +54,18 @@ fn file(path: &str) -> String {
 }
 
 #[cfg(test)]
+use rstest_reuse::{self, *};
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
     use rstest::*;
 
+    #[template]
     #[rstest]
     #[trace]
-    #[case("1=-0-2", 1747)]
-    #[case("12111", 906)]
-    #[case("2=0=", 198)]
-    #[case("21", 11)]
-    #[case("2=01", 201)]
-    #[case("111", 31)]
-    #[case("20012", 1257)]
-    #[case("112", 32)]
-    #[case("1=-1=", 353)]
-    #[case("1-12", 107)]
-    #[case("12", 7)]
-    #[case("1=", 3)]
-    #[case("122", 37)]
-    fn snafu_to_decimal_tests(#[case] input: &str, #[case] expected: Number) {
-        assert_eq!(snafu_to_decimal(input), expected);
-    }
-
-    #[rstest]
-    #[trace]
+    //
     #[case(1, "1")]
     #[case(2, "2")]
     #[case(3, "1=")]
@@ -95,8 +81,31 @@ mod tests {
     #[case(2022, "1=11-2")]
     #[case(12345, "1-0---0")]
     #[case(314159265, "1121-1110-1=0")]
-    fn decimal_to_snafu_tests(#[case] input: Number, #[case] expected: &str) {
-        assert_eq!(decimal_to_snafu(input), expected);
+    //
+    #[case(1747, "1=-0-2")]
+    #[case(906, "12111")]
+    #[case(198, "2=0=")]
+    #[case(11, "21")]
+    #[case(201, "2=01")]
+    #[case(31, "111")]
+    #[case(1257, "20012")]
+    #[case(32, "112")]
+    #[case(353, "1=-1=")]
+    #[case(107, "1-12")]
+    #[case(7, "12")]
+    #[case(3, "1=")]
+    #[case(37, "122")]
+    //
+    fn decimal_snafu_cases(#[case] input: &str, #[case] expected: Number) {}
+
+    #[apply(decimal_snafu_cases)]
+    fn snafu_to_decimal_tests(#[case] decimal: Number, #[case] snafu: &str) {
+        assert_eq!(snafu_to_decimal(snafu), decimal);
+    }
+
+    #[apply(decimal_snafu_cases)]
+    fn decimal_to_snafu_tests(#[case] decimal: Number, #[case] snafu: &str) {
+        assert_eq!(decimal_to_snafu(decimal), snafu);
     }
 
     #[test]
