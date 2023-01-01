@@ -1,8 +1,7 @@
 use itertools::{unfold, Itertools};
-use std::fs;
 
 fn main() {
-    println!("Part 1: {}", solve_part_1(&file("input")));
+    println!("Part 1: {}", solve_part_1(include_str!("../input")));
 }
 
 fn solve_part_1(input: &str) -> String {
@@ -47,10 +46,6 @@ fn decimal_to_snafu(n: Number) -> String {
     .iter()
     .rev()
     .collect()
-}
-
-fn file(path: &str) -> String {
-    fs::read_to_string(path).unwrap().trim_end().to_owned()
 }
 
 #[cfg(test)]
@@ -110,11 +105,14 @@ mod tests {
 
     #[test]
     fn part_1_example() {
-        assert_eq!(solve_part_1(&file("example_1")), "2=-1=0");
+        assert_eq!(solve_part_1(include_str!("../example_1")), "2=-1=0");
     }
 
     #[test]
     fn part_1_input() {
-        assert_eq!(solve_part_1(&file("input")), "2==0=0===02--210---1");
+        assert_eq!(
+            solve_part_1(include_str!("../input")),
+            "2==0=0===02--210---1"
+        );
     }
 }
