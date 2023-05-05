@@ -3,6 +3,8 @@
 use itertools::Itertools;
 use std::{ num::ParseIntError, fs, process::Output };
 
+type Int = i32;
+
 fn main() {
     println!("Part 1: {:?}", part1());
     println!("Part 2: {:?}", part2());
@@ -34,7 +36,20 @@ fn run_program(mut mem: Vec<Int>) -> Vec<Int> {
             break;
         }
         mem = i.process(mem);
-        ip += ip_delta;
+        ip += ip_delta as usize;
+    }
+    mem
+}
+
+fn run_program_v2(mut mem: Vec<Int>) -> Vec<Int> {
+    let mut ip = 0;
+    loop {
+        let (i, ip_delta) = Instruction::from_ints_v2(&mem[ip..]);
+        if i == Halt || i == HaltV2 {
+            break;
+        }
+        mem = i.process(mem);
+        ip += ip_delta as usize;
     }
     mem
 }
@@ -48,12 +63,10 @@ fn run_program_with_io(mut mem: Vec<Int>, mut input: Vec<Int>) -> Vec<Int> {
             break;
         }
         (mem, input, output) = i.process_with_io(mem, input, output);
-        ip += ip_delta;
+        ip += ip_delta as usize;
     }
     output
 }
-
-type Int = usize;
 
 #[derive(Debug, PartialEq)]
 enum Instruction {
@@ -61,6 +74,11 @@ enum Instruction {
         src1: Int,
         src2: Int,
         dst: Int,
+    },
+    AddV2 {
+        src1: Parameter,
+        src2: Parameter,
+        dst: Parameter,
     },
     Multiply {
         src1: Int,
@@ -75,23 +93,24 @@ enum Instruction {
     Input {
         dst: Int,
     },
+    InputV2 {
+        dst: Parameter,
+    },
     Output {
         src: Int,
     },
+    OutputV2 {
+        src: Parameter,
+    },
     Halt,
+    HaltV2,
 }
 use Instruction::*;
 
-// getModes opx =
-//   ( opx `mod` 100,
-//     opx `div` 100 `mod` 10,
-//     opx `div` 1000 `mod` 10,
-//     opx `div` 10000 `mod` 10
-//   )
-
 impl Instruction {
     fn from_ints(ints: &[Int]) -> (Self, Int) {
-        match ints[0] {
+        let (opcode, mode1, mode2, mode3) = get_modes(ints[0]);
+        match opcode {
             1 => (Self::Add { src1: ints[1], src2: ints[2], dst: ints[3] }, 4),
             2 => (Self::Multiply { src1: ints[1], src2: ints[2], dst: ints[3] }, 4),
             3 => (Self::Input { dst: ints[1] }, 2),
@@ -101,30 +120,62 @@ impl Instruction {
         }
     }
 
+    fn from_ints_v2(ints: &[Int]) -> (Self, Int) {
+        let (opcode, mode1, mode2, mode3) = get_modes(ints[0]);
+
+        let get_p1 = || { get_p(mode1, ints[1]) };
+        let get_p2 = || { get_p(mode2, ints[2]) };
+        let get_p3 = || { get_p(mode3, ints[3]) };
+
+        match opcode {
+            1 => { (Self::AddV2 { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
+            2 => { (Self::MultiplyV2 { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
+            3 => { (Self::InputV2 { dst: get_p1() }, 2) }
+            4 => { (Self::OutputV2 { src: get_p1() }, 2) }
+            99 => { (Self::HaltV2 {}, 1) }
+            _ => panic!("Unknown opcode"),
+        }
+    }
+
     fn process(self, mut mem: Vec<Int>) -> Vec<Int> {
         match self {
             Self::Add { src1, src2, dst } => {
-                mem[dst] = mem[src1] + mem[src2];
+                mem[dst as usize] = mem[src1 as usize] + mem[src2 as usize];
             }
-            Self::Multiply { src1, src2, dst } => {
-                mem[dst] = mem[src1] * mem[src2];
-            }
-            Self::Halt => {}
-            Self::MultiplyV2 { src1, src2, dst } => {
+            Self::AddV2 { src1, src2, dst } => {
                 let src1_value = match src1 {
-                    Position(p) => mem[p],
+                    Position(p) => mem[p as usize],
                     Immediate(i) => i,
                 };
                 let src2_value = match src2 {
-                    Position(p) => mem[p],
+                    Position(p) => mem[p as usize],
                     Immediate(i) => i,
                 };
                 let dst = match dst {
                     Position(p) => p,
                     Immediate(_) => panic!(),
                 };
-                mem[dst] = src1_value * src2_value;
+                mem[dst as usize] = src1_value + src2_value;
             }
+            Self::Multiply { src1, src2, dst } => {
+                mem[dst as usize] = mem[src1 as usize] * mem[src2 as usize];
+            }
+            Self::MultiplyV2 { src1, src2, dst } => {
+                let src1_value = match src1 {
+                    Position(p) => mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let src2_value = match src2 {
+                    Position(p) => mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                mem[dst as usize] = src1_value * src2_value;
+            }
+            Self::Halt => {}
             _ => unimplemented!(),
         }
         mem
@@ -138,15 +189,15 @@ impl Instruction {
     ) -> (Vec<Int>, Vec<Int>, Vec<Int>) {
         match self {
             Self::Add { src1, src2, dst } => {
-                mem[dst] = mem[src1] + mem[src2];
+                mem[dst as usize] = mem[src1 as usize] + mem[src2 as usize];
             }
             Self::Multiply { src1, src2, dst } => {
-                mem[dst] = mem[src1] * mem[src2];
+                mem[dst as usize] = mem[src1 as usize] * mem[src2 as usize];
             }
             Self::Input { dst } => {
-                mem[dst] = input.remove(0);
+                mem[dst as usize] = input.remove(0);
             }
-            Self::Output { src } => output.push(mem[src]),
+            Self::Output { src } => output.push(mem[src as usize]),
             Self::Halt => {}
             _ => unimplemented!(),
         }
@@ -160,6 +211,14 @@ enum Parameter {
     Immediate(Int),
 }
 use Parameter::*;
+
+fn get_p(mode: Int, value: Int) -> Parameter {
+    match mode {
+        0 => Parameter::Position(value),
+        1 => Parameter::Immediate(value),
+        _ => unimplemented!(),
+    }
+}
 
 fn get_modes(int: Int) -> (Int, Int, Int, Int) {
     (int % 100, (int / 100) % 10, (int / 1000) % 10, (int / 10000) % 10)
@@ -198,7 +257,11 @@ mod test {
     #[case("3,50", (Instruction::Input { dst: 50 }, 2))]
     #[case("4,50", (Instruction::Output { src: 50 }, 2))]
     #[case("99,30,40,50", (Instruction::Halt, 1))]
-    #[ignore]
+    fn parses_instruction(#[case] input: &str, #[case] expected: (Instruction, Int)) {
+        assert_eq!(expected, Instruction::from_ints(&parse_ints(input)));
+    }
+
+    #[rstest]
     #[case("1002,4,3,4,33", (
         Instruction::MultiplyV2 {
             src1: Parameter::Position(4),
@@ -207,8 +270,8 @@ mod test {
         },
         4,
     ))]
-    fn parses_instruction(#[case] input: &str, #[case] expected: (Instruction, Int)) {
-        assert_eq!(expected, Instruction::from_ints(&parse_ints(input)));
+    fn parses_instruction_v2(#[case] input: &str, #[case] expected: (Instruction, Int)) {
+        assert_eq!(expected, Instruction::from_ints_v2(&parse_ints(input)));
     }
 
     #[test]
@@ -284,6 +347,17 @@ mod test {
 
         assert_eq!(actual, expected)
     }
+
+    #[rstest]
+    #[case("1002,4,3,4,33", "1002,4,3,4,99")]
+    #[case("1101,100,-1,4,0", "1101,100,-1,4,99")]
+    fn runs_program_v2(#[case] input: &str, #[case] expected: &str) {
+        let actual = run_program_v2(parse_ints(input)).iter().join(",");
+
+        assert_eq!(actual, expected)
+    }
+
+    //
 
     #[rstest]
     #[case("3,0,4,0,99", "123", "123")]
