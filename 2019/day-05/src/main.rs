@@ -7,11 +7,16 @@ type Int = i32;
 
 fn main() {
     println!("Part 1: {:?}", part1());
-    println!("Part 2: {:?}", part2());
+    // println!("Part 2: {:?}", part2());
 }
 
-fn part1() -> Int {
-    0
+fn part1() -> Vec<Int> {
+    let file = fs::read_to_string("input.txt").unwrap();
+    let mem = parse_ints(&file);
+
+    let output = run_program_with_io_v2(mem, vec![1]);
+
+    output
 }
 
 fn part2() -> Int {
@@ -59,6 +64,20 @@ fn run_program_with_io(mut mem: Vec<Int>, mut input: Vec<Int>) -> Vec<Int> {
     let mut ip = 0;
     loop {
         let (i, ip_delta) = Instruction::from_ints(&mem[ip..]);
+        if i == Halt {
+            break;
+        }
+        (mem, input, output) = i.process_with_io(mem, input, output);
+        ip += ip_delta as usize;
+    }
+    output
+}
+
+fn run_program_with_io_v2(mut mem: Vec<Int>, mut input: Vec<Int>) -> Vec<Int> {
+    let mut output = vec![];
+    let mut ip = 0;
+    loop {
+        let (i, ip_delta) = Instruction::from_ints_v2(&mem[ip..]);
         if i == Halt {
             break;
         }
@@ -187,19 +206,66 @@ impl Instruction {
         mut input: Vec<Int>,
         mut output: Vec<Int>
     ) -> (Vec<Int>, Vec<Int>, Vec<Int>) {
+        println!("Executing {:?}", self);
+
         match self {
             Self::Add { src1, src2, dst } => {
                 mem[dst as usize] = mem[src1 as usize] + mem[src2 as usize];
             }
+            Self::AddV2 { src1, src2, dst } => {
+                let src1_value = match src1 {
+                    Position(p) => mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let src2_value = match src2 {
+                    Position(p) => mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                mem[dst as usize] = src1_value + src2_value;
+            }
             Self::Multiply { src1, src2, dst } => {
                 mem[dst as usize] = mem[src1 as usize] * mem[src2 as usize];
+            }
+            Self::MultiplyV2 { src1, src2, dst } => {
+                let src1_value = match src1 {
+                    Position(p) => mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let src2_value = match src2 {
+                    Position(p) => mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                mem[dst as usize] = src1_value * src2_value;
             }
             Self::Input { dst } => {
                 mem[dst as usize] = input.remove(0);
             }
+            Self::InputV2 { dst } => {
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                mem[dst as usize] = input.remove(0);
+            }
             Self::Output { src } => output.push(mem[src as usize]),
+            Self::OutputV2 { src } => {
+                let src_value = match src {
+                    Position(p) => mem[p as usize],
+                    Immediate(i) => i,
+                };
+                println!("Outputting {}", mem[src_value as usize]);
+                output.push(mem[src_value as usize]);
+            }
             Self::Halt => {}
-            _ => unimplemented!(),
+            _ => unimplemented!("{self:?}"),
         }
         (mem, input, output)
     }
