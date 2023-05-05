@@ -16,6 +16,16 @@ fn part2() -> Int {
     0
 }
 
+fn parse_ints(s: &str) -> Vec<Int> {
+    if s.is_empty() {
+        vec![]
+    } else {
+        s.split(',')
+            .map(|ss| ss.trim().parse().unwrap())
+            .collect_vec()
+    }
+}
+
 fn run_program(mut mem: Vec<Int>) -> Vec<Int> {
     let mut ip = 0;
     loop {
@@ -57,6 +67,11 @@ enum Instruction {
         src2: Int,
         dst: Int,
     },
+    MultiplyV2 {
+        src1: Parameter,
+        src2: Parameter,
+        dst: Parameter,
+    },
     Input {
         dst: Int,
     },
@@ -66,6 +81,13 @@ enum Instruction {
     Halt,
 }
 use Instruction::*;
+
+// getModes opx =
+//   ( opx `mod` 100,
+//     opx `div` 100 `mod` 10,
+//     opx `div` 1000 `mod` 10,
+//     opx `div` 10000 `mod` 10
+//   )
 
 impl Instruction {
     fn from_ints(ints: &[Int]) -> (Self, Int) {
@@ -88,6 +110,21 @@ impl Instruction {
                 mem[dst] = mem[src1] * mem[src2];
             }
             Self::Halt => {}
+            Self::MultiplyV2 { src1, src2, dst } => {
+                let src1_value = match src1 {
+                    Position(p) => mem[p],
+                    Immediate(i) => i,
+                };
+                let src2_value = match src2 {
+                    Position(p) => mem[p],
+                    Immediate(i) => i,
+                };
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                mem[dst] = src1_value * src2_value;
+            }
             _ => unimplemented!(),
         }
         mem
@@ -111,19 +148,21 @@ impl Instruction {
             }
             Self::Output { src } => output.push(mem[src]),
             Self::Halt => {}
+            _ => unimplemented!(),
         }
         (mem, input, output)
     }
 }
 
-fn parse_ints(s: &str) -> Vec<Int> {
-    if s.is_empty() {
-        vec![]
-    } else {
-        s.split(',')
-            .map(|ss| ss.trim().parse().unwrap())
-            .collect_vec()
-    }
+#[derive(Debug, PartialEq)]
+enum Parameter {
+    Position(Int),
+    Immediate(Int),
+}
+use Parameter::*;
+
+fn get_modes(int: Int) -> (Int, Int, Int, Int) {
+    (int % 100, (int / 100) % 10, (int / 1000) % 10, (int / 10000) % 10)
 }
 
 #[cfg(test)]
@@ -159,7 +198,16 @@ mod test {
     #[case("3,50", (Instruction::Input { dst: 50 }, 2))]
     #[case("4,50", (Instruction::Output { src: 50 }, 2))]
     #[case("99,30,40,50", (Instruction::Halt, 1))]
-    fn parses_opcode(#[case] input: &str, #[case] expected: (Instruction, Int)) {
+    #[ignore]
+    #[case("1002,4,3,4,33", (
+        Instruction::MultiplyV2 {
+            src1: Parameter::Position(4),
+            src2: Parameter::Immediate(3),
+            dst: Parameter::Position(4),
+        },
+        4,
+    ))]
+    fn parses_instruction(#[case] input: &str, #[case] expected: (Instruction, Int)) {
         assert_eq!(expected, Instruction::from_ints(&parse_ints(input)));
     }
 
@@ -185,6 +233,15 @@ mod test {
         Instruction::Multiply { src1: 3, src2: 11, dst: 0 },
         "1,9,10,70,2,3,11,0,99,30,40,50",
         "3500,9,10,70,2,3,11,0,99,30,40,50"
+    )]
+    #[case(
+        Instruction::MultiplyV2 {
+            src1: Parameter::Position(4),
+            src2: Parameter::Immediate(3),
+            dst: Parameter::Position(4),
+        },
+        "1002,4,3,4,33",
+        "1002,4,3,4,99"
     )]
     fn processes_instruction(
         #[case] instruction: Instruction,
@@ -232,6 +289,16 @@ mod test {
     #[case("3,0,4,0,99", "123", "123")]
     fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected: &str) {
         let actual = run_program_with_io(parse_ints(mem), parse_ints(input)).iter().join(",");
+
+        assert_eq!(actual, expected)
+    }
+
+    #[rstest]
+    #[case(1002, (2, 0, 1, 0))]
+    #[case(11122, (22, 1, 1, 1))] // My own
+    #[case(22, (22, 0, 0, 0))] // My own
+    fn gets_modes(#[case] input: Int, #[case] expected: (Int, Int, Int, Int)) {
+        let actual = get_modes(input);
 
         assert_eq!(actual, expected)
     }
