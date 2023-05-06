@@ -24,6 +24,14 @@ pub enum Instruction {
     Output {
         src: Parameter,
     },
+    JumpIfTrue {
+        src: Parameter,
+        dst: Parameter,
+    },
+    JumpIfFalse {
+        src: Parameter,
+        dst: Parameter,
+    },
     LessThan {
         src1: Parameter,
         src2: Parameter,
@@ -51,6 +59,8 @@ impl Instruction {
             2 => { (Multiply { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
             3 => { (Input { dst: get_p1() }, 2) }
             4 => { (Instruction::Output { src: get_p1() }, 2) }
+            5 => { (JumpIfTrue { src: get_p1(), dst: get_p2() }, 3) }
+            6 => { (JumpIfFalse { src: get_p1(), dst: get_p2() }, 3) }
             7 => { (LessThan { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
             8 => { (Equals { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
             99 => { (Halt {}, 1) }
@@ -106,6 +116,28 @@ impl Instruction {
                 };
                 println!("Outputting {}", src_value);
                 state.output.push(src_value);
+            }
+            Self::JumpIfTrue { src, dst } => {
+                let src_value = match src {
+                    Position(p) => state.mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                // Set ip
+            }
+            Self::JumpIfFalse { src, dst } => {
+                let src_value = match src {
+                    Position(p) => state.mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                // Set ip
             }
             Self::LessThan { src1, src2, dst } => {
                 let src1_value = match src1 {
@@ -183,6 +215,22 @@ mod test {
         },
         4,
     ))]
+    #[case("1005,4,3", (
+        JumpIfTrue {
+            src: Position(4),
+            dst: Immediate(3),
+        },
+        3,
+    ))]
+    #[case("1006,4,3", (
+        JumpIfFalse {
+            src: Position(4),
+            dst: Immediate(3),
+        },
+        3,
+    ))]
+    #[case("1007,4,3,4", (LessThan { src1: Position(4), src2: Immediate(3), dst: Position(4) }, 4))]
+    #[case("1008,4,3,4", (Equals { src1: Position(4), src2: Immediate(3), dst: Position(4) }, 4))]
     fn parses_instruction(#[case] input: &str, #[case] expected: (Instruction, Int)) {
         assert_eq!(expected, Instruction::from_ints(&parse_ints(input)));
     }
