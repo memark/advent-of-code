@@ -62,29 +62,39 @@ fn run_program_v2(mut mem: Vec<Int>) -> Vec<Int> {
 fn run_program_with_io(mut mem: Vec<Int>, mut input: Vec<Int>) -> Vec<Int> {
     let mut output = vec![];
     let mut ip = 0;
+    let mut state = State { mem, input, output };
+
     loop {
-        let (i, ip_delta) = Instruction::from_ints(&mem[ip..]);
+        let (i, ip_delta) = Instruction::from_ints(&state.mem[ip..]);
         if i == Halt {
             break;
         }
-        (mem, input, output) = i.process_with_io(mem, input, output);
+        state = i.process_with_io(state);
         ip += ip_delta as usize;
     }
-    output
+    state.output
 }
 
 fn run_program_with_io_v2(mut mem: Vec<Int>, mut input: Vec<Int>) -> Vec<Int> {
     let mut output = vec![];
     let mut ip = 0;
+    let mut state = State { mem, input, output };
+
     loop {
-        let (i, ip_delta) = Instruction::from_ints_v2(&mem[ip..]);
+        let (i, ip_delta) = Instruction::from_ints_v2(&state.mem[ip..]);
         if i == Halt {
             break;
         }
-        (mem, input, output) = i.process_with_io(mem, input, output);
+        state = i.process_with_io(state);
         ip += ip_delta as usize;
     }
-    output
+    state.output
+}
+
+struct State {
+    mem: Vec<Int>,
+    input: Vec<Int>,
+    output: Vec<Int>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -202,72 +212,74 @@ impl Instruction {
 
     fn process_with_io(
         self,
-        mut mem: Vec<Int>,
-        mut input: Vec<Int>,
-        mut output: Vec<Int>
-    ) -> (Vec<Int>, Vec<Int>, Vec<Int>) {
+        // mut mem: Vec<Int>,
+        // mut input: Vec<Int>,
+        // mut output: Vec<Int>,
+        mut state: State
+    ) -> State {
+        //(Vec<Int>, Vec<Int>, Vec<Int>)
         println!("Executing {:?}", self);
 
         match self {
             Self::Add { src1, src2, dst } => {
-                mem[dst as usize] = mem[src1 as usize] + mem[src2 as usize];
+                state.mem[dst as usize] = state.mem[src1 as usize] + state.mem[src2 as usize];
             }
             Self::AddV2 { src1, src2, dst } => {
                 let src1_value = match src1 {
-                    Position(p) => mem[p as usize],
+                    Position(p) => state.mem[p as usize],
                     Immediate(i) => i,
                 };
                 let src2_value = match src2 {
-                    Position(p) => mem[p as usize],
+                    Position(p) => state.mem[p as usize],
                     Immediate(i) => i,
                 };
                 let dst = match dst {
                     Position(p) => p,
                     Immediate(_) => panic!(),
                 };
-                mem[dst as usize] = src1_value + src2_value;
+                state.mem[dst as usize] = src1_value + src2_value;
             }
             Self::Multiply { src1, src2, dst } => {
-                mem[dst as usize] = mem[src1 as usize] * mem[src2 as usize];
+                state.mem[dst as usize] = state.mem[src1 as usize] * state.mem[src2 as usize];
             }
             Self::MultiplyV2 { src1, src2, dst } => {
                 let src1_value = match src1 {
-                    Position(p) => mem[p as usize],
+                    Position(p) => state.mem[p as usize],
                     Immediate(i) => i,
                 };
                 let src2_value = match src2 {
-                    Position(p) => mem[p as usize],
+                    Position(p) => state.mem[p as usize],
                     Immediate(i) => i,
                 };
                 let dst = match dst {
                     Position(p) => p,
                     Immediate(_) => panic!(),
                 };
-                mem[dst as usize] = src1_value * src2_value;
+                state.mem[dst as usize] = src1_value * src2_value;
             }
             Self::Input { dst } => {
-                mem[dst as usize] = input.remove(0);
+                state.mem[dst as usize] = state.input.remove(0);
             }
             Self::InputV2 { dst } => {
                 let dst = match dst {
                     Position(p) => p,
                     Immediate(_) => panic!(),
                 };
-                mem[dst as usize] = input.remove(0);
+                state.mem[dst as usize] = state.input.remove(0);
             }
-            Self::Output { src } => output.push(mem[src as usize]),
+            Self::Output { src } => state.output.push(state.mem[src as usize]),
             Self::OutputV2 { src } => {
                 let src_value = match src {
-                    Position(p) => mem[p as usize],
+                    Position(p) => state.mem[p as usize],
                     Immediate(i) => i,
                 };
-                println!("Outputting {}", mem[src_value as usize]);
-                output.push(mem[src_value as usize]);
+                println!("Outputting {}", state.mem[src_value as usize]);
+                state.output.push(state.mem[src_value as usize]);
             }
             Self::Halt => {}
             _ => unimplemented!("{self:?}"),
         }
-        (mem, input, output)
+        state
     }
 }
 
@@ -391,15 +403,15 @@ mod test {
         #[case] expected_input: &str,
         #[case] expected_output: &str
     ) {
-        let (actual_mem, actual_input, actual_output) = instruction.process_with_io(
-            parse_ints(mem),
-            parse_ints(input),
-            vec![]
-        );
+        let state = instruction.process_with_io(State {
+            mem: parse_ints(mem),
+            input: parse_ints(input),
+            output: vec![],
+        });
 
-        assert_eq!(actual_mem.iter().join(","), expected_mem);
-        assert_eq!(actual_input.iter().join(","), expected_input);
-        assert_eq!(actual_output.iter().join(","), expected_output);
+        assert_eq!(state.mem.iter().join(","), expected_mem);
+        assert_eq!(state.input.iter().join(","), expected_input);
+        assert_eq!(state.output.iter().join(","), expected_output);
     }
 
     #[rstest]
