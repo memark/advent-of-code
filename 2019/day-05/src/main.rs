@@ -16,7 +16,7 @@ type Int = i32;
 
 fn main() {
     println!("Part 1: {:?}", part1());
-    // println!("Part 2: {:?}", part2());
+    println!("Part 2: {:?}", part2());
 }
 
 fn part1() -> Int {
@@ -28,7 +28,11 @@ fn part1() -> Int {
 }
 
 fn part2() -> Int {
-    0
+    let file = fs::read_to_string("input.txt").unwrap();
+    let mem = parse_ints(&file);
+    let input = vec![5];
+
+    *run_program(State::with_input(mem, input)).output.last().unwrap()
 }
 
 pub fn parse_ints(s: &str) -> Vec<Int> {
@@ -124,6 +128,22 @@ mod test {
     //   (using immediate mode)
     #[case("3,3,1105,-1,9,1101,0,0,12,4,12,99,1", "0", "0")]
     #[case("3,3,1105,-1,9,1101,0,0,12,4,12,99,1", "42", "1")]
+    // The above example program uses an input instruction to ask for a single number. The program will then output 999 if the input value is below 8, output 1000 if the input value is equal to 8, or output 1001 if the input value is greater than 8.
+    #[case(
+        "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99",
+        "7",
+        "999"
+    )]
+    #[case(
+        "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99",
+        "8",
+        "1000"
+    )]
+    #[case(
+        "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99",
+        "9",
+        "1001"
+    )]
     fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected_output: &str) {
         let actual = run_program(State::with_input(parse_ints(mem), parse_ints(input)))
             .output.iter()
@@ -137,8 +157,8 @@ mod test {
         assert_eq!(5346030, part1());
     }
 
-    // #[test]
-    // fn runs_part2() {
-    //     assert_eq!(513116, part2());
-    // }
+    #[test]
+    fn runs_part2() {
+        assert_eq!(513116, part2());
+    }
 }
