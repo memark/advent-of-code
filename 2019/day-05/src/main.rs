@@ -1,5 +1,8 @@
 #![allow(dead_code, unused_imports, unused_variables)]
 
+mod state;
+use state::State;
+
 use itertools::Itertools;
 use std::{ num::ParseIntError, fs, process::Output };
 
@@ -44,23 +47,6 @@ fn run_program(mut state: State) -> State {
         ip += ip_delta as usize;
     }
     state
-}
-
-#[derive(Debug, PartialEq)]
-struct State {
-    mem: Vec<Int>,
-    input: Vec<Int>,
-    output: Vec<Int>,
-}
-
-impl State {
-    fn from_mem(mem: Vec<Int>) -> Self {
-        State { mem, input: vec![], output: vec![] }
-    }
-
-    fn with_input(mem: Vec<Int>, input: Vec<Int>) -> Self {
-        State { mem, input, output: vec![] }
-    }
 }
 
 #[derive(Debug, PartialEq)]
