@@ -89,9 +89,9 @@ impl Instruction {
     fn from_ints(ints: &[Int]) -> (Self, Int) {
         let (opcode, mode1, mode2, mode3) = get_modes(ints[0]);
 
-        let get_p1 = || { get_p(mode1, ints[1]) };
-        let get_p2 = || { get_p(mode2, ints[2]) };
-        let get_p3 = || { get_p(mode3, ints[3]) };
+        let get_p1 = || { Parameter::create(mode1, ints[1]) };
+        let get_p2 = || { Parameter::create(mode2, ints[2]) };
+        let get_p3 = || { Parameter::create(mode3, ints[3]) };
 
         match opcode {
             1 => { (Add { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
@@ -167,11 +167,13 @@ enum Parameter {
 }
 use Parameter::*;
 
-fn get_p(mode: Int, value: Int) -> Parameter {
-    match mode {
-        0 => Position(value),
-        1 => Immediate(value),
-        _ => unimplemented!(),
+impl Parameter {
+    fn create(mode: Int, value: Int) -> Self {
+        match mode {
+            0 => Position(value),
+            1 => Immediate(value),
+            _ => unimplemented!(),
+        }
     }
 }
 
