@@ -68,7 +68,7 @@ impl Instruction {
         }
     }
 
-    pub fn process(self, mut state: State) -> State {
+    pub fn process(self, mut state: State) -> ProcessResult {
         println!("Executing {:?}", self);
 
         match self {
@@ -86,6 +86,7 @@ impl Instruction {
                     Immediate(_) => panic!(),
                 };
                 state.mem[dst as usize] = src1_value + src2_value;
+                ProcessResult::new(state, None)
             }
             Self::Multiply { src1, src2, dst } => {
                 let src1_value = match src1 {
@@ -101,6 +102,7 @@ impl Instruction {
                     Immediate(_) => panic!(),
                 };
                 state.mem[dst as usize] = src1_value * src2_value;
+                ProcessResult::new(state, None)
             }
             Self::Input { dst } => {
                 let dst = match dst {
@@ -108,6 +110,7 @@ impl Instruction {
                     Immediate(_) => panic!(),
                 };
                 state.mem[dst as usize] = state.input.remove(0);
+                ProcessResult::new(state, None)
             }
             Self::Output { src } => {
                 let src_value = match src {
@@ -116,6 +119,7 @@ impl Instruction {
                 };
                 println!("Outputting {}", src_value);
                 state.output.push(src_value);
+                ProcessResult::new(state, None)
             }
             Self::JumpIfTrue { src, dst } => {
                 let src_value = match src {
@@ -127,6 +131,7 @@ impl Instruction {
                     Immediate(_) => panic!(),
                 };
                 // Set ip
+                ProcessResult::new(state, None)
             }
             Self::JumpIfFalse { src, dst } => {
                 let src_value = match src {
@@ -138,6 +143,7 @@ impl Instruction {
                     Immediate(_) => panic!(),
                 };
                 // Set ip
+                ProcessResult::new(state, None)
             }
             Self::LessThan { src1, src2, dst } => {
                 let src1_value = match src1 {
@@ -153,6 +159,7 @@ impl Instruction {
                     Immediate(_) => panic!(),
                 };
                 state.mem[dst as usize] = if src1_value < src2_value { 1 } else { 0 };
+                ProcessResult::new(state, None)
             }
             Self::Equals { src1, src2, dst } => {
                 let src1_value = match src1 {
@@ -168,12 +175,23 @@ impl Instruction {
                     Immediate(_) => panic!(),
                 };
                 state.mem[dst as usize] = if src1_value == src2_value { 1 } else { 0 };
+                ProcessResult::new(state, None)
             }
-            Self::Halt => {}
+            Self::Halt => { ProcessResult::new(state, None) }
             #[allow(unreachable_patterns)]
             _ => unimplemented!("{self:?}"),
         }
-        state
+    }
+}
+
+pub struct ProcessResult {
+    pub state: State,
+    pub new_ip: Option<Int>,
+}
+
+impl ProcessResult {
+    fn new(state: State, new_ip: Option<Int>) -> Self {
+        ProcessResult { state, new_ip }
     }
 }
 
@@ -280,7 +298,7 @@ mod test {
             expected,
             instruction
                 .process(State::from_mem(parse_ints(mem)))
-                .mem.iter()
+                .state.mem.iter()
                 .join(",")
         );
     }
@@ -296,11 +314,11 @@ mod test {
         #[case] expected_input: &str,
         #[case] expected_output: &str
     ) {
-        let state = instruction.process(State::with_input(parse_ints(mem), parse_ints(input)));
+        let result = instruction.process(State::with_input(parse_ints(mem), parse_ints(input)));
 
-        assert_eq!(state.mem.iter().join(","), expected_mem);
-        assert_eq!(state.input.iter().join(","), expected_input);
-        assert_eq!(state.output.iter().join(","), expected_output);
+        assert_eq!(result.state.mem.iter().join(","), expected_mem);
+        assert_eq!(result.state.input.iter().join(","), expected_input);
+        assert_eq!(result.state.output.iter().join(","), expected_output);
     }
 
     #[rstest]

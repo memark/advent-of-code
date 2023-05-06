@@ -49,8 +49,13 @@ fn run_program(mut state: State) -> State {
         if i == Halt {
             break;
         }
-        state = i.process(state);
-        ip += ip_delta as usize;
+        let result = i.process(state);
+        state = result.state;
+        if let Some(new_ip) = result.new_ip {
+            ip = new_ip as usize;
+        } else {
+            ip += ip_delta as usize;
+        }
     }
     state
 }
