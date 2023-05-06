@@ -10,13 +10,13 @@ fn main() {
     // println!("Part 2: {:?}", part2());
 }
 
-fn part1() -> Vec<Int> {
+fn part1() -> Int {
     let file = fs::read_to_string("input.txt").unwrap();
     let mem = parse_ints(&file);
 
-    let output = run_program_with_io_v2(mem, vec![1]);
-
-    output
+    *run_program_with_io_v2(State { mem, input: vec![1], output: vec![] })
+        .output.last()
+        .unwrap()
 }
 
 fn part2() -> Int {
@@ -33,64 +33,63 @@ fn parse_ints(s: &str) -> Vec<Int> {
     }
 }
 
-fn run_program(mut mem: Vec<Int>) -> Vec<Int> {
+fn run_program(mut state: State) -> State {
     let mut ip = 0;
     loop {
-        let (i, ip_delta) = Instruction::from_ints(&mem[ip..]);
-        if i == Halt {
-            break;
-        }
-        mem = i.process(mem);
-        ip += ip_delta as usize;
-    }
-    mem
-}
-
-fn run_program_v2(mut mem: Vec<Int>) -> Vec<Int> {
-    let mut ip = 0;
-    loop {
-        let (i, ip_delta) = Instruction::from_ints_v2(&mem[ip..]);
+        let (i, ip_delta) = Instruction::from_ints_v2(&state.mem[ip..]);
         if i == Halt || i == HaltV2 {
             break;
         }
-        mem = i.process(mem);
+        state = i.process_with_io(state);
         ip += ip_delta as usize;
     }
-    mem
+    state
 }
 
-fn run_program_with_io(mut mem: Vec<Int>, mut input: Vec<Int>) -> Vec<Int> {
-    let mut output = vec![];
+fn run_program_v2(mut state: State) -> State {
     let mut ip = 0;
-    let mut state = State { mem, input, output };
-
     loop {
-        let (i, ip_delta) = Instruction::from_ints(&state.mem[ip..]);
-        if i == Halt {
+        let (i, ip_delta) = Instruction::from_ints_v2(&state.mem[ip..]);
+        if i == Halt || i == HaltV2 {
             break;
         }
         state = i.process_with_io(state);
         ip += ip_delta as usize;
     }
-    state.output
+    state
 }
 
-fn run_program_with_io_v2(mut mem: Vec<Int>, mut input: Vec<Int>) -> Vec<Int> {
-    let mut output = vec![];
+fn run_program_with_io(mut state: State) -> State {
     let mut ip = 0;
-    let mut state = State { mem, input, output };
 
     loop {
         let (i, ip_delta) = Instruction::from_ints_v2(&state.mem[ip..]);
-        if i == Halt {
+        if i == Halt || i == HaltV2 {
             break;
         }
         state = i.process_with_io(state);
         ip += ip_delta as usize;
     }
-    state.output
+    state
 }
 
+fn run_program_with_io_v2(mut state: State) -> State {
+    // let mut output = vec![];
+    let mut ip = 0;
+    // let mut state = State { mem, input, output };
+
+    loop {
+        let (i, ip_delta) = Instruction::from_ints_v2(&state.mem[ip..]);
+        if i == Halt || i == HaltV2 {
+            break;
+        }
+        state = i.process_with_io(state);
+        ip += ip_delta as usize;
+    }
+    state
+}
+
+#[derive(Debug, PartialEq)]
 struct State {
     mem: Vec<Int>,
     input: Vec<Int>,
@@ -137,6 +136,7 @@ enum Instruction {
 use Instruction::*;
 
 impl Instruction {
+    #[deprecated]
     fn from_ints(ints: &[Int]) -> (Self, Int) {
         let (opcode, mode1, mode2, mode3) = get_modes(ints[0]);
         match opcode {
@@ -166,6 +166,7 @@ impl Instruction {
         }
     }
 
+    #[deprecated]
     fn process(self, mut mem: Vec<Int>) -> Vec<Int> {
         match self {
             Self::Add { src1, src2, dst } => {
@@ -210,14 +211,7 @@ impl Instruction {
         mem
     }
 
-    fn process_with_io(
-        self,
-        // mut mem: Vec<Int>,
-        // mut input: Vec<Int>,
-        // mut output: Vec<Int>,
-        mut state: State
-    ) -> State {
-        //(Vec<Int>, Vec<Int>, Vec<Int>)
+    fn process_with_io(self, mut state: State) -> State {
         println!("Executing {:?}", self);
 
         match self {
@@ -273,10 +267,12 @@ impl Instruction {
                     Position(p) => state.mem[p as usize],
                     Immediate(i) => i,
                 };
-                println!("Outputting {}", state.mem[src_value as usize]);
-                state.output.push(state.mem[src_value as usize]);
+                println!("Outputting {}", src_value);
+                state.output.push(src_value);
             }
             Self::Halt => {}
+            Self::HaltV2 => {}
+            #[allow(unreachable_patterns)]
             _ => unimplemented!("{self:?}"),
         }
         state
@@ -330,13 +326,27 @@ mod test {
     }
 
     #[rstest]
-    #[case("1,9,10,3,2,3,11,0,99,30,40,50", (Instruction::Add { src1: 9, src2: 10, dst: 3 }, 4))]
-    #[case("2,3,11,0,99,30,40,50", (Instruction::Multiply { src1: 3, src2: 11, dst: 0 }, 4))]
-    #[case("3,50", (Instruction::Input { dst: 50 }, 2))]
-    #[case("4,50", (Instruction::Output { src: 50 }, 2))]
-    #[case("99,30,40,50", (Instruction::Halt, 1))]
+    #[case("1,9,10,3,2,3,11,0,99,30,40,50", (
+        Instruction::AddV2 {
+            src1: Parameter::Position(9),
+            src2: Parameter::Position(10),
+            dst: Parameter::Position(3),
+        },
+        4,
+    ))]
+    #[case("2,3,11,0,99,30,40,50", (
+        Instruction::MultiplyV2 {
+            src1: Parameter::Position(3),
+            src2: Parameter::Position(11),
+            dst: Parameter::Position(0),
+        },
+        4,
+    ))]
+    #[case("3,50", (Instruction::InputV2 { dst: Parameter::Position(50) }, 2))]
+    #[case("4,50", (Instruction::OutputV2 { src: Parameter::Position(50) }, 2))]
+    #[case("99,30,40,50", (Instruction::HaltV2, 1))]
     fn parses_instruction(#[case] input: &str, #[case] expected: (Instruction, Int)) {
-        assert_eq!(expected, Instruction::from_ints(&parse_ints(input)));
+        assert_eq!(expected, Instruction::from_ints_v2(&parse_ints(input)));
     }
 
     #[rstest]
@@ -357,7 +367,7 @@ mod test {
     fn panics_on_unknown_opcode() {
         let input = "123,2,3,11,0,99,30,40,50";
 
-        let actual = Instruction::from_ints(&parse_ints(input));
+        let actual = Instruction::from_ints_v2(&parse_ints(input));
     }
 
     #[rstest]
@@ -389,7 +399,17 @@ mod test {
         #[case] mem: &str,
         #[case] expected: &str
     ) {
-        assert_eq!(expected, instruction.process(parse_ints(mem)).iter().join(","));
+        assert_eq!(
+            expected,
+            instruction
+                .process_with_io(State {
+                    mem: parse_ints(mem),
+                    input: vec![],
+                    output: vec![],
+                })
+                .mem.iter()
+                .join(",")
+        );
     }
 
     #[rstest]
@@ -420,29 +440,37 @@ mod test {
     #[case("2,3,0,3,99", "2,3,0,6,99")]
     #[case("2,4,4,5,99,0", "2,4,4,5,99,9801")]
     #[case("1,1,1,4,99,5,6,0,99", "30,1,1,4,2,5,6,0,99")]
-    fn runs_program(#[case] input: &str, #[case] expected: &str) {
-        let actual = run_program(parse_ints(input)).iter().join(",");
+    fn runs_program(#[case] mem: &str, #[case] expected_mem: &str) {
+        let actual = run_program(State { mem: parse_ints(mem), input: vec![], output: vec![] })
+            .mem.iter()
+            .join(",");
 
-        assert_eq!(actual, expected)
+        assert_eq!(actual, expected_mem)
     }
 
     #[rstest]
     #[case("1002,4,3,4,33", "1002,4,3,4,99")]
     #[case("1101,100,-1,4,0", "1101,100,-1,4,99")]
-    fn runs_program_v2(#[case] input: &str, #[case] expected: &str) {
-        let actual = run_program_v2(parse_ints(input)).iter().join(",");
+    fn runs_program_v2(#[case] mem: &str, #[case] expected_mem: &str) {
+        let actual = run_program_v2(State { mem: parse_ints(mem), input: vec![], output: vec![] })
+            .mem.iter()
+            .join(",");
 
-        assert_eq!(actual, expected)
+        assert_eq!(actual, expected_mem)
     }
-
-    //
 
     #[rstest]
     #[case("3,0,4,0,99", "123", "123")]
-    fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected: &str) {
-        let actual = run_program_with_io(parse_ints(mem), parse_ints(input)).iter().join(",");
+    fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected_output: &str) {
+        let actual = run_program_with_io(State {
+            mem: parse_ints(mem),
+            input: parse_ints(input),
+            output: vec![],
+        })
+            .output.iter()
+            .join(",");
 
-        assert_eq!(actual, expected)
+        assert_eq!(actual, expected_output)
     }
 
     #[rstest]
@@ -455,10 +483,10 @@ mod test {
         assert_eq!(actual, expected)
     }
 
-    // #[test]
-    // fn runs_part1() {
-    //     assert_eq!(5346030, part1());
-    // }
+    #[test]
+    fn runs_part1() {
+        assert_eq!(5346030, part1());
+    }
 
     // #[test]
     // fn runs_part2() {
