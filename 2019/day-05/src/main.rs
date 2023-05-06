@@ -117,13 +117,13 @@ mod test {
     // Using immediate mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
     #[case("3,3,1107,-1,8,3,4,3,99", "7", "1")]
     #[case("3,3,1107,-1,8,3,4,3,99", "8", "0")]
-    // // Here are some jump tests that take an input, then output 0 if the input was zero or 1 if the input was non-zero.
-    // //   (using position mode)
-    // #[case("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", "0", "0")]
-    // #[case("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", "42", "1")]
-    // //   (using immediate mode)
-    // #[case("3,3,1105,-1,9,1101,0,0,12,4,12,99,1", "0", "0")]
-    // #[case("3,3,1105,-1,9,1101,0,0,12,4,12,99,1", "42", "1")]
+    // Here are some jump tests that take an input, then output 0 if the input was zero or 1 if the input was non-zero.
+    //   (using position mode)
+    #[case("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", "0", "0")]
+    #[case("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", "42", "1")]
+    //   (using immediate mode)
+    #[case("3,3,1105,-1,9,1101,0,0,12,4,12,99,1", "0", "0")]
+    #[case("3,3,1105,-1,9,1101,0,0,12,4,12,99,1", "42", "1")]
     fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected_output: &str) {
         let actual = run_program(State::with_input(parse_ints(mem), parse_ints(input)))
             .output.iter()

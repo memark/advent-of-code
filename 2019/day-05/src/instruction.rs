@@ -127,11 +127,10 @@ impl Instruction {
                     Immediate(i) => i,
                 };
                 let dst = match dst {
-                    Position(p) => p,
-                    Immediate(_) => panic!(),
+                    Position(p) => state.mem[p as usize],
+                    Immediate(i) => i,
                 };
-                // Set ip
-                ProcessResult::new(state, None)
+                ProcessResult::new(state, if src_value != 0 { Some(dst) } else { None })
             }
             Self::JumpIfFalse { src, dst } => {
                 let src_value = match src {
@@ -139,11 +138,10 @@ impl Instruction {
                     Immediate(i) => i,
                 };
                 let dst = match dst {
-                    Position(p) => p,
-                    Immediate(_) => panic!(),
+                    Position(p) => state.mem[p as usize],
+                    Immediate(i) => i,
                 };
-                // Set ip
-                ProcessResult::new(state, None)
+                ProcessResult::new(state, if src_value == 0 { Some(dst) } else { None })
             }
             Self::LessThan { src1, src2, dst } => {
                 let src1_value = match src1 {
