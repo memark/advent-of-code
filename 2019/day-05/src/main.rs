@@ -85,11 +85,11 @@ impl Instruction {
         let get_p3 = || { get_p(mode3, ints[3]) };
 
         match opcode {
-            1 => { (Self::Add { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
-            2 => { (Self::Multiply { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
-            3 => { (Self::Input { dst: get_p1() }, 2) }
-            4 => { (Self::Output { src: get_p1() }, 2) }
-            99 => { (Self::Halt {}, 1) }
+            1 => { (Add { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
+            2 => { (Multiply { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
+            3 => { (Input { dst: get_p1() }, 2) }
+            4 => { (Instruction::Output { src: get_p1() }, 2) }
+            99 => { (Halt {}, 1) }
             _ => panic!("Unknown opcode"),
         }
     }
@@ -160,8 +160,8 @@ use Parameter::*;
 
 fn get_p(mode: Int, value: Int) -> Parameter {
     match mode {
-        0 => Parameter::Position(value),
-        1 => Parameter::Immediate(value),
+        0 => Position(value),
+        1 => Immediate(value),
         _ => unimplemented!(),
     }
 }
@@ -199,29 +199,29 @@ mod test {
 
     #[rstest]
     #[case("1,9,10,3,2,3,11,0,99,30,40,50", (
-        Instruction::Add {
-            src1: Parameter::Position(9),
-            src2: Parameter::Position(10),
-            dst: Parameter::Position(3),
+        Add {
+            src1: Position(9),
+            src2: Position(10),
+            dst: Position(3),
         },
         4,
     ))]
     #[case("2,3,11,0,99,30,40,50", (
-        Instruction::Multiply {
-            src1: Parameter::Position(3),
-            src2: Parameter::Position(11),
-            dst: Parameter::Position(0),
+        Multiply {
+            src1: Position(3),
+            src2: Position(11),
+            dst: Position(0),
         },
         4,
     ))]
-    #[case("3,50", (Instruction::Input { dst: Parameter::Position(50) }, 2))]
-    #[case("4,50", (Instruction::Output { src: Parameter::Position(50) }, 2))]
-    #[case("99,30,40,50", (Instruction::Halt, 1))]
+    #[case("3,50", (Input { dst: Position(50) }, 2))]
+    #[case("4,50", (Instruction::Output { src: Position(50) }, 2))]
+    #[case("99,30,40,50", (Halt, 1))]
     #[case("1002,4,3,4,33", (
-        Instruction::Multiply {
-            src1: Parameter::Position(4),
-            src2: Parameter::Immediate(3),
-            dst: Parameter::Position(4),
+        Multiply {
+            src1: Position(4),
+            src2: Immediate(3),
+            dst: Position(4),
         },
         4,
     ))]
@@ -239,33 +239,33 @@ mod test {
 
     #[rstest]
     #[case(
-        Instruction::Add {
-            src1: Parameter::Position(9),
-            src2: Parameter::Position(10),
-            dst: Parameter::Position(3),
+        Add {
+            src1: Position(9),
+            src2: Position(10),
+            dst: Position(3),
         },
         "1,9,10,3,2,3,11,0,99,30,40,50",
         "1,9,10,70,2,3,11,0,99,30,40,50"
     )]
     #[case(
-        Instruction::Multiply {
-            src1: Parameter::Position(3),
-            src2: Parameter::Position(11),
-            dst: Parameter::Position(0),
+        Multiply {
+            src1: Position(3),
+            src2: Position(11),
+            dst: Position(0),
         },
         "1,9,10,70,2,3,11,0,99,30,40,50",
         "3500,9,10,70,2,3,11,0,99,30,40,50"
     )]
     #[case(
-        Instruction::Multiply {
-            src1: Parameter::Position(4),
-            src2: Parameter::Immediate(3),
-            dst: Parameter::Position(4),
+        Multiply {
+            src1: Position(4),
+            src2: Immediate(3),
+            dst: Position(4),
         },
         "1002,4,3,4,33",
         "1002,4,3,4,99"
     )]
-    fn processes_instruction(
+    fn processes_instruction_with_mem(
         #[case] instruction: Instruction,
         #[case] mem: &str,
         #[case] expected: &str
@@ -284,8 +284,8 @@ mod test {
     }
 
     #[rstest]
-    #[case(Instruction::Input { dst: Parameter::Position(0) }, "0", "123", "123", "", "")]
-    #[case(Instruction::Output { src: Parameter::Position(0) }, "123", "", "123", "", "123")]
+    #[case(Input { dst: Position(0) }, "0", "123", "123", "", "")]
+    #[case(Instruction::Output { src: Position(0) }, "123", "", "123", "", "123")]
     fn processes_instruction_with_io(
         #[case] instruction: Instruction,
         #[case] mem: &str,
@@ -313,7 +313,7 @@ mod test {
     #[case("1,1,1,4,99,5,6,0,99", "30,1,1,4,2,5,6,0,99")]
     #[case("1002,4,3,4,33", "1002,4,3,4,99")]
     #[case("1101,100,-1,4,0", "1101,100,-1,4,99")]
-    fn runs_program(#[case] mem: &str, #[case] expected_mem: &str) {
+    fn runs_program_with_mem(#[case] mem: &str, #[case] expected_mem: &str) {
         let actual = run_program(State { mem: parse_ints(mem), input: vec![], output: vec![] })
             .mem.iter()
             .join(",");
