@@ -24,6 +24,16 @@ pub enum Instruction {
     Output {
         src: Parameter,
     },
+    LessThan {
+        src1: Parameter,
+        src2: Parameter,
+        dst: Parameter,
+    },
+    Equals {
+        src1: Parameter,
+        src2: Parameter,
+        dst: Parameter,
+    },
     Halt,
 }
 use Instruction::*;
@@ -41,6 +51,8 @@ impl Instruction {
             2 => { (Multiply { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
             3 => { (Input { dst: get_p1() }, 2) }
             4 => { (Instruction::Output { src: get_p1() }, 2) }
+            7 => { (LessThan { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
+            8 => { (Equals { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
             99 => { (Halt {}, 1) }
             _ => panic!("Unknown opcode"),
         }
@@ -94,6 +106,36 @@ impl Instruction {
                 };
                 println!("Outputting {}", src_value);
                 state.output.push(src_value);
+            }
+            Self::LessThan { src1, src2, dst } => {
+                let src1_value = match src1 {
+                    Position(p) => state.mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let src2_value = match src2 {
+                    Position(p) => state.mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                state.mem[dst as usize] = if src1_value < src2_value { 1 } else { 0 };
+            }
+            Self::Equals { src1, src2, dst } => {
+                let src1_value = match src1 {
+                    Position(p) => state.mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let src2_value = match src2 {
+                    Position(p) => state.mem[p as usize],
+                    Immediate(i) => i,
+                };
+                let dst = match dst {
+                    Position(p) => p,
+                    Immediate(_) => panic!(),
+                };
+                state.mem[dst as usize] = if src1_value == src2_value { 1 } else { 0 };
             }
             Self::Halt => {}
             #[allow(unreachable_patterns)]

@@ -100,6 +100,18 @@ mod test {
 
     #[rstest]
     #[case("3,0,4,0,99", "123", "123")]
+    // Using position mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
+    #[case("3,9,8,9,10,9,4,9,99,-1,8", "8", "1")]
+    #[case("3,9,8,9,10,9,4,9,99,-1,8", "9", "0")]
+    // Using position mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
+    #[case("3,9,7,9,10,9,4,9,99,-1,8", "7", "1")]
+    #[case("3,9,7,9,10,9,4,9,99,-1,8", "8", "0")]
+    //Using immediate mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
+    #[case("3,3,1108,-1,8,3,4,3,99", "8", "1")]
+    #[case("3,3,1108,-1,8,3,4,3,99", "9", "0")]
+    // Using immediate mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
+    #[case("3,3,1107,-1,8,3,4,3,99", "7", "1")]
+    #[case("3,3,1107,-1,8,3,4,3,99", "8", "0")]
     fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected_output: &str) {
         let actual = run_program(State::with_input(parse_ints(mem), parse_ints(input)))
             .output.iter()
