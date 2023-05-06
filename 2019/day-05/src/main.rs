@@ -13,10 +13,9 @@ fn main() {
 fn part1() -> Int {
     let file = fs::read_to_string("input.txt").unwrap();
     let mem = parse_ints(&file);
+    let input = vec![1];
 
-    *run_program(State { mem, input: vec![1], output: vec![] })
-        .output.last()
-        .unwrap()
+    *run_program(State::with_input(mem, input)).output.last().unwrap()
 }
 
 fn part2() -> Int {
@@ -52,6 +51,16 @@ struct State {
     mem: Vec<Int>,
     input: Vec<Int>,
     output: Vec<Int>,
+}
+
+impl State {
+    fn from_mem(mem: Vec<Int>) -> Self {
+        State { mem, input: vec![], output: vec![] }
+    }
+
+    fn with_input(mem: Vec<Int>, input: Vec<Int>) -> Self {
+        State { mem, input, output: vec![] }
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -273,11 +282,7 @@ mod test {
         assert_eq!(
             expected,
             instruction
-                .process(State {
-                    mem: parse_ints(mem),
-                    input: vec![],
-                    output: vec![],
-                })
+                .process(State::from_mem(parse_ints(mem)))
                 .mem.iter()
                 .join(",")
         );
@@ -294,11 +299,7 @@ mod test {
         #[case] expected_input: &str,
         #[case] expected_output: &str
     ) {
-        let state = instruction.process(State {
-            mem: parse_ints(mem),
-            input: parse_ints(input),
-            output: vec![],
-        });
+        let state = instruction.process(State::with_input(parse_ints(mem), parse_ints(input)));
 
         assert_eq!(state.mem.iter().join(","), expected_mem);
         assert_eq!(state.input.iter().join(","), expected_input);
@@ -314,7 +315,7 @@ mod test {
     #[case("1002,4,3,4,33", "1002,4,3,4,99")]
     #[case("1101,100,-1,4,0", "1101,100,-1,4,99")]
     fn runs_program_with_mem(#[case] mem: &str, #[case] expected_mem: &str) {
-        let actual = run_program(State { mem: parse_ints(mem), input: vec![], output: vec![] })
+        let actual = run_program(State::from_mem(parse_ints(mem)))
             .mem.iter()
             .join(",");
 
@@ -324,11 +325,7 @@ mod test {
     #[rstest]
     #[case("3,0,4,0,99", "123", "123")]
     fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected_output: &str) {
-        let actual = run_program(State {
-            mem: parse_ints(mem),
-            input: parse_ints(input),
-            output: vec![],
-        })
+        let actual = run_program(State::with_input(parse_ints(mem), parse_ints(input)))
             .output.iter()
             .join(",");
 
