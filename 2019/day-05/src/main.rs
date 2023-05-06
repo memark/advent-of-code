@@ -3,6 +3,9 @@
 mod state;
 use state::State;
 
+mod parameter;
+use parameter::Parameter::*;
+
 use itertools::Itertools;
 use std::{ num::ParseIntError, fs, process::Output };
 
@@ -52,20 +55,20 @@ fn run_program(mut state: State) -> State {
 #[derive(Debug, PartialEq)]
 enum Instruction {
     Add {
-        src1: Parameter,
-        src2: Parameter,
-        dst: Parameter,
+        src1: parameter::Parameter,
+        src2: parameter::Parameter,
+        dst: parameter::Parameter,
     },
     Multiply {
-        src1: Parameter,
-        src2: Parameter,
-        dst: Parameter,
+        src1: parameter::Parameter,
+        src2: parameter::Parameter,
+        dst: parameter::Parameter,
     },
     Input {
-        dst: Parameter,
+        dst: parameter::Parameter,
     },
     Output {
-        src: Parameter,
+        src: parameter::Parameter,
     },
     Halt,
 }
@@ -75,9 +78,9 @@ impl Instruction {
     fn from_ints(ints: &[Int]) -> (Self, Int) {
         let (opcode, mode1, mode2, mode3) = get_modes(ints[0]);
 
-        let get_p1 = || { Parameter::create(mode1, ints[1]) };
-        let get_p2 = || { Parameter::create(mode2, ints[2]) };
-        let get_p3 = || { Parameter::create(mode3, ints[3]) };
+        let get_p1 = || { parameter::Parameter::create(mode1, ints[1]) };
+        let get_p2 = || { parameter::Parameter::create(mode2, ints[2]) };
+        let get_p3 = || { parameter::Parameter::create(mode3, ints[3]) };
 
         match opcode {
             1 => { (Add { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
@@ -143,23 +146,6 @@ impl Instruction {
             _ => unimplemented!("{self:?}"),
         }
         state
-    }
-}
-
-#[derive(Debug, PartialEq)]
-enum Parameter {
-    Position(Int),
-    Immediate(Int),
-}
-use Parameter::*;
-
-impl Parameter {
-    fn create(mode: Int, value: Int) -> Self {
-        match mode {
-            0 => Position(value),
-            1 => Immediate(value),
-            _ => unimplemented!(),
-        }
     }
 }
 
