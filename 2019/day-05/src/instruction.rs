@@ -248,11 +248,11 @@ mod test {
         #[case] expected_input: &str,
         #[case] expected_output: &str
     ) {
-        let result = instruction.process(State::with_input(parse_ints(mem), parse_ints(input)));
+        let actual = instruction.process(State::with_input(parse_ints(mem), parse_ints(input)));
 
-        assert_eq!(result.state.mem.iter().join(","), expected_mem);
-        assert_eq!(result.state.input.iter().join(","), expected_input);
-        assert_eq!(result.state.output.iter().join(","), expected_output);
+        assert_eq!(actual.state.mem.iter().join(","), expected_mem);
+        assert_eq!(actual.state.input.iter().join(","), expected_input);
+        assert_eq!(actual.state.output.iter().join(","), expected_output);
     }
 
     #[rstest]
@@ -260,8 +260,6 @@ mod test {
     #[case(11122, (22, 1, 1, 1))] // My own
     #[case(22, (22, 0, 0, 0))] // My own
     fn gets_modes(#[case] input: Int, #[case] expected: (Int, Int, Int, Int)) {
-        let actual = get_modes(input);
-
-        assert_eq!(actual, expected)
+        assert_eq!(get_modes(input), expected)
     }
 }
