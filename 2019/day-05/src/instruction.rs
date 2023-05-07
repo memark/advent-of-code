@@ -73,109 +73,56 @@ impl Instruction {
 
         match self {
             Self::Add { src1, src2, dst } => {
-                let src1_value = match src1 {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let src2_value = match src2 {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let dst = match dst {
-                    Position(p) => p,
-                    Immediate(_) => panic!(),
-                };
+                let src1_value = src1.eval(&state);
+                let src2_value = src2.eval(&state);
+                let dst = dst.extract_pos();
                 state.mem[dst as usize] = src1_value + src2_value;
                 ProcessResult::new(state, None)
             }
             Self::Multiply { src1, src2, dst } => {
-                let src1_value = match src1 {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let src2_value = match src2 {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let dst = match dst {
-                    Position(p) => p,
-                    Immediate(_) => panic!(),
-                };
+                let src1_value = src1.eval(&state);
+                let src2_value = src2.eval(&state);
+                let dst = dst.extract_pos();
                 state.mem[dst as usize] = src1_value * src2_value;
                 ProcessResult::new(state, None)
             }
             Self::Input { dst } => {
-                let dst = match dst {
-                    Position(p) => p,
-                    Immediate(_) => panic!(),
-                };
+                let dst = dst.extract_pos();
                 state.mem[dst as usize] = state.input.remove(0);
                 ProcessResult::new(state, None)
             }
             Self::Output { src } => {
-                let src_value = match src {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
+                let src_value = src.eval(&state);
                 println!("Outputting {}", src_value);
                 state.output.push(src_value);
                 ProcessResult::new(state, None)
             }
             Self::JumpIfTrue { src, dst } => {
-                let src_value = match src {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let dst = match dst {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
+                let src_value = src.eval(&state);
+                let dst = dst.eval(&state);
                 ProcessResult::new(state, if src_value != 0 { Some(dst) } else { None })
             }
             Self::JumpIfFalse { src, dst } => {
-                let src_value = match src {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let dst = match dst {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
+                let src_value = src.eval(&state);
+                let dst = dst.eval(&state);
                 ProcessResult::new(state, if src_value == 0 { Some(dst) } else { None })
             }
             Self::LessThan { src1, src2, dst } => {
-                let src1_value = match src1 {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let src2_value = match src2 {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let dst = match dst {
-                    Position(p) => p,
-                    Immediate(_) => panic!(),
-                };
+                let src1_value = src1.eval(&state);
+                let src2_value = src2.eval(&state);
+                let dst = dst.extract_pos();
                 state.mem[dst as usize] = if src1_value < src2_value { 1 } else { 0 };
                 ProcessResult::new(state, None)
             }
             Self::Equals { src1, src2, dst } => {
-                let src1_value = match src1 {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let src2_value = match src2 {
-                    Position(p) => state.mem[p as usize],
-                    Immediate(i) => i,
-                };
-                let dst = match dst {
-                    Position(p) => p,
-                    Immediate(_) => panic!(),
-                };
+                let src1_value = src1.eval(&state);
+                let src2_value = src2.eval(&state);
+                let dst = dst.extract_pos();
                 state.mem[dst as usize] = if src1_value == src2_value { 1 } else { 0 };
                 ProcessResult::new(state, None)
             }
             Self::Halt => { ProcessResult::new(state, None) }
+
             #[allow(unreachable_patterns)]
             _ => unimplemented!("{self:?}"),
         }
