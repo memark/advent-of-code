@@ -69,56 +69,45 @@ impl Instruction {
     }
 
     pub fn process(self, mut state: State) -> ProcessResult {
-        println!("Executing {:?}", self);
-
         match self {
             Self::Add { src1, src2, dst } => {
-                let src1_value = src1.eval(&state);
-                let src2_value = src2.eval(&state);
-                let dst = dst.extract_pos();
-                state.mem[dst as usize] = src1_value + src2_value;
+                state.mem[dst.extract_pos() as usize] = src1.eval(&state) + src2.eval(&state);
                 ProcessResult::new(state, None)
             }
             Self::Multiply { src1, src2, dst } => {
-                let src1_value = src1.eval(&state);
-                let src2_value = src2.eval(&state);
-                let dst = dst.extract_pos();
-                state.mem[dst as usize] = src1_value * src2_value;
+                state.mem[dst.extract_pos() as usize] = src1.eval(&state) * src2.eval(&state);
                 ProcessResult::new(state, None)
             }
             Self::Input { dst } => {
-                let dst = dst.extract_pos();
-                state.mem[dst as usize] = state.input.remove(0);
+                state.mem[dst.extract_pos() as usize] = state.input.remove(0);
                 ProcessResult::new(state, None)
             }
             Self::Output { src } => {
-                let src_value = src.eval(&state);
-                println!("Outputting {}", src_value);
-                state.output.push(src_value);
+                state.output.push(src.eval(&state));
                 ProcessResult::new(state, None)
             }
             Self::JumpIfTrue { src, dst } => {
-                let src_value = src.eval(&state);
-                let dst = dst.eval(&state);
-                ProcessResult::new(state, if src_value != 0 { Some(dst) } else { None })
+                let new_ip = if src.eval(&state) != 0 { Some(dst.eval(&state)) } else { None };
+                ProcessResult::new(state, new_ip)
             }
             Self::JumpIfFalse { src, dst } => {
-                let src_value = src.eval(&state);
-                let dst = dst.eval(&state);
-                ProcessResult::new(state, if src_value == 0 { Some(dst) } else { None })
+                let new_ip = if src.eval(&state) == 0 { Some(dst.eval(&state)) } else { None };
+                ProcessResult::new(state, new_ip)
             }
             Self::LessThan { src1, src2, dst } => {
-                let src1_value = src1.eval(&state);
-                let src2_value = src2.eval(&state);
-                let dst = dst.extract_pos();
-                state.mem[dst as usize] = if src1_value < src2_value { 1 } else { 0 };
+                state.mem[dst.extract_pos() as usize] = if src1.eval(&state) < src2.eval(&state) {
+                    1
+                } else {
+                    0
+                };
                 ProcessResult::new(state, None)
             }
             Self::Equals { src1, src2, dst } => {
-                let src1_value = src1.eval(&state);
-                let src2_value = src2.eval(&state);
-                let dst = dst.extract_pos();
-                state.mem[dst as usize] = if src1_value == src2_value { 1 } else { 0 };
+                state.mem[dst.extract_pos() as usize] = if src1.eval(&state) == src2.eval(&state) {
+                    1
+                } else {
+                    0
+                };
                 ProcessResult::new(state, None)
             }
             Self::Halt => { ProcessResult::new(state, None) }
