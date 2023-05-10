@@ -28,11 +28,11 @@ impl Parameter {
         }
     }
 
-    pub fn eval_pos(self) -> Int {
+    pub fn eval_pos(self, state: &State) -> Int {
         match self {
             Position(p) => p,
             Immediate(_) => panic!(),
-            Relative(p) => todo!(),
+            Relative(p) => state.rb + p,
         }
     }
 }

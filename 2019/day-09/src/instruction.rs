@@ -75,15 +75,15 @@ impl Instruction {
     pub fn process(self, mut state: State) -> ProcessResult {
         match self {
             Self::Add { src1, src2, dst } => {
-                state.mem.insert(dst.eval_pos(), src1.eval(&state) + src2.eval(&state));
+                state.mem.insert(dst.eval_pos(&state), src1.eval(&state) + src2.eval(&state));
                 ProcessResult::new(state, None)
             }
             Self::Multiply { src1, src2, dst } => {
-                state.mem.insert(dst.eval_pos(), src1.eval(&state) * src2.eval(&state));
+                state.mem.insert(dst.eval_pos(&state), src1.eval(&state) * src2.eval(&state));
                 ProcessResult::new(state, None)
             }
             Self::Input { dst } => {
-                state.mem.insert(dst.eval_pos(), state.input.remove(0));
+                state.mem.insert(dst.eval_pos(&state), state.input.remove(0));
                 ProcessResult::new(state, None)
             }
             Self::Output { src } => {
@@ -99,7 +99,7 @@ impl Instruction {
                 ProcessResult::new(state, new_ip)
             }
             Self::LessThan { src1, src2, dst } => {
-                state.mem.insert(dst.eval_pos(), if src1.eval(&state) < src2.eval(&state) {
+                state.mem.insert(dst.eval_pos(&state), if src1.eval(&state) < src2.eval(&state) {
                     1
                 } else {
                     0
@@ -107,7 +107,7 @@ impl Instruction {
                 ProcessResult::new(state, None)
             }
             Self::Equals { src1, src2, dst } => {
-                state.mem.insert(dst.eval_pos(), if src1.eval(&state) == src2.eval(&state) {
+                state.mem.insert(dst.eval_pos(&state), if src1.eval(&state) == src2.eval(&state) {
                     1
                 } else {
                     0
