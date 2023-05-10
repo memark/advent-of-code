@@ -12,7 +12,7 @@ use parameter::Parameter::{ self, * };
 use itertools::Itertools;
 use std::{ num::ParseIntError, fs, process::Output };
 
-type Int = i32;
+type Int = i64;
 
 fn main() {
     // println!("Part 1: {:?}", part1());
@@ -144,6 +144,8 @@ mod test {
         "9",
         "1001"
     )]
+    #[case("1102,34915192,34915192,7,4,7,99,0", "", "1219070632396864")]
+    #[case("104,1125899906842624,99", "", "1125899906842624")]
     fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected_output: &str) {
         let actual = run_program(State::with_input(parse_ints(mem), parse_ints(input)))
             .output.iter()
