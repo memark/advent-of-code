@@ -22,9 +22,9 @@ impl Parameter {
 
     pub fn eval(self, state: &State) -> Int {
         match self {
-            Position(p) => state.mem[&p],
+            Position(p) => *state.mem.get(&p).unwrap_or(&0),
             Immediate(i) => i,
-            Relative(p) => state.mem[&(state.rb + p)],
+            Relative(p) => *state.mem.get(&(state.rb + p)).unwrap_or(&0),
         }
     }
 
