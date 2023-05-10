@@ -42,6 +42,9 @@ pub enum Instruction {
         src2: Parameter,
         dst: Parameter,
     },
+    SetRelativeBase {
+        src: Parameter,
+    },
     Halt,
 }
 use Instruction::*;
@@ -63,6 +66,7 @@ impl Instruction {
             6 => { (JumpIfFalse { src: get_p1(), dst: get_p2() }, 3) }
             7 => { (LessThan { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
             8 => { (Equals { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
+            9 => { (SetRelativeBase { src: get_p1() }, 2) }
             99 => { (Halt {}, 1) }
             _ => panic!("Unknown opcode"),
         }
@@ -71,15 +75,15 @@ impl Instruction {
     pub fn process(self, mut state: State) -> ProcessResult {
         match self {
             Self::Add { src1, src2, dst } => {
-                state.mem[dst.extract_pos() as usize] = src1.eval(&state) + src2.eval(&state);
+                state.mem[dst.eval_pos() as usize] = src1.eval(&state) + src2.eval(&state);
                 ProcessResult::new(state, None)
             }
             Self::Multiply { src1, src2, dst } => {
-                state.mem[dst.extract_pos() as usize] = src1.eval(&state) * src2.eval(&state);
+                state.mem[dst.eval_pos() as usize] = src1.eval(&state) * src2.eval(&state);
                 ProcessResult::new(state, None)
             }
             Self::Input { dst } => {
-                state.mem[dst.extract_pos() as usize] = state.input.remove(0);
+                state.mem[dst.eval_pos() as usize] = state.input.remove(0);
                 ProcessResult::new(state, None)
             }
             Self::Output { src } => {
@@ -95,7 +99,7 @@ impl Instruction {
                 ProcessResult::new(state, new_ip)
             }
             Self::LessThan { src1, src2, dst } => {
-                state.mem[dst.extract_pos() as usize] = if src1.eval(&state) < src2.eval(&state) {
+                state.mem[dst.eval_pos() as usize] = if src1.eval(&state) < src2.eval(&state) {
                     1
                 } else {
                     0
@@ -103,11 +107,15 @@ impl Instruction {
                 ProcessResult::new(state, None)
             }
             Self::Equals { src1, src2, dst } => {
-                state.mem[dst.extract_pos() as usize] = if src1.eval(&state) == src2.eval(&state) {
+                state.mem[dst.eval_pos() as usize] = if src1.eval(&state) == src2.eval(&state) {
                     1
                 } else {
                     0
                 };
+                ProcessResult::new(state, None)
+            }
+            Self::SetRelativeBase { src } => {
+                state.rb += src.eval(&state);
                 ProcessResult::new(state, None)
             }
             Self::Halt => { ProcessResult::new(state, None) }

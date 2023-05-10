@@ -6,6 +6,7 @@ use crate::state::State;
 pub enum Parameter {
     Position(Int),
     Immediate(Int),
+    Relative(Int),
 }
 use Parameter::*;
 
@@ -14,6 +15,7 @@ impl Parameter {
         match mode {
             0 => Position(value),
             1 => Immediate(value),
+            2 => Relative(value),
             _ => unimplemented!("{}", mode),
         }
     }
@@ -22,13 +24,15 @@ impl Parameter {
         match self {
             Position(p) => state.mem[p as usize],
             Immediate(i) => i,
+            Relative(p) => state.mem[(state.rb + p) as usize],
         }
     }
 
-    pub fn extract_pos(self) -> Int {
+    pub fn eval_pos(self) -> Int {
         match self {
             Position(p) => p,
             Immediate(_) => panic!(),
+            Relative(p) => todo!(),
         }
     }
 }
