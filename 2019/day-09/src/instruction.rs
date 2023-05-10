@@ -1,6 +1,6 @@
 use super::Int;
 
-use crate::state::State;
+use crate::state::{ State, Mem };
 use crate::parameter::Parameter::{ self, * };
 use crate::parse_ints;
 
@@ -50,12 +50,12 @@ pub enum Instruction {
 use Instruction::*;
 
 impl Instruction {
-    pub fn from_ints(ints: &[Int]) -> (Self, Int) {
-        let (opcode, mode1, mode2, mode3) = get_modes(ints[0]);
+    pub fn from_mem_and_ip(mem: &Mem, ip: Int) -> (Self, Int) {
+        let (opcode, mode1, mode2, mode3) = get_modes(mem[&ip]);
 
-        let get_p1 = || { Parameter::create(mode1, ints[1]) };
-        let get_p2 = || { Parameter::create(mode2, ints[2]) };
-        let get_p3 = || { Parameter::create(mode3, ints[3]) };
+        let get_p1 = || { Parameter::create(mode1, mem[&(ip + 1)]) };
+        let get_p2 = || { Parameter::create(mode2, mem[&(ip + 2)]) };
+        let get_p3 = || { Parameter::create(mode3, mem[&(ip + 3)]) };
 
         match opcode {
             1 => { (Add { src1: get_p1(), src2: get_p2(), dst: get_p3() }, 4) }
@@ -75,15 +75,15 @@ impl Instruction {
     pub fn process(self, mut state: State) -> ProcessResult {
         match self {
             Self::Add { src1, src2, dst } => {
-                state.mem[dst.eval_pos() as usize] = src1.eval(&state) + src2.eval(&state);
+                state.mem.insert(dst.eval_pos(), src1.eval(&state) + src2.eval(&state));
                 ProcessResult::new(state, None)
             }
             Self::Multiply { src1, src2, dst } => {
-                state.mem[dst.eval_pos() as usize] = src1.eval(&state) * src2.eval(&state);
+                state.mem.insert(dst.eval_pos(), src1.eval(&state) * src2.eval(&state));
                 ProcessResult::new(state, None)
             }
             Self::Input { dst } => {
-                state.mem[dst.eval_pos() as usize] = state.input.remove(0);
+                state.mem.insert(dst.eval_pos(), state.input.remove(0));
                 ProcessResult::new(state, None)
             }
             Self::Output { src } => {
@@ -99,19 +99,19 @@ impl Instruction {
                 ProcessResult::new(state, new_ip)
             }
             Self::LessThan { src1, src2, dst } => {
-                state.mem[dst.eval_pos() as usize] = if src1.eval(&state) < src2.eval(&state) {
+                state.mem.insert(dst.eval_pos(), if src1.eval(&state) < src2.eval(&state) {
                     1
                 } else {
                     0
-                };
+                });
                 ProcessResult::new(state, None)
             }
             Self::Equals { src1, src2, dst } => {
-                state.mem[dst.eval_pos() as usize] = if src1.eval(&state) == src2.eval(&state) {
+                state.mem.insert(dst.eval_pos(), if src1.eval(&state) == src2.eval(&state) {
                     1
                 } else {
                     0
-                };
+                });
                 ProcessResult::new(state, None)
             }
             Self::SetRelativeBase { src } => {
@@ -143,6 +143,8 @@ pub fn get_modes(int: Int) -> (Int, Int, Int, Int) {
 
 #[cfg(test)]
 mod test {
+    use crate::ints_to_hashmap;
+
     use super::*;
     use pretty_assertions::assert_eq;
     use rstest::rstest;
@@ -192,7 +194,7 @@ mod test {
     #[case("1007,4,3,4", (LessThan { src1: Position(4), src2: Immediate(3), dst: Position(4) }, 4))]
     #[case("1008,4,3,4", (Equals { src1: Position(4), src2: Immediate(3), dst: Position(4) }, 4))]
     fn parses_instruction(#[case] input: &str, #[case] expected: (Instruction, Int)) {
-        assert_eq!(expected, Instruction::from_ints(&parse_ints(input)));
+        assert_eq!(expected, Instruction::from_mem_and_ip(&ints_to_hashmap(parse_ints(input)), 0));
     }
 
     #[test]
@@ -200,7 +202,7 @@ mod test {
     fn panics_on_unknown_opcode() {
         let input = "123,2,3,11,0,99,30,40,50";
 
-        let actual = Instruction::from_ints(&parse_ints(input));
+        let actual = Instruction::from_mem_and_ip(&ints_to_hashmap(parse_ints(input)), 0);
     }
 
     #[rstest]
@@ -237,11 +239,8 @@ mod test {
         #[case] expected: &str
     ) {
         assert_eq!(
-            expected,
-            instruction
-                .process(State::from_mem(parse_ints(mem)))
-                .state.mem.iter()
-                .join(",")
+            ints_to_hashmap(parse_ints(expected)),
+            instruction.process(State::from_mem(ints_to_hashmap(parse_ints(mem)))).state.mem
         );
     }
 
@@ -256,9 +255,11 @@ mod test {
         #[case] expected_input: &str,
         #[case] expected_output: &str
     ) {
-        let actual = instruction.process(State::with_input(parse_ints(mem), parse_ints(input)));
+        let actual = instruction.process(
+            State::with_input(ints_to_hashmap(parse_ints(mem)), parse_ints(input))
+        );
 
-        assert_eq!(actual.state.mem.iter().join(","), expected_mem);
+        assert_eq!(actual.state.mem, ints_to_hashmap(parse_ints(expected_mem)));
         assert_eq!(actual.state.input.iter().join(","), expected_input);
         assert_eq!(actual.state.output.iter().join(","), expected_output);
     }
