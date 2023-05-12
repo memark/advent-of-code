@@ -46,9 +46,8 @@ dependencies = [
 name = "day-09"
 version = "0.1.0"
 dependencies = [
- "itertools",
+ "intcode-computer",
  "pretty_assertions",
- "rstest",
 ]
 
 [[package]]
@@ -156,6 +155,15 @@ dependencies = [
  "pin-project-lite",
  "pin-utils",
  "slab",
+]
+
+[[package]]
+name = "intcode-computer"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+ "pretty_assertions",
+ "rstest",
 ]
 
 [[package]]
