@@ -11,6 +11,7 @@ use parameter::Parameter::{ self, * };
 
 use itertools::Itertools;
 use std::collections::HashMap;
+use std::path::Path;
 use std::{ num::ParseIntError, fs, process::Output };
 
 type Int = i64;
@@ -21,16 +22,16 @@ fn main() {
 }
 
 fn part1() -> Int {
-    let file = fs::read_to_string("input.txt").unwrap();
-    let mem = ints_to_hashmap(parse_ints(&file));
+    let file = include_str!("../input.txt");
+    let mem = ints_to_hashmap(parse_ints(file));
     let input = vec![1];
 
     *run_program(State::with_input(mem, input)).output.last().unwrap()
 }
 
 fn part2() -> Int {
-    let file = fs::read_to_string("input.txt").unwrap();
-    let mem = ints_to_hashmap(parse_ints(&file));
+    let file = include_str!("../input.txt");
+    let mem = ints_to_hashmap(parse_ints(file));
     let input = vec![2];
 
     *run_program(State::with_input(mem, input)).output.last().unwrap()

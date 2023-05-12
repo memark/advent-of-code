@@ -9,8 +9,8 @@ fn main() {
 }
 
 fn part1() -> usize {
-    let file = fs::read_to_string("input.txt").unwrap();
-    let mut mem = parse_memory(&file);
+    let file = include_str!("../input.txt");
+    let mut mem = parse_memory(file);
 
     mem[1] = 12;
     mem[2] = 2;
@@ -20,8 +20,8 @@ fn part1() -> usize {
 }
 
 fn part2() -> usize {
-    let file = fs::read_to_string("input.txt").unwrap();
-    let orig_mem = parse_memory(&file);
+    let file = include_str!("../input.txt");
+    let orig_mem = parse_memory(file);
     let target = 19690720;
 
     (0..=99)
