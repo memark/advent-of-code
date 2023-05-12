@@ -1,13 +1,4 @@
-#![allow(
-    dead_code,
-    unreachable_code,
-//     unused_imports,
-    unused_variables,
-//     non_upper_case_globals,
-//     unused_parens,
-//     unused_mut,
-//     unused_assignments
-)]
+#![allow(dead_code, unreachable_code, unused_variables)]
 
 mod coord;
 mod jet;
@@ -17,10 +8,7 @@ use coord::*;
 use itertools::Itertools;
 use jet::*;
 use rock::*;
-use std::{
-    collections::{HashMap, HashSet},
-    fs,
-};
+use std::{ collections::HashSet, fs };
 
 fn main() {
     println!();
@@ -69,7 +57,10 @@ fn calc_height(input: &str, number_of_rocks: i32) -> i32 {
 
         // Each rock appears so that its left edge is two units away from the left wall and its bottom edge is three units above the highest rock in the room (or the floor, if there isn't one).
         let mut rock_pos = {
-            let max_rock_y = stationary_rocks_coords.iter().map(|c| c.y).max();
+            let max_rock_y = stationary_rocks_coords
+                .iter()
+                .map(|c| c.y)
+                .max();
             Coord::new(2, max_rock_y.unwrap_or(-1) + 4)
         };
         // println!("Starting position: {rock_pos}");
@@ -85,7 +76,7 @@ fn calc_height(input: &str, number_of_rocks: i32) -> i32 {
             };
             let rock_real_coords = rock.real_coords(rock_new_pos);
 
-            let collides_with_wall = rock_real_coords.iter().any(|c| c.x <= -1 || c.x >= 7);
+            let collides_with_wall = rock_real_coords.iter().any(|c| (c.x <= -1 || c.x >= 7));
 
             let collides_with_rock = {
                 let collides_with_stationary_rock = rock_real_coords
@@ -135,7 +126,13 @@ fn calc_height(input: &str, number_of_rocks: i32) -> i32 {
 
     let max_rock_y = stationary_rocks
         .iter()
-        .flat_map(|sr| sr.0.real_coords(sr.1).iter().map(|c| c.y).collect_vec())
+        .flat_map(|sr|
+            sr.0
+                .real_coords(sr.1)
+                .iter()
+                .map(|c| c.y)
+                .collect_vec()
+        )
         .max()
         .unwrap_or(0);
 
@@ -146,11 +143,17 @@ fn print_current_state(stationary_rocks: &Vec<RockPos>, falling_rock: Option<&Ro
     let y_max = {
         let mut all_rocks = stationary_rocks.clone();
         if let Some(fr) = falling_rock {
-            all_rocks.push(fr.clone())
-        };
+            all_rocks.push(fr.clone());
+        }
         all_rocks
             .iter()
-            .flat_map(|sr| sr.0.real_coords(sr.1).iter().map(|c| c.y).collect_vec())
+            .flat_map(|sr|
+                sr.0
+                    .real_coords(sr.1)
+                    .iter()
+                    .map(|c| c.y)
+                    .collect_vec()
+            )
             .max()
             .unwrap_or(0)
     };
