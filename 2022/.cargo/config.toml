@@ -2,10 +2,10 @@
 quiet = true
 
 [alias]
-a = "add"
-rr = "run -r"
+a = ["add"]
+rr = ["run -r"]
 wr = ["watch", "-x", "run"]
 wrr = ["watch", "-x", "run -r"]
-nt = "nextest run"
+nt = ["nextest run"]
 wt =  ["watch", "-x", "test"]
 wnt = ["watch", "-x", "nextest run"]
