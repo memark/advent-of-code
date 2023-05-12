@@ -37,9 +37,8 @@ dependencies = [
 name = "day-05"
 version = "0.1.0"
 dependencies = [
- "itertools",
+ "intcode-computer",
  "pretty_assertions",
- "rstest",
 ]
 
 [[package]]
