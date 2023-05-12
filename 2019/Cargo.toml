@@ -1,0 +1,5 @@
+[workspace]
+members = ["day-02", "day-05", "day-09"]
+
+[profile.dev]
+opt-level = 2
