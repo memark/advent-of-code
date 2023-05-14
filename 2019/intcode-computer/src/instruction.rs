@@ -315,8 +315,8 @@ mod test {
 
     #[rstest]
     #[case(1002, (2, 0, 1, 0))]
-    #[case(11122, (22, 1, 1, 1))] // My own
-    #[case(22, (22, 0, 0, 0))] // My own
+    #[case(11122, (22, 1, 1, 1))]
+    #[case(22, (22, 0, 0, 0))]
     fn gets_modes(#[case] input: Int, #[case] expected: (Int, Int, Int, Int)) {
         assert_eq!(get_modes(input), expected)
     }

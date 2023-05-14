@@ -67,9 +67,9 @@ mod test {
     #[rstest]
     fn parses_ints_with_newlines() {
         let input = "1,9,10,3,
-    2,3,11,0,
-    99,
-    30,40,50";
+            2,3,11,0,
+            99,
+            30,40,50";
 
         let actual = parse_ints(input);
 
