@@ -1,5 +1,4 @@
-use super::Int;
-
+use crate::Int;
 use crate::state::State;
 
 #[derive(Debug, PartialEq)]

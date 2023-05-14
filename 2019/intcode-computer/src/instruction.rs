@@ -1,10 +1,7 @@
-use super::Int;
+use crate::Int;
 
-use crate::parameter::Parameter::{self, *};
-use crate::parse_ints;
-use crate::state::{Mem, State};
-
-use itertools::Itertools;
+use crate::parameter::Parameter;
+use crate::state::{ Mem, State };
 
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
@@ -58,54 +55,60 @@ impl Instruction {
         let get_p3 = || Parameter::create(mode3, mem[&(ip + 3)]);
 
         match opcode {
-            1 => (
-                Add {
-                    src1: get_p1(),
-                    src2: get_p2(),
-                    dst: get_p3(),
-                },
-                4,
-            ),
-            2 => (
-                Multiply {
-                    src1: get_p1(),
-                    src2: get_p2(),
-                    dst: get_p3(),
-                },
-                4,
-            ),
+            1 =>
+                (
+                    Add {
+                        src1: get_p1(),
+                        src2: get_p2(),
+                        dst: get_p3(),
+                    },
+                    4,
+                ),
+            2 =>
+                (
+                    Multiply {
+                        src1: get_p1(),
+                        src2: get_p2(),
+                        dst: get_p3(),
+                    },
+                    4,
+                ),
             3 => (Input { dst: get_p1() }, 2),
             4 => (Instruction::Output { src: get_p1() }, 2),
-            5 => (
-                JumpIfTrue {
-                    src: get_p1(),
-                    dst: get_p2(),
-                },
-                3,
-            ),
-            6 => (
-                JumpIfFalse {
-                    src: get_p1(),
-                    dst: get_p2(),
-                },
-                3,
-            ),
-            7 => (
-                LessThan {
-                    src1: get_p1(),
-                    src2: get_p2(),
-                    dst: get_p3(),
-                },
-                4,
-            ),
-            8 => (
-                Equals {
-                    src1: get_p1(),
-                    src2: get_p2(),
-                    dst: get_p3(),
-                },
-                4,
-            ),
+            5 =>
+                (
+                    JumpIfTrue {
+                        src: get_p1(),
+                        dst: get_p2(),
+                    },
+                    3,
+                ),
+            6 =>
+                (
+                    JumpIfFalse {
+                        src: get_p1(),
+                        dst: get_p2(),
+                    },
+                    3,
+                ),
+            7 =>
+                (
+                    LessThan {
+                        src1: get_p1(),
+                        src2: get_p2(),
+                        dst: get_p3(),
+                    },
+                    4,
+                ),
+            8 =>
+                (
+                    Equals {
+                        src1: get_p1(),
+                        src2: get_p2(),
+                        dst: get_p3(),
+                    },
+                    4,
+                ),
             9 => (SetRelativeBase { src: get_p1() }, 2),
             99 => (Halt {}, 1),
             _ => panic!("Unknown opcode"),
@@ -115,21 +118,15 @@ impl Instruction {
     pub fn process(self, mut state: State) -> ProcessResult {
         match self {
             Self::Add { src1, src2, dst } => {
-                state
-                    .mem
-                    .insert(dst.eval_pos(&state), src1.eval(&state) + src2.eval(&state));
+                state.mem.insert(dst.eval_pos(&state), src1.eval(&state) + src2.eval(&state));
                 ProcessResult::new(state, None)
             }
             Self::Multiply { src1, src2, dst } => {
-                state
-                    .mem
-                    .insert(dst.eval_pos(&state), src1.eval(&state) * src2.eval(&state));
+                state.mem.insert(dst.eval_pos(&state), src1.eval(&state) * src2.eval(&state));
                 ProcessResult::new(state, None)
             }
             Self::Input { dst } => {
-                state
-                    .mem
-                    .insert(dst.eval_pos(&state), state.input.remove(0));
+                state.mem.insert(dst.eval_pos(&state), state.input.remove(0));
                 ProcessResult::new(state, None)
             }
             Self::Output { src } => {
@@ -137,41 +134,27 @@ impl Instruction {
                 ProcessResult::new(state, None)
             }
             Self::JumpIfTrue { src, dst } => {
-                let new_ip = if src.eval(&state) != 0 {
-                    Some(dst.eval(&state))
-                } else {
-                    None
-                };
+                let new_ip = if src.eval(&state) != 0 { Some(dst.eval(&state)) } else { None };
                 ProcessResult::new(state, new_ip)
             }
             Self::JumpIfFalse { src, dst } => {
-                let new_ip = if src.eval(&state) == 0 {
-                    Some(dst.eval(&state))
-                } else {
-                    None
-                };
+                let new_ip = if src.eval(&state) == 0 { Some(dst.eval(&state)) } else { None };
                 ProcessResult::new(state, new_ip)
             }
             Self::LessThan { src1, src2, dst } => {
-                state.mem.insert(
-                    dst.eval_pos(&state),
-                    if src1.eval(&state) < src2.eval(&state) {
-                        1
-                    } else {
-                        0
-                    },
-                );
+                state.mem.insert(dst.eval_pos(&state), if src1.eval(&state) < src2.eval(&state) {
+                    1
+                } else {
+                    0
+                });
                 ProcessResult::new(state, None)
             }
             Self::Equals { src1, src2, dst } => {
-                state.mem.insert(
-                    dst.eval_pos(&state),
-                    if src1.eval(&state) == src2.eval(&state) {
-                        1
-                    } else {
-                        0
-                    },
-                );
+                state.mem.insert(dst.eval_pos(&state), if src1.eval(&state) == src2.eval(&state) {
+                    1
+                } else {
+                    0
+                });
                 ProcessResult::new(state, None)
             }
             Self::SetRelativeBase { src } => {
@@ -198,21 +181,18 @@ impl ProcessResult {
 }
 
 pub fn get_modes(int: Int) -> (Int, Int, Int, Int) {
-    (
-        int % 100,
-        (int / 100) % 10,
-        (int / 1000) % 10,
-        (int / 10000) % 10,
-    )
+    (int % 100, (int / 100) % 10, (int / 1000) % 10, (int / 10000) % 10)
 }
 
 #[cfg(test)]
 mod test {
-    use crate::ints_to_hashmap;
-
     use super::*;
     use pretty_assertions::assert_eq;
     use rstest::rstest;
+    use itertools::Itertools;
+
+    use crate::{ ints_to_hashmap, parse_ints };
+    use crate::parameter::Parameter::*;
 
     #[rstest]
     #[case("1,9,10,3,2,3,11,0,99,30,40,50", (
@@ -259,10 +239,7 @@ mod test {
     #[case("1007,4,3,4", (LessThan { src1: Position(4), src2: Immediate(3), dst: Position(4) }, 4))]
     #[case("1008,4,3,4", (Equals { src1: Position(4), src2: Immediate(3), dst: Position(4) }, 4))]
     fn parses_instruction(#[case] input: &str, #[case] expected: (Instruction, Int)) {
-        assert_eq!(
-            expected,
-            Instruction::from_mem_and_ip(&ints_to_hashmap(parse_ints(input)), 0)
-        );
+        assert_eq!(expected, Instruction::from_mem_and_ip(&ints_to_hashmap(parse_ints(input)), 0));
     }
 
     #[test]
@@ -270,7 +247,7 @@ mod test {
     fn panics_on_unknown_opcode() {
         let input = "123,2,3,11,0,99,30,40,50";
 
-        let actual = Instruction::from_mem_and_ip(&ints_to_hashmap(parse_ints(input)), 0);
+        Instruction::from_mem_and_ip(&ints_to_hashmap(parse_ints(input)), 0);
     }
 
     #[rstest]
@@ -304,14 +281,11 @@ mod test {
     fn processes_instruction_with_mem(
         #[case] instruction: Instruction,
         #[case] mem: &str,
-        #[case] expected: &str,
+        #[case] expected: &str
     ) {
         assert_eq!(
             ints_to_hashmap(parse_ints(expected)),
-            instruction
-                .process(State::from_mem(ints_to_hashmap(parse_ints(mem))))
-                .state
-                .mem
+            instruction.process(State::from_mem(ints_to_hashmap(parse_ints(mem)))).state.mem
         );
     }
 
@@ -324,12 +298,11 @@ mod test {
         #[case] input: &str,
         #[case] expected_mem: &str,
         #[case] expected_input: &str,
-        #[case] expected_output: &str,
+        #[case] expected_output: &str
     ) {
-        let actual = instruction.process(State::with_input(
-            ints_to_hashmap(parse_ints(mem)),
-            parse_ints(input),
-        ));
+        let actual = instruction.process(
+            State::with_input(ints_to_hashmap(parse_ints(mem)), parse_ints(input))
+        );
 
         assert_eq!(actual.state.mem, ints_to_hashmap(parse_ints(expected_mem)));
         assert_eq!(actual.state.input.iter().join(","), expected_input);

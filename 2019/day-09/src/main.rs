@@ -1,4 +1,4 @@
-use intcode_computer::{ ints_to_hashmap, parse_ints, run_program, Int, state::State };
+use intcode_computer::{ ints_to_hashmap, parse_ints, Int, state::State, program::run_program };
 
 fn main() {
     println!("Part 1: {:?}", part1());
