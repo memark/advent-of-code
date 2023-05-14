@@ -1,5 +1,5 @@
 [workspace]
-members = ["day-02", "day-05", "day-09", "intcode-computer"]
+members = ["day-02", "day-05", "day-09", "intcode-computer", "intcode-computer-cli"]
 
 [profile.dev]
 opt-level = 2

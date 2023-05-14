@@ -1,0 +1,12 @@
+[package]
+name = "intcode-computer-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "icc"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.2.7", features = ["derive"] }
+intcode-computer = { path = "../intcode-computer" }
