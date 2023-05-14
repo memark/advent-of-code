@@ -10,3 +10,7 @@ path = "src/main.rs"
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"] }
 intcode-computer = { path = "../intcode-computer" }
+itertools = "0.10.5"
+
+[dev-dependencies]
+assert_cmd = "2.0.11"
