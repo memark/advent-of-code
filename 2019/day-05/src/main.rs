@@ -1,4 +1,4 @@
-use intcode_computer::{ ints_to_hashmap, parse_ints, program::run_program, Int, state::State };
+use intcode_computer::{ program::run_program, Int, state::{ State, Input, Memory } };
 
 fn main() {
     println!("Part 1: {:?}", part1());
@@ -7,18 +7,18 @@ fn main() {
 
 fn part1() -> Int {
     let file = include_str!("../input.txt");
-    let mem = ints_to_hashmap(parse_ints(file));
-    let input = vec![1];
+    let memory = Memory::parse(file);
+    let input = Input::parse("1");
 
-    *run_program(State::with_input(mem, input)).output.last().unwrap()
+    *run_program(State::with_input(memory, input)).output.last().unwrap()
 }
 
 fn part2() -> Int {
     let file = include_str!("../input.txt");
-    let mem = ints_to_hashmap(parse_ints(file));
-    let input = vec![5];
+    let memory = Memory::parse(file);
+    let input = Input::parse("5");
 
-    *run_program(State::with_input(mem, input)).output.last().unwrap()
+    *run_program(State::with_input(memory, input)).output.last().unwrap()
 }
 
 #[cfg(test)]

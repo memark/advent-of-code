@@ -1,4 +1,4 @@
-use intcode_computer::{ ints_to_hashmap, parse_ints, program::run_program, Int, state::State };
+use intcode_computer::{ program::run_program, Int, state::{ State, Memory } };
 use itertools::Itertools;
 
 fn main() {
@@ -8,28 +8,28 @@ fn main() {
 
 fn part1() -> Int {
     let file = include_str!("../input.txt");
-    let mut mem = ints_to_hashmap(parse_ints(file));
+    let mut memory = Memory::parse(file);
 
-    mem.insert(1, 12);
-    mem.insert(2, 2);
+    memory.0.insert(1, 12);
+    memory.0.insert(2, 2);
 
-    run_program(State::from_mem(mem)).mem[&0]
+    run_program(State::from_memory(memory)).memory.0[&0]
 }
 
 fn part2() -> Int {
     let file = include_str!("../input.txt");
-    let orig_mem = ints_to_hashmap(parse_ints(file));
+    let orig_memory = Memory::parse(file);
     let target = 19690720;
 
     (0..=99)
         .cartesian_product(0..=99)
         .find_map(|(noun, verb)| {
-            let mut mem = orig_mem.clone();
+            let mut memory = orig_memory.clone();
 
-            mem.insert(1, noun);
-            mem.insert(2, verb);
+            memory.0.insert(1, noun);
+            memory.0.insert(2, verb);
 
-            let output = run_program(State::from_mem(mem)).mem[&0];
+            let output = run_program(State::from_memory(memory)).memory.0[&0];
 
             if output == target {
                 Some(100 * noun + verb)

@@ -1,5 +1,5 @@
 use clap::Parser;
-use intcode_computer::{ program::run_program, state::State, ints_to_hashmap, parse_ints };
+use intcode_computer::{ program::run_program, state::{ State, Memory, Input } };
 use itertools::Itertools;
 
 #[derive(Parser, Debug)]
@@ -16,8 +16,8 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let memory = ints_to_hashmap(parse_ints(&args.memory));
-    let input = parse_ints(&args.input);
+    let memory = Memory::parse(&args.memory);
+    let input = Input::parse(&args.input);
 
     let state = State::with_input(memory, input);
     let output = run_program(state).output.iter().join(",");

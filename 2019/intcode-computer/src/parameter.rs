@@ -2,7 +2,7 @@ use crate::Int;
 use crate::state::State;
 
 #[derive(Debug, PartialEq)]
-pub enum Parameter {
+pub(crate) enum Parameter {
     Position(Int),
     Immediate(Int),
     Relative(Int),
@@ -21,9 +21,9 @@ impl Parameter {
 
     pub fn eval(self, state: &State) -> Int {
         match self {
-            Position(p) => *state.mem.get(&p).unwrap_or(&0),
+            Position(p) => *state.memory.0.get(&p).unwrap_or(&0),
             Immediate(i) => i,
-            Relative(p) => *state.mem.get(&(state.rb + p)).unwrap_or(&0),
+            Relative(p) => *state.memory.0.get(&(state.rb + p)).unwrap_or(&0),
         }
     }
 

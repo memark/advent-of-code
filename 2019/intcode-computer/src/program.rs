@@ -5,7 +5,7 @@ pub fn run_program(mut state: State) -> State {
     let mut ip = 0;
 
     loop {
-        let (i, ip_delta) = Instruction::from_mem_and_ip(&state.mem, ip);
+        let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, ip);
         if i == Halt {
             break;
         }
@@ -27,28 +27,8 @@ mod test {
     use rstest::rstest;
     use itertools::Itertools;
 
-    use crate::{ ints_to_hashmap, parse_ints };
-
-    #[rstest]
-    fn parses_ints_with_newlines() {
-        let input = "1,9,10,3,
-        2,3,11,0,
-        99,
-        30,40,50";
-
-        let actual = parse_ints(input);
-
-        assert_eq!(vec![1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50], actual);
-    }
-
-    #[rstest]
-    fn parses_ints_empty() {
-        let input = "";
-
-        let actual = parse_ints(input);
-
-        assert_eq!(vec![0; 0], actual);
-    }
+    use crate::state::Input;
+    use crate::state::Memory;
 
     #[rstest]
     #[case("1,9,10,3,2,3,11,0,99,30,40,50", "3500,9,10,70,2,3,11,0,99,30,40,50")]
@@ -58,10 +38,10 @@ mod test {
     #[case("1,1,1,4,99,5,6,0,99", "30,1,1,4,2,5,6,0,99")]
     #[case("1002,4,3,4,33", "1002,4,3,4,99")]
     #[case("1101,100,-1,4,0", "1101,100,-1,4,99")]
-    fn runs_program_with_mem(#[case] mem: &str, #[case] expected_mem: &str) {
-        let actual = run_program(State::from_mem(ints_to_hashmap(parse_ints(mem)))).mem;
+    fn runs_program_with_mem(#[case] memory: &str, #[case] expected_memory: &str) {
+        let actual = run_program(State::from_memory(Memory::parse(memory))).memory;
 
-        assert_eq!(actual, ints_to_hashmap(parse_ints(expected_mem)))
+        assert_eq!(actual, Memory::parse(expected_memory))
     }
 
     #[rstest]
@@ -108,10 +88,12 @@ mod test {
     )]
     #[case("1102,34915192,34915192,7,4,7,99,0", "", "1219070632396864")]
     #[case("104,1125899906842624,99", "", "1125899906842624")]
-    fn runs_program_with_io(#[case] mem: &str, #[case] input: &str, #[case] expected_output: &str) {
-        let actual = run_program(
-            State::with_input(ints_to_hashmap(parse_ints(mem)), parse_ints(input))
-        )
+    fn runs_program_with_io(
+        #[case] memory: &str,
+        #[case] input: &str,
+        #[case] expected_output: &str
+    ) {
+        let actual = run_program(State::with_input(Memory::parse(memory), Input::parse(input)))
             .output.iter()
             .join(",");
 
