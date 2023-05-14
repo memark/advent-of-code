@@ -23,3 +23,15 @@ fn main() {
 
     println!("{output:?}");
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn verify_clap_config() {
+        use clap::CommandFactory;
+
+        Args::command().debug_assert()
+    }
+}
