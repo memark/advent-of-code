@@ -1,4 +1,4 @@
-use crate::instruction::Instruction::{ self, * };
+use crate::instruction::Instruction;
 use crate::state::State;
 
 pub fn run_program(mut state: State) -> State {
@@ -6,11 +6,11 @@ pub fn run_program(mut state: State) -> State {
 
     loop {
         let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, ip);
-        if i == Halt {
-            break;
-        }
         let result = i.process(state);
         state = result.state;
+        if result.halted {
+            break;
+        }
         if let Some(new_ip) = result.new_ip {
             ip = new_ip;
         } else {
