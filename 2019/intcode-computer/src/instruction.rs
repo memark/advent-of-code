@@ -119,27 +119,27 @@ impl Instruction {
         match self {
             Self::Add { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), src1.eval(&state) + src2.eval(&state));
-                ProcessResult::new(state, None)
+                ProcessResult::proceed(state)
             }
             Self::Multiply { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), src1.eval(&state) * src2.eval(&state));
-                ProcessResult::new(state, None)
+                ProcessResult::proceed(state)
             }
             Self::Input { dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), state.input.0.remove(0));
-                ProcessResult::new(state, None)
+                ProcessResult::proceed(state)
             }
             Self::Output { src } => {
                 state.output.push(src.eval(&state));
-                ProcessResult::new(state, None)
+                ProcessResult::proceed(state)
             }
             Self::JumpIfTrue { src, dst } => {
                 let new_ip = if src.eval(&state) != 0 { Some(dst.eval(&state)) } else { None };
-                ProcessResult::new(state, new_ip)
+                ProcessResult::jump(state, new_ip)
             }
             Self::JumpIfFalse { src, dst } => {
                 let new_ip = if src.eval(&state) == 0 { Some(dst.eval(&state)) } else { None };
-                ProcessResult::new(state, new_ip)
+                ProcessResult::jump(state, new_ip)
             }
             Self::LessThan { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), if
@@ -149,7 +149,7 @@ impl Instruction {
                 } else {
                     0
                 });
-                ProcessResult::new(state, None)
+                ProcessResult::proceed(state)
             }
             Self::Equals { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), if
@@ -159,13 +159,13 @@ impl Instruction {
                 } else {
                     0
                 });
-                ProcessResult::new(state, None)
+                ProcessResult::proceed(state)
             }
             Self::SetRelativeBase { src } => {
                 state.rb += src.eval(&state);
-                ProcessResult::new(state, None)
+                ProcessResult::proceed(state)
             }
-            Self::Halt => ProcessResult::new(state, None),
+            Self::Halt => ProcessResult::halt(state),
 
             #[allow(unreachable_patterns)]
             _ => unimplemented!("{self:?}"),
@@ -176,11 +176,20 @@ impl Instruction {
 pub struct ProcessResult {
     pub state: State,
     pub new_ip: Option<Int>,
+    pub halted: bool,
 }
 
 impl ProcessResult {
-    fn new(state: State, new_ip: Option<Int>) -> Self {
-        ProcessResult { state, new_ip }
+    fn proceed(state: State) -> Self {
+        ProcessResult { state, new_ip: None, halted: false }
+    }
+
+    fn jump(state: State, new_ip: Option<Int>) -> Self {
+        ProcessResult { state, new_ip, halted: false }
+    }
+
+    fn halt(state: State) -> Self {
+        ProcessResult { state, new_ip: None, halted: true }
     }
 }
 
