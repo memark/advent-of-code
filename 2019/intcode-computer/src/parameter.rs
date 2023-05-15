@@ -20,6 +20,7 @@ impl Parameter {
     }
 
     pub fn eval(self, state: &State) -> Int {
+        // Assume unlimited memory. Every non-hit address should have the value 0.
         match self {
             Position(p) => *state.memory.0.get(&p).unwrap_or(&0),
             Immediate(i) => i,
