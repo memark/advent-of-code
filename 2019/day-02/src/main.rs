@@ -1,5 +1,5 @@
 use intcode_computer::{ program::run_program, Int, state::{ State, Memory } };
-use itertools::Itertools;
+use itertools::iproduct;
 
 fn main() {
     println!("Part 1: {:?}", part1());
@@ -21,8 +21,7 @@ fn part2() -> Int {
     let orig_memory = Memory::parse(file);
     let target = 19690720;
 
-    (0..=99)
-        .cartesian_product(0..=99)
+    iproduct!(0..=99, 0..=99)
         .find_map(|(noun, verb)| {
             let mut memory = orig_memory.clone();
 
