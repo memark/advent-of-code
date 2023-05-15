@@ -10,7 +10,7 @@ fn part1() -> Int {
     let memory = Memory::parse(file);
     let input = Input::parse("1");
 
-    *run_program(State::with_input(memory, input)).output.last().unwrap()
+    *run_program(State::with_input(memory, input)).output.last().expect("No output found")
 }
 
 fn part2() -> Int {
@@ -18,7 +18,7 @@ fn part2() -> Int {
     let memory = Memory::parse(file);
     let input = Input::parse("5");
 
-    *run_program(State::with_input(memory, input)).output.last().unwrap()
+    *run_program(State::with_input(memory, input)).output.last().expect("No output found")
 }
 
 #[cfg(test)]

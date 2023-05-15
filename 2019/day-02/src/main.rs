@@ -37,7 +37,7 @@ fn part2() -> Int {
                 None
             }
         })
-        .unwrap()
+        .expect("No solution found")
 }
 
 #[cfg(test)]

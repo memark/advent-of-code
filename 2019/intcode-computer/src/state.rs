@@ -53,7 +53,7 @@ fn parse_ints(s: &str) -> Vec<Int> {
         vec![]
     } else {
         s.split(',')
-            .map(|ss| ss.trim().parse().unwrap())
+            .map(|ss| ss.trim().parse().expect("Unable to parse int"))
             .collect_vec()
     }
 }
