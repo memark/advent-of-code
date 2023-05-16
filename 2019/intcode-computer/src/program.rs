@@ -1,4 +1,5 @@
 use crate::instruction::Instruction;
+use crate::instruction::ProcessResult::*;
 use crate::state::State;
 
 pub fn run_program(mut state: State) -> State {
@@ -7,14 +8,20 @@ pub fn run_program(mut state: State) -> State {
     loop {
         let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, ip);
         let result = i.process(state);
-        state = result.state;
-        if result.halted {
-            break;
-        }
-        if let Some(new_ip) = result.new_ip {
-            ip = new_ip;
-        } else {
-            ip += ip_delta;
+
+        match result {
+            Running(new_state, None) => {
+                state = new_state;
+                ip += ip_delta;
+            }
+            Running(new_state, Some(new_ip)) => {
+                state = new_state;
+                ip = new_ip;
+            }
+            Halted(new_state) => {
+                state = new_state;
+                break;
+            }
         }
     }
     state
