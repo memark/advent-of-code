@@ -24,7 +24,7 @@ mod test {
     use rstest::rstest;
     use itertools::Itertools;
 
-    use crate::state::Input;
+    use crate::input::Input;
     use crate::memory::Memory;
 
     #[rstest]

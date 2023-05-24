@@ -1,7 +1,7 @@
+use crate::input::Input;
 use crate::instruction::Instruction;
 use crate::Int;
 use crate::memory::Memory;
-use crate::utils::parse_ints;
 
 #[derive(Debug, PartialEq)]
 pub struct State {
@@ -122,15 +122,6 @@ pub fn get_modes(int: Int) -> (Int, Int, Int, Int) {
     (int % 100, (int / 100) % 10, (int / 1000) % 10, (int / 10000) % 10)
 }
 
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct Input(pub Vec<Int>);
-
-impl Input {
-    pub fn parse(s: &str) -> Self {
-        Self(parse_ints(s))
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -138,13 +129,12 @@ mod test {
     use rstest::rstest;
     use itertools::Itertools;
 
-    use crate::instruction::Instruction::*;
+    use crate::instruction::Instruction;
     use crate::parameter::Parameter::*;
-    use crate::state::Input;
 
     #[rstest]
     #[case(
-        Add {
+        Instruction::Add {
             src1: Position(9),
             src2: Position(10),
             dst: Position(3),
@@ -153,7 +143,7 @@ mod test {
         "1,9,10,70,2,3,11,0,99,30,40,50"
     )]
     #[case(
-        Multiply {
+        Instruction::Multiply {
             src1: Position(3),
             src2: Position(11),
             dst: Position(0),
@@ -162,7 +152,7 @@ mod test {
         "3500,9,10,70,2,3,11,0,99,30,40,50"
     )]
     #[case(
-        Multiply {
+        Instruction::Multiply {
             src1: Position(4),
             src2: Immediate(3),
             dst: Position(4),

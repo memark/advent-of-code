@@ -1,3 +1,4 @@
+pub mod input;
 pub mod instruction;
 pub mod memory;
 pub mod parameter;
