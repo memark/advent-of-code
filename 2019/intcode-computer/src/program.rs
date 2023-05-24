@@ -12,20 +12,8 @@ pub fn run_program(mut state: State) -> State {
 }
 
 pub fn run_program_one_instruction(mut state: State) -> State {
-    let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, state.ip);
-    let result = state.process(i);
-    state = result.state;
-
-    if let Some(new_ip) = result.new_ip {
-        state.ip = new_ip;
-    } else {
-        state.ip += ip_delta;
-    }
-
-    if result.halted {
-        state.halted = true;
-    }
-
+    let instr = Instruction::from_memory_and_ip(&state.memory, state.ip);
+    state = state.process(instr);
     state
 }
 
@@ -48,9 +36,9 @@ mod test {
     #[case("1002,4,3,4,33", "1002,4,3,4,99")]
     #[case("1101,100,-1,4,0", "1101,100,-1,4,99")]
     fn runs_program_with_mem(#[case] memory: &str, #[case] expected_memory: &str) {
-        let actual = run_program(State::from_memory(Memory::parse(memory))).memory;
+        let actual = run_program(State::from_memory(Memory::parse(memory)));
 
-        assert_eq!(actual, Memory::parse(expected_memory))
+        assert_eq!(actual.memory, Memory::parse(expected_memory))
     }
 
     #[rstest]
@@ -102,10 +90,8 @@ mod test {
         #[case] input: &str,
         #[case] expected_output: &str
     ) {
-        let actual = run_program(State::with_input(Memory::parse(memory), Input::parse(input)))
-            .output.iter()
-            .join(",");
+        let actual = run_program(State::with_input(Memory::parse(memory), Input::parse(input)));
 
-        assert_eq!(actual, expected_output)
+        assert_eq!(actual.output.iter().join(","), expected_output)
     }
 }

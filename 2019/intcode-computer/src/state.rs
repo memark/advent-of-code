@@ -24,32 +24,40 @@ impl State {
         State { memory, input, output: vec![], ip: 0, rb: 0, halted: false }
     }
 
-    pub fn process(self, instruction: Instruction) -> ProcessResult {
+    pub fn process(self, instruction: Instruction) -> State {
         let mut state = self;
         match instruction {
             Instruction::Add { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), src1.eval(&state) + src2.eval(&state));
-                ProcessResult::proceed(state)
+                state.inc_ip(4)
             }
             Instruction::Multiply { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), src1.eval(&state) * src2.eval(&state));
-                ProcessResult::proceed(state)
+                state.inc_ip(4)
             }
             Instruction::Input { dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), state.input.0.remove(0));
-                ProcessResult::proceed(state)
+                state.inc_ip(2)
             }
             Instruction::Output { src } => {
                 state.output.push(src.eval(&state));
-                ProcessResult::proceed(state)
+                state.inc_ip(2)
             }
             Instruction::JumpIfTrue { src, dst } => {
                 let new_ip = if src.eval(&state) != 0 { Some(dst.eval(&state)) } else { None };
-                ProcessResult::jump(state, new_ip)
+                if let Some(new_ip) = new_ip {
+                    state.set_ip(new_ip)
+                } else {
+                    state.inc_ip(3)
+                }
             }
             Instruction::JumpIfFalse { src, dst } => {
                 let new_ip = if src.eval(&state) == 0 { Some(dst.eval(&state)) } else { None };
-                ProcessResult::jump(state, new_ip)
+                if let Some(new_ip) = new_ip {
+                    state.set_ip(new_ip)
+                } else {
+                    state.inc_ip(3)
+                }
             }
             Instruction::LessThan { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), if
@@ -59,7 +67,7 @@ impl State {
                 } else {
                     0
                 });
-                ProcessResult::proceed(state)
+                state.inc_ip(4)
             }
             Instruction::Equals { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), if
@@ -69,42 +77,32 @@ impl State {
                 } else {
                     0
                 });
-                ProcessResult::proceed(state)
+                state.inc_ip(4)
             }
             Instruction::SetRelativeBase { src } => {
                 state.rb += src.eval(&state);
-                ProcessResult::proceed(state)
+                state.inc_ip(2)
             }
-            Instruction::Halt => ProcessResult::halt(state),
+            Instruction::Halt => state.halted(),
 
             #[allow(unreachable_patterns)]
             _ => unimplemented!("{instruction:?}"),
         }
     }
 
+    pub fn inc_ip(mut self, ip_inc: Int) -> Self {
+        self.ip += ip_inc;
+        self
+    }
+
+    pub fn set_ip(mut self, new_ip: Int) -> Self {
+        self.ip = new_ip;
+        self
+    }
+
     pub fn halted(mut self) -> Self {
         self.halted = true;
         self
-    }
-}
-
-pub struct ProcessResult {
-    pub state: State,
-    pub new_ip: Option<Int>,
-    pub halted: bool,
-}
-
-impl ProcessResult {
-    fn proceed(state: State) -> Self {
-        ProcessResult { state, new_ip: None, halted: false }
-    }
-
-    fn jump(state: State, new_ip: Option<Int>) -> Self {
-        ProcessResult { state, new_ip, halted: false }
-    }
-
-    fn halt(state: State) -> Self {
-        ProcessResult { state, new_ip: None, halted: true }
     }
 }
 
@@ -193,7 +191,7 @@ mod test {
     ) {
         assert_eq!(
             Memory::parse(expected),
-            State::from_memory(Memory::parse(memory)).process(instruction).state.memory
+            State::from_memory(Memory::parse(memory)).process(instruction).memory
         );
     }
 
@@ -212,9 +210,9 @@ mod test {
             instruction
         );
 
-        assert_eq!(actual.state.memory, Memory::parse(expected_memory));
-        assert_eq!(actual.state.input.0.iter().join(","), expected_input);
-        assert_eq!(actual.state.output.iter().join(","), expected_output);
+        assert_eq!(actual.memory, Memory::parse(expected_memory));
+        assert_eq!(actual.input.0.iter().join(","), expected_input);
+        assert_eq!(actual.output.iter().join(","), expected_output);
     }
 
     #[rstest]
