@@ -1,6 +1,7 @@
 use crate::Int;
+use crate::memory::Memory;
 use crate::parameter::Parameter;
-use crate::state::{ Memory, get_modes };
+use crate::state::get_modes;
 
 #[derive(Debug, PartialEq)]
 pub enum Instruction {

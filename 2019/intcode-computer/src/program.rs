@@ -25,7 +25,7 @@ mod test {
     use itertools::Itertools;
 
     use crate::state::Input;
-    use crate::state::Memory;
+    use crate::memory::Memory;
 
     #[rstest]
     #[case("1,9,10,3,2,3,11,0,99,30,40,50", "3500,9,10,70,2,3,11,0,99,30,40,50")]

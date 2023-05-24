@@ -1,4 +1,4 @@
-use intcode_computer::{ program::run_program, Int, state::{ State, Memory } };
+use intcode_computer::{ program::run_program, Int, memory::Memory, state::State };
 use itertools::iproduct;
 
 fn main() {
@@ -10,10 +10,10 @@ fn part1() -> Int {
     let file = include_str!("../input.txt");
     let mut memory = Memory::parse(file);
 
-    memory.0.insert(1, 12);
-    memory.0.insert(2, 2);
+    memory.set(1, 12);
+    memory.set(2, 2);
 
-    run_program(State::from_memory(memory)).memory.0[&0]
+    run_program(State::from_memory(memory)).memory.get(0)
 }
 
 fn part2() -> Int {
@@ -25,10 +25,10 @@ fn part2() -> Int {
         .find_map(|(noun, verb)| {
             let mut memory = orig_memory.clone();
 
-            memory.0.insert(1, noun);
-            memory.0.insert(2, verb);
+            memory.set(1, noun);
+            memory.set(2, verb);
 
-            let output = run_program(State::from_memory(memory)).memory.0[&0];
+            let output = run_program(State::from_memory(memory)).memory.get(0);
 
             if output == target {
                 Some(100 * noun + verb)

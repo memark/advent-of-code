@@ -1,9 +1,7 @@
-use std::collections::HashMap;
-
-use itertools::Itertools;
-
 use crate::instruction::Instruction;
 use crate::Int;
+use crate::memory::Memory;
+use crate::utils::parse_ints;
 
 #[derive(Debug, PartialEq)]
 pub struct State {
@@ -125,46 +123,11 @@ pub fn get_modes(int: Int) -> (Int, Int, Int, Int) {
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct Memory(HashMap<Int, Int>);
-
-impl Memory {
-    pub fn parse(s: &str) -> Self {
-        Self(ints_to_hashmap(parse_ints(s)))
-    }
-
-    pub fn get(&self, index: Int) -> Int {
-        // Assume unlimited memory. Every non-set address should have the value 0.
-        *self.0.get(&index).unwrap_or(&0)
-    }
-
-    pub fn set(&mut self, index: Int, value: Int) {
-        self.0.insert(index, value);
-    }
-}
-
-#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Input(pub Vec<Int>);
 
 impl Input {
     pub fn parse(s: &str) -> Self {
         Self(parse_ints(s))
-    }
-}
-
-fn ints_to_hashmap(ints: Vec<Int>) -> HashMap<Int, Int> {
-    ints.into_iter()
-        .enumerate()
-        .map(|(i, x)| (i as Int, x))
-        .collect()
-}
-
-fn parse_ints(s: &str) -> Vec<Int> {
-    if s.is_empty() {
-        vec![]
-    } else {
-        s.split(',')
-            .map(|ss| ss.trim().parse().expect("Unable to parse int"))
-            .collect_vec()
     }
 }
 
@@ -244,26 +207,5 @@ mod test {
     #[case(22, (22, 0, 0, 0))]
     fn gets_modes(#[case] input: Int, #[case] expected: (Int, Int, Int, Int)) {
         assert_eq!(get_modes(input), expected)
-    }
-
-    #[rstest]
-    fn parses_ints_with_newlines() {
-        let input = "1,9,10,3,
-            2,3,11,0,
-            99,
-            30,40,50";
-
-        let actual = parse_ints(input);
-
-        assert_eq!(vec![1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50], actual);
-    }
-
-    #[rstest]
-    fn parses_ints_empty() {
-        let input = "";
-
-        let actual = parse_ints(input);
-
-        assert_eq!(vec![0; 0], actual);
     }
 }

@@ -1,5 +1,5 @@
 use clap::Parser;
-use intcode_computer::{ program::run_program, state::{ State, Memory, Input } };
+use intcode_computer::{ program::run_program, memory::Memory, state::{ State, Input } };
 use itertools::Itertools;
 
 #[derive(Parser, Debug)]

@@ -1,4 +1,4 @@
-use intcode_computer::{ program::run_program, Int, state::{ State, Input, Memory } };
+use intcode_computer::{ program::run_program, Int, memory::Memory, state::{ State, Input } };
 
 fn main() {
     println!("Part 1: {:?}", part1());
