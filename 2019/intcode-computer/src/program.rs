@@ -6,7 +6,7 @@ pub fn run_program(mut state: State) -> State {
 
     loop {
         let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, ip);
-        let result = i.process(state);
+        let result = state.process(i);
         state = result.state;
         if result.halted {
             break;
