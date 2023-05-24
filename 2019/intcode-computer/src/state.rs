@@ -22,7 +22,7 @@ impl State {
         State { memory, input, output: vec![], ip: 0, rb: 0, halted: false }
     }
 
-    pub fn process(self, instruction: Instruction) -> State {
+    pub(crate) fn process(self, instruction: Instruction) -> State {
         let mut state = self;
         match instruction {
             Instruction::Add { src1, src2, dst } => {

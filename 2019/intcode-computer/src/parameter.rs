@@ -2,7 +2,7 @@ use crate::Int;
 use crate::state::State;
 
 #[derive(Debug, PartialEq)]
-pub enum Parameter {
+pub(crate) enum Parameter {
     Position(Int),
     Immediate(Int),
     Relative(Int),

@@ -4,7 +4,7 @@ use crate::parameter::Parameter;
 use crate::state::get_modes;
 
 #[derive(Debug, PartialEq)]
-pub enum Instruction {
+pub(crate) enum Instruction {
     Add {
         src1: Parameter,
         src2: Parameter,
