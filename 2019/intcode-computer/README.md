@@ -21,12 +21,15 @@ assert_eq!(output, vec![123]);
 
 The most interesting modules are probably:
 - [instruction](src/instruction.rs)
-- [program](src/program.rs)
+- [state](src/state.rs)
 
 (They also contain most of the unit tests.)
 
 Supporting modules:
+- [input](src/input.rs)
+- [memory](src/memory.rs)
 - [parameter](src/parameter.rs)
-- [state](src/state.rs)
+- [program](src/program.rs)
+- [utils](src/utils.rs)
 
 There is also a [CLI](../intcode-computer-cli/) bin crate in the workspace.
