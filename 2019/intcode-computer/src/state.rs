@@ -28,11 +28,17 @@ impl State {
         let mut state = self;
         match instruction {
             Instruction::Add { src1, src2, dst } => {
-                state.memory.0.insert(dst.eval_pos(&state), src1.eval(&state) + src2.eval(&state));
+                state.memory.0.insert(
+                    dst.eval_pos(&state),
+                    src1.eval_val(&state) + src2.eval_val(&state)
+                );
                 state.inc_ip(4)
             }
             Instruction::Multiply { src1, src2, dst } => {
-                state.memory.0.insert(dst.eval_pos(&state), src1.eval(&state) * src2.eval(&state));
+                state.memory.0.insert(
+                    dst.eval_pos(&state),
+                    src1.eval_val(&state) * src2.eval_val(&state)
+                );
                 state.inc_ip(4)
             }
             Instruction::Input { dst } => {
@@ -40,11 +46,15 @@ impl State {
                 state.inc_ip(2)
             }
             Instruction::Output { src } => {
-                state.output.push(src.eval(&state));
+                state.output.push(src.eval_val(&state));
                 state.inc_ip(2)
             }
             Instruction::JumpIfTrue { src, dst } => {
-                let new_ip = if src.eval(&state) != 0 { Some(dst.eval(&state)) } else { None };
+                let new_ip = if src.eval_val(&state) != 0 {
+                    Some(dst.eval_val(&state))
+                } else {
+                    None
+                };
                 if let Some(new_ip) = new_ip {
                     state.set_ip(new_ip)
                 } else {
@@ -52,7 +62,11 @@ impl State {
                 }
             }
             Instruction::JumpIfFalse { src, dst } => {
-                let new_ip = if src.eval(&state) == 0 { Some(dst.eval(&state)) } else { None };
+                let new_ip = if src.eval_val(&state) == 0 {
+                    Some(dst.eval_val(&state))
+                } else {
+                    None
+                };
                 if let Some(new_ip) = new_ip {
                     state.set_ip(new_ip)
                 } else {
@@ -61,7 +75,7 @@ impl State {
             }
             Instruction::LessThan { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), if
-                    src1.eval(&state) < src2.eval(&state)
+                    src1.eval_val(&state) < src2.eval_val(&state)
                 {
                     1
                 } else {
@@ -71,7 +85,7 @@ impl State {
             }
             Instruction::Equals { src1, src2, dst } => {
                 state.memory.0.insert(dst.eval_pos(&state), if
-                    src1.eval(&state) == src2.eval(&state)
+                    src1.eval_val(&state) == src2.eval_val(&state)
                 {
                     1
                 } else {
@@ -80,7 +94,7 @@ impl State {
                 state.inc_ip(4)
             }
             Instruction::SetRelativeBase { src } => {
-                state.rb += src.eval(&state);
+                state.rb += src.eval_val(&state);
                 state.inc_ip(2)
             }
             Instruction::Halt => state.halted(),

@@ -19,8 +19,8 @@ impl Parameter {
         }
     }
 
-    pub fn eval(self, state: &State) -> Int {
-        // Assume unlimited memory. Every non-hit address should have the value 0.
+    pub fn eval_val(self, state: &State) -> Int {
+        // Assume unlimited memory. Every non-set address should have the value 0.
         match self {
             Position(p) => *state.memory.0.get(&p).unwrap_or(&0),
             Immediate(i) => i,
@@ -31,7 +31,7 @@ impl Parameter {
     pub fn eval_pos(self, state: &State) -> Int {
         match self {
             Position(p) => p,
-            Immediate(_) => panic!(),
+            Immediate(_) => panic!("Positional parameter cannot be of type Immediate."),
             Relative(p) => state.rb + p,
         }
     }
