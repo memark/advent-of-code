@@ -22,6 +22,11 @@ impl State {
         State { memory, input, output: vec![], ip: 0, rb: 0, halted: false }
     }
 
+    pub(crate) fn process_one_instruction(self) -> State {
+        let instr = Instruction::from_memory_and_ip(&self.memory, self.ip);
+        self.process(instr)
+    }
+
     pub(crate) fn process(self, instruction: Instruction) -> State {
         let mut state = self;
         match instruction {

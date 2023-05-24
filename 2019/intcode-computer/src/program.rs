@@ -1,4 +1,3 @@
-use crate::instruction::Instruction;
 use crate::state::State;
 
 pub fn run_program(mut state: State) -> State {
@@ -11,10 +10,8 @@ pub fn run_program(mut state: State) -> State {
     state
 }
 
-pub fn run_program_one_instruction(mut state: State) -> State {
-    let instr = Instruction::from_memory_and_ip(&state.memory, state.ip);
-    state = state.process(instr);
-    state
+pub fn run_program_one_instruction(state: State) -> State {
+    state.process_one_instruction()
 }
 
 #[cfg(test)]
