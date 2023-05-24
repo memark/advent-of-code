@@ -12,15 +12,16 @@ pub struct State {
     pub output: Vec<Int>,
     pub ip: Int,
     pub rb: Int,
+    pub halted: bool,
 }
 
 impl State {
     pub fn from_memory(memory: Memory) -> Self {
-        State { memory, input: Input::default(), output: vec![], ip: 0, rb: 0 }
+        State { memory, input: Input::default(), output: vec![], ip: 0, rb: 0, halted: false }
     }
 
     pub fn with_input(memory: Memory, input: Input) -> Self {
-        State { memory, input, output: vec![], ip: 0, rb: 0 }
+        State { memory, input, output: vec![], ip: 0, rb: 0, halted: false }
     }
 
     pub fn process(self, instruction: Instruction) -> ProcessResult {
@@ -79,6 +80,11 @@ impl State {
             #[allow(unreachable_patterns)]
             _ => unimplemented!("{instruction:?}"),
         }
+    }
+
+    pub fn halted(mut self) -> Self {
+        self.halted = true;
+        self
     }
 }
 

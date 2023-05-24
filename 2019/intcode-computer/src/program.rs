@@ -3,18 +3,29 @@ use crate::state::State;
 
 pub fn run_program(mut state: State) -> State {
     loop {
-        let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, state.ip);
-        let result = state.process(i);
-        state = result.state;
-        if result.halted {
+        state = run_program_one_instruction(state);
+        if state.halted {
             break;
         }
-        if let Some(new_ip) = result.new_ip {
-            state.ip = new_ip;
-        } else {
-            state.ip += ip_delta;
-        }
     }
+    state
+}
+
+pub fn run_program_one_instruction(mut state: State) -> State {
+    let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, state.ip);
+    let result = state.process(i);
+    state = result.state;
+
+    if let Some(new_ip) = result.new_ip {
+        state.ip = new_ip;
+    } else {
+        state.ip += ip_delta;
+    }
+
+    if result.halted {
+        state.halted = true;
+    }
+
     state
 }
 
