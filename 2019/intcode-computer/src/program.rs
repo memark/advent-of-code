@@ -2,19 +2,17 @@ use crate::instruction::Instruction;
 use crate::state::State;
 
 pub fn run_program(mut state: State) -> State {
-    let mut ip = 0;
-
     loop {
-        let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, ip);
+        let (i, ip_delta) = Instruction::from_memory_and_ip(&state.memory, state.ip);
         let result = state.process(i);
         state = result.state;
         if result.halted {
             break;
         }
         if let Some(new_ip) = result.new_ip {
-            ip = new_ip;
+            state.ip = new_ip;
         } else {
-            ip += ip_delta;
+            state.ip += ip_delta;
         }
     }
     state
