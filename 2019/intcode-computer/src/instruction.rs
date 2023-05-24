@@ -47,11 +47,11 @@ use Instruction::*;
 
 impl Instruction {
     pub fn from_memory_and_ip(memory: &Memory, ip: Int) -> Self {
-        let (opcode, mode1, mode2, mode3) = get_modes(memory.0[&ip]);
+        let (opcode, mode1, mode2, mode3) = get_modes(memory.get(ip));
 
-        let get_p1 = || Parameter::create(mode1, memory.0[&(ip + 1)]);
-        let get_p2 = || Parameter::create(mode2, memory.0[&(ip + 2)]);
-        let get_p3 = || Parameter::create(mode3, memory.0[&(ip + 3)]);
+        let get_p1 = || Parameter::create(mode1, memory.get(ip + 1));
+        let get_p2 = || Parameter::create(mode2, memory.get(ip + 2));
+        let get_p3 = || Parameter::create(mode3, memory.get(ip + 3));
 
         match opcode {
             1 =>

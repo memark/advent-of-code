@@ -20,11 +20,10 @@ impl Parameter {
     }
 
     pub fn eval_val(self, state: &State) -> Int {
-        // Assume unlimited memory. Every non-set address should have the value 0.
         match self {
-            Position(p) => *state.memory.0.get(&p).unwrap_or(&0),
+            Position(p) => state.memory.get(p),
             Immediate(i) => i,
-            Relative(p) => *state.memory.0.get(&(state.rb + p)).unwrap_or(&0),
+            Relative(p) => state.memory.get(state.rb + p),
         }
     }
 

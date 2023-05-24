@@ -28,21 +28,21 @@ impl State {
         let mut state = self;
         match instruction {
             Instruction::Add { src1, src2, dst } => {
-                state.memory.0.insert(
+                state.memory.set(
                     dst.eval_pos(&state),
                     src1.eval_val(&state) + src2.eval_val(&state)
                 );
                 state.inc_ip(4)
             }
             Instruction::Multiply { src1, src2, dst } => {
-                state.memory.0.insert(
+                state.memory.set(
                     dst.eval_pos(&state),
                     src1.eval_val(&state) * src2.eval_val(&state)
                 );
                 state.inc_ip(4)
             }
             Instruction::Input { dst } => {
-                state.memory.0.insert(dst.eval_pos(&state), state.input.0.remove(0));
+                state.memory.set(dst.eval_pos(&state), state.input.0.remove(0));
                 state.inc_ip(2)
             }
             Instruction::Output { src } => {
@@ -74,7 +74,7 @@ impl State {
                 }
             }
             Instruction::LessThan { src1, src2, dst } => {
-                state.memory.0.insert(dst.eval_pos(&state), if
+                state.memory.set(dst.eval_pos(&state), if
                     src1.eval_val(&state) < src2.eval_val(&state)
                 {
                     1
@@ -84,7 +84,7 @@ impl State {
                 state.inc_ip(4)
             }
             Instruction::Equals { src1, src2, dst } => {
-                state.memory.0.insert(dst.eval_pos(&state), if
+                state.memory.set(dst.eval_pos(&state), if
                     src1.eval_val(&state) == src2.eval_val(&state)
                 {
                     1
@@ -125,11 +125,20 @@ pub fn get_modes(int: Int) -> (Int, Int, Int, Int) {
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct Memory(pub HashMap<Int, Int>);
+pub struct Memory(HashMap<Int, Int>);
 
 impl Memory {
     pub fn parse(s: &str) -> Self {
         Self(ints_to_hashmap(parse_ints(s)))
+    }
+
+    pub fn get(&self, index: Int) -> Int {
+        // Assume unlimited memory. Every non-set address should have the value 0.
+        *self.0.get(&index).unwrap_or(&0)
+    }
+
+    pub fn set(&mut self, index: Int, value: Int) {
+        self.0.insert(index, value);
     }
 }
 
