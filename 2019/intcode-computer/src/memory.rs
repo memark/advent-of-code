@@ -1,5 +1,5 @@
-use crate::Int;
 use crate::utils::parse_ints;
+use crate::Int;
 
 use std::collections::HashMap;
 

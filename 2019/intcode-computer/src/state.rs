@@ -1,7 +1,7 @@
 use crate::input::Input;
 use crate::instruction::Instruction;
-use crate::Int;
 use crate::memory::Memory;
+use crate::Int;
 
 #[derive(Debug, PartialEq)]
 pub struct State {
@@ -15,11 +15,25 @@ pub struct State {
 
 impl State {
     pub fn from_memory(memory: Memory) -> Self {
-        State { memory, input: Input::default(), output: vec![], ip: 0, rb: 0, halted: false }
+        State {
+            memory,
+            input: Input::default(),
+            output: vec![],
+            ip: 0,
+            rb: 0,
+            halted: false,
+        }
     }
 
     pub fn with_input(memory: Memory, input: Input) -> Self {
-        State { memory, input, output: vec![], ip: 0, rb: 0, halted: false }
+        State {
+            memory,
+            input,
+            output: vec![],
+            ip: 0,
+            rb: 0,
+            halted: false,
+        }
     }
 
     pub(crate) fn process_one_instruction(self) -> State {
@@ -33,19 +47,21 @@ impl State {
             Instruction::Add { src1, src2, dst } => {
                 state.memory.set(
                     dst.eval_pos(&state),
-                    src1.eval_val(&state) + src2.eval_val(&state)
+                    src1.eval_val(&state) + src2.eval_val(&state),
                 );
                 state.inc_ip(4)
             }
             Instruction::Multiply { src1, src2, dst } => {
                 state.memory.set(
                     dst.eval_pos(&state),
-                    src1.eval_val(&state) * src2.eval_val(&state)
+                    src1.eval_val(&state) * src2.eval_val(&state),
                 );
                 state.inc_ip(4)
             }
             Instruction::Input { dst } => {
-                state.memory.set(dst.eval_pos(&state), state.input.0.remove(0));
+                state
+                    .memory
+                    .set(dst.eval_pos(&state), state.input.0.remove(0));
                 state.inc_ip(2)
             }
             Instruction::Output { src } => {
@@ -77,23 +93,25 @@ impl State {
                 }
             }
             Instruction::LessThan { src1, src2, dst } => {
-                state.memory.set(dst.eval_pos(&state), if
-                    src1.eval_val(&state) < src2.eval_val(&state)
-                {
-                    1
-                } else {
-                    0
-                });
+                state.memory.set(
+                    dst.eval_pos(&state),
+                    if src1.eval_val(&state) < src2.eval_val(&state) {
+                        1
+                    } else {
+                        0
+                    },
+                );
                 state.inc_ip(4)
             }
             Instruction::Equals { src1, src2, dst } => {
-                state.memory.set(dst.eval_pos(&state), if
-                    src1.eval_val(&state) == src2.eval_val(&state)
-                {
-                    1
-                } else {
-                    0
-                });
+                state.memory.set(
+                    dst.eval_pos(&state),
+                    if src1.eval_val(&state) == src2.eval_val(&state) {
+                        1
+                    } else {
+                        0
+                    },
+                );
                 state.inc_ip(4)
             }
             Instruction::SetRelativeBase { src } => {
@@ -124,15 +142,20 @@ impl State {
 }
 
 pub fn get_modes(int: Int) -> (Int, Int, Int, Int) {
-    (int % 100, (int / 100) % 10, (int / 1000) % 10, (int / 10000) % 10)
+    (
+        int % 100,
+        (int / 100) % 10,
+        (int / 1000) % 10,
+        (int / 10000) % 10,
+    )
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
+    use itertools::Itertools;
     use pretty_assertions::assert_eq;
     use rstest::rstest;
-    use itertools::Itertools;
 
     use crate::instruction::Instruction;
     use crate::parameter::Parameter::*;
@@ -168,11 +191,13 @@ mod test {
     fn processes_instruction_with_mem(
         #[case] instruction: Instruction,
         #[case] memory: &str,
-        #[case] expected: &str
+        #[case] expected: &str,
     ) {
         assert_eq!(
             Memory::parse(expected),
-            State::from_memory(Memory::parse(memory)).process(instruction).memory
+            State::from_memory(Memory::parse(memory))
+                .process(instruction)
+                .memory
         );
     }
 
@@ -185,11 +210,10 @@ mod test {
         #[case] input: &str,
         #[case] expected_memory: &str,
         #[case] expected_input: &str,
-        #[case] expected_output: &str
+        #[case] expected_output: &str,
     ) {
-        let actual = State::with_input(Memory::parse(memory), Input::parse(input)).process(
-            instruction
-        );
+        let actual =
+            State::with_input(Memory::parse(memory), Input::parse(input)).process(instruction);
 
         assert_eq!(actual.memory, Memory::parse(expected_memory));
         assert_eq!(actual.input.0.iter().join(","), expected_input);

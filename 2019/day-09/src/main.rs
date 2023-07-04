@@ -1,4 +1,4 @@
-use intcode_computer::{ Int, input::Input, memory::Memory, program::run_program, state::State };
+use intcode_computer::{input::Input, memory::Memory, program::run_program, state::State, Int};
 
 fn main() {
     println!("Part 1: {:?}", part1());
@@ -10,7 +10,10 @@ fn part1() -> Int {
     let memory = Memory::parse(file);
     let input = Input::parse("1");
 
-    *run_program(State::with_input(memory, input)).output.last().expect("No output found")
+    *run_program(State::with_input(memory, input))
+        .output
+        .last()
+        .expect("No output found")
 }
 
 fn part2() -> Int {
@@ -18,7 +21,10 @@ fn part2() -> Int {
     let memory = Memory::parse(file);
     let input = Input::parse("2");
 
-    *run_program(State::with_input(memory, input)).output.last().expect("No output found")
+    *run_program(State::with_input(memory, input))
+        .output
+        .last()
+        .expect("No output found")
 }
 
 #[cfg(test)]

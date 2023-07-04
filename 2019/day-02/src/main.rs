@@ -1,4 +1,4 @@
-use intcode_computer::{ program::run_program, Int, memory::Memory, state::State };
+use intcode_computer::{memory::Memory, program::run_program, state::State, Int};
 use itertools::iproduct;
 
 fn main() {

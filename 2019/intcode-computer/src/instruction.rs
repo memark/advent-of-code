@@ -1,7 +1,7 @@
-use crate::Int;
 use crate::memory::Memory;
 use crate::parameter::Parameter;
 use crate::state::get_modes;
+use crate::Int;
 
 #[derive(Debug, PartialEq)]
 pub(crate) enum Instruction {
@@ -55,42 +55,36 @@ impl Instruction {
         let get_p3 = || Parameter::create(mode3, memory.get(ip + 3));
 
         match opcode {
-            1 =>
-                Instruction::Add {
-                    src1: get_p1(),
-                    src2: get_p2(),
-                    dst: get_p3(),
-                },
-            2 =>
-                Instruction::Multiply {
-                    src1: get_p1(),
-                    src2: get_p2(),
-                    dst: get_p3(),
-                },
+            1 => Instruction::Add {
+                src1: get_p1(),
+                src2: get_p2(),
+                dst: get_p3(),
+            },
+            2 => Instruction::Multiply {
+                src1: get_p1(),
+                src2: get_p2(),
+                dst: get_p3(),
+            },
             3 => Instruction::Input { dst: get_p1() },
             4 => Instruction::Output { src: get_p1() },
-            5 =>
-                Instruction::JumpIfTrue {
-                    src: get_p1(),
-                    dst: get_p2(),
-                },
-            6 =>
-                Instruction::JumpIfFalse {
-                    src: get_p1(),
-                    dst: get_p2(),
-                },
-            7 =>
-                Instruction::LessThan {
-                    src1: get_p1(),
-                    src2: get_p2(),
-                    dst: get_p3(),
-                },
-            8 =>
-                Instruction::Equals {
-                    src1: get_p1(),
-                    src2: get_p2(),
-                    dst: get_p3(),
-                },
+            5 => Instruction::JumpIfTrue {
+                src: get_p1(),
+                dst: get_p2(),
+            },
+            6 => Instruction::JumpIfFalse {
+                src: get_p1(),
+                dst: get_p2(),
+            },
+            7 => Instruction::LessThan {
+                src1: get_p1(),
+                src2: get_p2(),
+                dst: get_p3(),
+            },
+            8 => Instruction::Equals {
+                src1: get_p1(),
+                src2: get_p2(),
+                dst: get_p3(),
+            },
             9 => SetRelativeBase { src: get_p1() },
             99 => Halt {},
             _ => panic!("Unknown opcode"),
@@ -136,7 +130,10 @@ mod test {
     #[case("1007,4,3,4", LessThan { src1: Position(4), src2: Immediate(3), dst: Position(4) })]
     #[case("1008,4,3,4", Equals { src1: Position(4), src2: Immediate(3), dst: Position(4) })]
     fn parses_instruction(#[case] memory: &str, #[case] expected: Instruction) {
-        assert_eq!(expected, Instruction::from_memory_and_ip(&Memory::parse(memory), 0));
+        assert_eq!(
+            expected,
+            Instruction::from_memory_and_ip(&Memory::parse(memory), 0)
+        );
     }
 
     #[test]

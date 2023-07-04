@@ -17,9 +17,9 @@ pub fn run_program_one_instruction(state: State) -> State {
 #[cfg(test)]
 mod test {
     use super::*;
+    use itertools::Itertools;
     use pretty_assertions::assert_eq;
     use rstest::rstest;
-    use itertools::Itertools;
 
     use crate::input::Input;
     use crate::memory::Memory;
@@ -85,9 +85,12 @@ mod test {
     fn runs_program_with_io(
         #[case] memory: &str,
         #[case] input: &str,
-        #[case] expected_output: &str
+        #[case] expected_output: &str,
     ) {
-        let actual = run_program(State::with_input(Memory::parse(memory), Input::parse(input)));
+        let actual = run_program(State::with_input(
+            Memory::parse(memory),
+            Input::parse(input),
+        ));
 
         assert_eq!(actual.output.iter().join(","), expected_output)
     }

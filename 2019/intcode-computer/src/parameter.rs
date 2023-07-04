@@ -1,5 +1,5 @@
-use crate::Int;
 use crate::state::State;
+use crate::Int;
 
 #[derive(Debug, PartialEq)]
 pub(crate) enum Parameter {
