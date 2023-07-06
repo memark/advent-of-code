@@ -59,9 +59,10 @@ impl State {
                 state.inc_ip(4)
             }
             Instruction::Input { dst } => {
-                state
-                    .memory
-                    .set(dst.eval_pos(&state), state.input.0.remove(0));
+                state.memory.set(
+                    dst.eval_pos(&state),
+                    state.input.0.pop_front().expect("input vector empty"),
+                );
                 state.inc_ip(2)
             }
             Instruction::Output { src } => {
