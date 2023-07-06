@@ -1,8 +1,9 @@
 use crate::state::State;
 
-pub fn run_program(mut state: State) -> State {
+pub fn run_program(state: State) -> State {
+    let mut state = state;
     loop {
-        state = run_program_one_instruction(state);
+        state = state.process_one_instruction();
         if state.halted {
             break;
         }
@@ -10,8 +11,29 @@ pub fn run_program(mut state: State) -> State {
     state
 }
 
-pub fn run_program_one_instruction(state: State) -> State {
-    state.process_one_instruction()
+pub fn run_program_one_output(state: State) -> State {
+    let output_len = state.output.len();
+    let mut state = state;
+    loop {
+        state = state.process_one_instruction();
+        // println!("{} - {}", state.output.len(), output_len);
+        if state.output.len() > output_len {
+            break;
+        }
+        if state.halted {
+            break;
+        }
+    }
+    state
+}
+
+pub fn run_program_n_output(state: State, n: i32) -> State {
+    let mut state = state;
+    // Is this a fold?
+    for _ in 0..n {
+        state = run_program_one_output(state);
+    }
+    state
 }
 
 #[cfg(test)]
