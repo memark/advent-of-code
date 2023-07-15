@@ -7,6 +7,9 @@ pub fn run_program(state: State) -> State {
         if state.halted {
             break;
         }
+        if state.waiting_for_input {
+            break;
+        }
     }
     state
 }
@@ -27,7 +30,31 @@ pub fn run_program_one_output(state: State) -> State {
     state
 }
 
+pub fn run_program_w_input(state: State) -> State {
+    let mut state = state;
+    // state.waiting_for_input = false;
+    loop {
+        state = state.process_one_instruction();
+        if state.halted {
+            break;
+        }
+        if state.waiting_for_input {
+            break;
+        }
+    }
+    state
+}
+
 pub fn run_program_n_output(state: State, n: i32) -> State {
+    let mut state = state;
+    // Is this a fold?
+    for _ in 0..n {
+        state = run_program_one_output(state);
+    }
+    state
+}
+
+pub fn run_program_n_output_or_w_input(state: State, n: i32) -> State {
     let mut state = state;
     // Is this a fold?
     for _ in 0..n {

@@ -11,6 +11,7 @@ pub struct State {
     pub ip: Int,
     pub rb: Int,
     pub halted: bool,
+    pub waiting_for_input: bool,
 }
 
 impl State {
@@ -22,6 +23,7 @@ impl State {
             ip: 0,
             rb: 0,
             halted: false,
+            waiting_for_input: false,
         }
     }
 
@@ -33,6 +35,7 @@ impl State {
             ip: 0,
             rb: 0,
             halted: false,
+            waiting_for_input: false,
         }
     }
 
@@ -59,10 +62,10 @@ impl State {
                 state.inc_ip(4)
             }
             Instruction::Input { dst } => {
-                state.memory.set(
-                    dst.eval_pos(&state),
-                    state.input.0.pop_front().expect("input vector empty"),
-                );
+                let Some(i) = state.input.0.pop_front() else {
+                    return state.wait_for_input()
+                };
+                state.memory.set(dst.eval_pos(&state), i);
                 state.inc_ip(2)
             }
             Instruction::Output { src } => {
@@ -70,6 +73,7 @@ impl State {
                 state.inc_ip(2)
             }
             Instruction::JumpIfTrue { src, dst } => {
+                // Skriva ihop?
                 let new_ip = if src.eval_val(&state) != 0 {
                     Some(dst.eval_val(&state))
                 } else {
@@ -82,6 +86,7 @@ impl State {
                 }
             }
             Instruction::JumpIfFalse { src, dst } => {
+                // Skriva ihop?
                 let new_ip = if src.eval_val(&state) == 0 {
                     Some(dst.eval_val(&state))
                 } else {
@@ -119,7 +124,7 @@ impl State {
                 state.rb += src.eval_val(&state);
                 state.inc_ip(2)
             }
-            Instruction::Halt => state.halted(),
+            Instruction::Halt => state.halt(),
 
             #[allow(unreachable_patterns)]
             _ => unimplemented!("{instruction:?}"),
@@ -136,8 +141,13 @@ impl State {
         self
     }
 
-    pub fn halted(mut self) -> Self {
+    pub fn halt(mut self) -> Self {
         self.halted = true;
+        self
+    }
+
+    pub fn wait_for_input(mut self) -> Self {
+        self.waiting_for_input = true;
         self
     }
 }

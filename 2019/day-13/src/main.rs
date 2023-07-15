@@ -1,9 +1,12 @@
 // https://adventofcode.com/2019/day/13
 
-use std::{io, thread::sleep, time::Duration};
+#![allow(dead_code, unused_variables, unused_imports)]
 
 use anyhow::Result;
+use chrono::Timelike;
+use chrono::Utc;
 use colored::Colorize;
+use intcode_computer::program::run_program_w_input;
 use intcode_computer::{
     input::Input,
     memory::Memory,
@@ -12,6 +15,11 @@ use intcode_computer::{
     Int,
 };
 use itertools::Itertools;
+use std::{
+    io,
+    thread::sleep,
+    time::{self, Duration, Instant, SystemTime},
+};
 use tui::{
     backend::CrosstermBackend,
     layout::{Alignment, Constraint, Direction, Layout},
@@ -45,52 +53,14 @@ fn part1() -> Result<usize> {
     let mut state = State::from_memory(memory);
     state.memory.set(0, 2);
 
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-
-    // state.input.0.push_back(1);
-    // state.input.0.push_back(1);
-    // state.input.0.push_back(1);
-    // state.input.0.push_back(1);
-    // state.input.0.push_back(1);
-    // state.input.0.push_back(1);
-    // state.input.0.push_back(1);
-    // state.input.0.push_back(1);
-    // state.input.0.push_back(1);
-
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    // state.input.0.push_back(0);
-    state.input.0.push_back(0);
-
-    // for _ in 0..100 {
-    //     state.input.0.push_back(0);
-    // }
-    // println!("{}", state.input.0.len());
-
-    // state = run_program(state);
-    // println!("finished!");
-
     let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
     terminal.clear()?;
+
+    let mut output_len = 0;
+
+    let mut took_input = false;
 
     let mut ball_column = 0;
     let mut paddle_column = 0;
@@ -108,27 +78,34 @@ fn part1() -> Result<usize> {
         }
 
         // if state.output.len() > 2522 {
-        if state.input.0.is_empty() {
+        // if state.input.0.is_empty() {
+        if state.waiting_for_input {
             state.input.0.push_back(joystick);
+            state.waiting_for_input = false;
+            took_input = true;
         }
 
-        state = run_program_n_output(state, 3);
-        let (x, y, id) = state
-            .output
-            .iter()
-            .rev()
-            .take(3)
-            .rev()
-            .next_tuple()
-            .unwrap();
-        // println!("{:?}", (x, y, id));
+        state = run_program_w_input(state);
 
-        if *id == 4 {
-            ball_column = *x;
-        }
+        if state.output.len() >= output_len + 3 {
+            let (x, y, id) = state
+                .output
+                .iter()
+                .rev()
+                .take(3)
+                .rev()
+                .next_tuple()
+                .unwrap();
 
-        if *id == 3 {
-            paddle_column = *x;
+            if *id == 4 {
+                ball_column = *x;
+            }
+
+            if *id == 3 {
+                paddle_column = *x;
+            }
+
+            output_len = state.output.len();
         }
 
         terminal.draw(|rect| {
@@ -136,21 +113,29 @@ fn part1() -> Result<usize> {
             let chunks = Layout::default()
                 .direction(Direction::Vertical)
                 .margin(2)
-                .constraints(
-                    [
-                        Constraint::Length(3),
-                        Constraint::Min(2),
-                        Constraint::Length(3),
-                    ]
-                    .as_ref(),
-                )
+                .constraints([
+                    Constraint::Length(3),
+                    Constraint::Min(2),
+                    Constraint::Length(3),
+                ])
                 .split(size);
 
-            let copyright = Paragraph::new(format!(
-                "{:?}",
-                (ball_column, paddle_column, joystick, state.input.0.len())
+            let grid_string = construct_grid_string(&state);
+            let text = grid_string.lines().map(Spans::from).collect_vec();
+            let paragraph = Paragraph::new(text).alignment(Alignment::Center);
+            rect.render_widget(paragraph, chunks[1]);
+
+            let footer = Paragraph::new(format!(
+                "time: {:?}, bc: {:?}, pc: {:?}, j: {:?}, il: {:?}, sh: {:?}, sw: {:?}, ol: {:?}, sol: {:?}",
+                Utc::now().num_seconds_from_midnight(),
+                ball_column,
+                paddle_column,
+                joystick,
+                state.input.0.len(),
+                state.halted,
+                state.waiting_for_input,
+                output_len,state.output.len(),
             ))
-            .style(Style::default().fg(Color::LightCyan))
             .alignment(Alignment::Center)
             .block(
                 Block::default()
@@ -159,33 +144,17 @@ fn part1() -> Result<usize> {
                     // .title("Copyright")
                     .border_type(BorderType::Plain),
             );
-
-            rect.render_widget(copyright, chunks[2]);
-
-            let grid_string = construct_grid_string(&state);
-
-            let text = grid_string.lines().map(Spans::from).collect_vec();
-
-            let paragraph = Paragraph::new(text.clone());
-
-            rect.render_widget(paragraph, chunks[1]);
+            rect.render_widget(footer, chunks[2]);
         })?;
 
         if state.halted {
             break;
         }
 
-        // if state.input.0.len() < 100 {
-        // if state.output.len() > 2522 {
-        if state.input.0.is_empty() {
-            // println!("{}", state.output.len());
-            sleep(Duration::from_millis(1000));
-        } else if state.output.len() > 2522 {
-            sleep(Duration::from_millis(100));
+        if took_input {
+            sleep(Duration::from_millis(250));
         }
     }
-
-    // print_colored_grid_string(&state);
 
     Ok(0)
 }
