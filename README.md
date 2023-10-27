@@ -1,22 +1,25 @@
 # Advent-of-code
 
+## 2023
+
+Uiua and Rust coming right up!
+
 ## 2022
 
-All Rust!
+Rust.
 
 ## 2021
 
-Gave AoC 2021 a Go. It was not for me, and I soon changed into TypeScript code running in Deno instead.
+TypeScript/Deno. (And some Go.)
 
 ## 2020
 
-I was new to Python when beginning this year's AoC. After 43 stars I feel I'm starting to know the language pretty well!
-(And some Ruby, TypeScript and F# as well.)
+Python. (And some Ruby, TypeScript and F# as well.)
 
 ## 2019
 
-Trying this year's AoC in Haskell. Getting a suprising amount of correct answers!
+Haskell.
 
 ## 2018
 
-Warm-up in Rust.
+Rust.
