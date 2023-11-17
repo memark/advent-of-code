@@ -26,5 +26,6 @@
     "deno.config": "tsconfig_deno.json",
     "deno.suggest.imports.hosts": {
         "https://deno.land": true
-    }
+    },
+    "rust-analyzer.showUnlinkedFileNotification": false
 }
