@@ -1,6 +1,6 @@
 # https://adventofcode.com/2019/day/12
 
-Lib ← &i "lib.ua"
+Lib ← &i "../lib.ua"
   Compare ← Lib "Compare"
   SplitLines ← Lib "SplitLines"
 
