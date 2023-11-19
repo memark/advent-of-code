@@ -25,4 +25,29 @@ SolvePartOne! ← |1 (
 ⍤∶≍, "25131128" SolvePartOne!(100) &fras "input.txt"
 ---
 
-&p $"Part 1: _" SolvePartOne!(100) &fras "input.txt"
+# &p $"Part 1: _" SolvePartOne!(100) &fras "input.txt"
+
+MakeTimesLonger ← ↯⊂[]×⧻,
+---
+⍤∶≍, [1 2 1 2 1 2] MakeTimesLonger 3 [1 2]
+---
+
+SolvePartTwo! ← |1 (
+  ∵parse
+  ∶ PatternMatrix ⧻.
+  # ⍥(♭≡([◿10⌵/+]) ×, ↯⧻.) ^0
+  ⍥(♭≡([◿10⌵/+]) ∺×,) ^0
+  ↙8 /$"__" ⊙;
+)
+
+SolvePartTwo!(100) MakeTimesLonger 100 "80871224585914546619083218645595"
+# SolvePartTwo!(100) "80871224585914546619083218645595"
+
+# Nä, det gick ju alldeles för långsamt så klart. (100 MTL 100 tog 2,5 s.) (100 MTL 1000 tog 4,5 min.)
+# Då är det dags att börja optimera.
+# Säkerligen behöver jag inte skapa upp en hel matris för att kunna multiplicera. Det borde väl gå med en matris och en array?
+
+# [[1 1 1] [2 2 2] [3 3 3]]
+# [1 2 3]
+# # ∺×
+# ↯⧻.
