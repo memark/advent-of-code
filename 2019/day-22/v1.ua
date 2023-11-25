@@ -54,8 +54,15 @@ Cut ¯2
 # .DealWithIncrement 7
 # .DealIntoNewStack
 
-+1⇡10
-×7.
-:-100
-◿10
-⊏
+GetAtIndex ← |2 ⊡
+GetAtIndex 2 1_2_3_4
+
+ChangeAtIndex ← |3 ⍜⊡;
+ChangeAtIndex 2 1_2_3_4 10
+
+¤+5⇡10
++5⇡10
+⇡10
+◿10 ×3 ⇡10
+dump∘
+≡(;;;;dump∘)
