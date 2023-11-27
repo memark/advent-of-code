@@ -17,16 +17,16 @@ OneDoubleLetter ← ≥2 /↥ ⊐≡⧻ ⊜□. -@\0
 
 ContainsForbidden ← /↥/↥⊐≡⌕ {"ab" "cd" "pq" "xy"} ¤
 
-IsNice ← ××⊃(ThreeVowels|OneDoubleLetter|-:1ContainsForbidden)
+IsNicePartOne ← ××⊃(ThreeVowels|OneDoubleLetter|-:1ContainsForbidden)
 ---
-⍤:≍, 1 IsNice "ugknbfddgicrmopn"
-⍤:≍, 1 IsNice "aaa"
-⍤:≍, 0 IsNice "jchzalrnumimnmhp"
-⍤:≍, 0 IsNice "haegwjzuvuyypxyu"
-⍤:≍, 0 IsNice "dvszwmarrgswjxmb"
+⍤:≍, 1 IsNicePartOne "ugknbfddgicrmopn"
+⍤:≍, 1 IsNicePartOne "aaa"
+⍤:≍, 0 IsNicePartOne "jchzalrnumimnmhp"
+⍤:≍, 0 IsNicePartOne "haegwjzuvuyypxyu"
+⍤:≍, 0 IsNicePartOne "dvszwmarrgswjxmb"
 ---
 
-SolvePartOne ← /+ ≡IsNice SplitLines
+SolvePartOne ← /+ ≡IsNicePartOne SplitLines
 ---
 ⍤:≍, 236 SolvePartOne &fras "input"
 ---
@@ -36,5 +36,26 @@ SolvePartOne ← /+ ≡IsNice SplitLines
 # ⍤:≍, 3812909 SolvePartTwo &fras "input"
 # ---
 
-&p $"Part 1: _" SolvePartOne &fras "input"
+# &p $"Part 1: _" SolvePartOne &fras "input"
 # &p $"Part 2: _" SolvePartTwo &fras "input"
+
+# ---
+
+"aabcdefgaa"
+-@\0.
+⊐⊜∘
+# ≡⧻
+# ⊐≡(↙↧2⧻.)
+# ⊐(⊜∘.)
+⊏⍏.
+▽≥2≡⧻.
+⊐≡⊢
+
+"aabcdefgaaff"
+:⊝.
+⍘⊚⊛
+▽≥2
+
+# ¤:
+dump∘
+⊞(=dump∘)
