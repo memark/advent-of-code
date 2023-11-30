@@ -41,21 +41,44 @@ SolvePartOne ← /+ ≡IsNicePartOne SplitLines
 
 # ---
 
-"aabcdefgaa"
--@\0.
-⊐⊜∘
-# ≡⧻
-# ⊐≡(↙↧2⧻.)
-# ⊐(⊜∘.)
-⊏⍏.
-▽≥2≡⧻.
-⊐≡⊢
+IdentityMatrix ← |1 ⊞=.⇡
 
-"aabcdefgaaff"
-:⊝.
-⍘⊚⊛
-▽≥2
+TwoSeqs ← ↯⇌⊂[2]⌊÷2⧻.
+TwoDropOneSeqs ← ≡⍜⇌(↘1) ↯⇌⊂[3]⌊÷3⧻.
 
-# ¤:
-dump∘
-⊞(=dump∘)
+HasDoublePairA ← ≥1+ ∩(≥2 /↥ ⍘⊚⊛ TwoSeqs) ↘1.
+HasDoublePairB ← ≥1+ ∩(≥2 /↥ ⍘⊚⊛ TwoDropOneSeqs) ↘1.
+HasDoublePair ← ≥1+⊃(HasDoublePairA|HasDoublePairB)
+---
+⍤:≍, 1 HasDoublePair "xyxy"
+⍤:≍, 1 HasDoublePair "axyxy"
+# ⍤:≍, 1 HasDoublePair "xxyxx"
+⍤:≍, 1 HasDoublePair "aabcdefgaa"
+⍤:≍, 0 HasDoublePair "aaa"
+---
+
+HasXyX ← /↥ ≡(≍⊃(↙1|↙¯1)) ◫3
+---
+⍤:≍, 1 HasXyX "xyx"
+⍤:≍, 1 HasXyX "xxx"
+⍤:≍, 0 HasXyX "xxy"
+⍤:≍, 1 HasXyX "abcdefeghi"
+---
+
+# MostCommonRow ← ⊏⊢⍖⍘⊚⊛:⊝.
+
+IsNicePartTwo ← ×⊃(HasDoublePair|HasXyX)
+---
+⍤:≍, 1 IsNicePartTwo "qjhvhtzxzqqjkmpb"
+# ⍤:≍, 0 IsNicePartTwo "xxyxx"
+---
+
+TwoDropOneSeqs ← ≡⍜⇌(↘1) ↯⇌⊂[3]⌊÷3⧻.
+
+"xxyxx"
+↘1.
+∩(TwoDropOneSeqs)
+# ∩(⍘⊚⊛)
+# ∩(/↥)
+# ∩(≥2)
+# ≥1+
