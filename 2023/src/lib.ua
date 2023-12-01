@@ -1,4 +1,4 @@
-Compare ← |2 ((0|1)|¯1;) ⊃<>
+Compare ← |2 ±-
 ---
 ⍤∶≍, 1 Compare 3 5
 ⍤∶≍, 0 Compare 3 3
