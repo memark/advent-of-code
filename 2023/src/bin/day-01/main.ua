@@ -14,12 +14,6 @@ SolvePartOne ← /+ ≡(CalibrationValue ⊔) SplitLines
 ⍤:≍, 54968 SolvePartOne &fras "input"
 ---
 
-StartsWith ← =1⊢⌕
----
-⍤:≍, 1 StartsWith "eight" "eightwothree"
-⍤:≍, 0 StartsWith "two" "eightwothree"
----
-
 Numberify ← (
   (∘|⍜(↙4)((∘|"z0ro") ≍"zero" .)) ≥4⧻.
   (∘|⍜(↙3)((∘|"o1e") ≍"one" .)) ≥3⧻.

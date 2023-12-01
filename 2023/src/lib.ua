@@ -11,3 +11,9 @@ SplitLines ← ⊜□≠, @\n
 ⍤∶≍, {"hej" "hoj"} SplitLines "hej\nhoj\n\n"
 ⍤∶≍, {"hej" "hoj"} SplitLines "\n\nhej\nhoj"
 ---
+
+StartsWith ← =1⊢⌕
+---
+⍤:≍, 1 StartsWith "eight" "eightwothree"
+⍤:≍, 0 StartsWith "two" "eightwothree"
+---
