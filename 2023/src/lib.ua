@@ -5,6 +5,10 @@ Compare ← |2 ±-
 ⍤∶≍, ¯1 Compare 5 3
 ---
 
+SplitByDelimiter ← ⊜□≠,
+---
+---
+
 SplitLines ← ⊜□≠, @\n
 ---
 ⍤∶≍, {"hej" "hoj"} SplitLines "hej\n\nhoj"
@@ -16,4 +20,8 @@ StartsWith ← =1⊢⌕
 ---
 ⍤:≍, 1 StartsWith "eight" "eightwothree"
 ⍤:≍, 0 StartsWith "two" "eightwothree"
+---
+
+Trim ← ▽×⍜(⊟⇌)≡\↥.≠@ .
+---
 ---
