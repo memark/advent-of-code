@@ -25,8 +25,8 @@ Lib ← &i "../../lib.ua"
 IsDigit ← ×⊃(≥@0|≤@9)
 IsSymbol ← ×⊃(-:1IsDigit|≠@.)
 
-M ← ⊐SplitLines &fras ("example_1"|"input") 0
-# M ← ↯ ⊂.140 M
+M ← ⊐SplitLines &fras ("example_1"|"input") 1
+M ← ↯ ⊂.140 M
 &s M
 &s △M
 
@@ -134,10 +134,10 @@ AllStars
 ⊐≡(▽≡(KIsWithinRange :M).)
 ⊐≡(▽≡(IsDigit EAtK :M).)
 ⊐≡(≡FindWholeNumberK).
-# ⊐≡(⊝≡(⊏⍏.)).
+⊐≡(⊝≡(⊏⍏.)).
 # ⊐≡△
-# ▽=2≡⧻.
-# ⊐≡(≡(≡(EAtK :M))).
+▽=2≡⧻.
+⊐≡(≡(≡(EAtK :M))).
 # ≡(≡(∵parse⊔⸮∵⸮))
 # ⊐∵(⊔∵⊔⸮)
 
