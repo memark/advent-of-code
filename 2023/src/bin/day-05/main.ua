@@ -23,13 +23,12 @@ Lib ← &i "../../lib.ua"
 
 # ⊕□ => group plockar bort alla \n och lägger i en egen bucket
 
-# Seed -> Soil -> Fert -> Water -> Light -> Temp -> Humid -> Loc
+ParseSeedRow ← ⊐≡parse ⊐SplitByDelimiter@ # 
 
-ParseSeedRow ← ⊐≡parse ⊐SplitByDelimiter@ 
-
-ParseMapRow ← ⊐≡parse SplitByDelimiter@ 
+ParseMapRow ← ⊐≡parse SplitByDelimiter@ # 
 ParseMapSection ← ⊐≡ParseMapRow SplitByDelimiter@\n
 
+# jag har tagit bort alla "seeds: " och "bla bla mapping: "
 ParseFixedFile ← (
   -:1⌕ "\n\n" .
   ⊜□
@@ -39,16 +38,7 @@ ParseFixedFile ← (
   )
 )
 
-M ← ParseFixedFile &fras ("example_1"|"input") 1
-&s $"M:"
-&s M
-
-Seed ← ⊐⊢⊢ M
-&s "Seed:"
-&s Seed
-
-&s "---"
-&s "Stack:"
+M ← ParseFixedFile &fras ("example_1"|"input") 0
 
 Fst ← ⊡0
 Snd ← ⊡1
@@ -93,28 +83,69 @@ ApplyMapRow ← +-:⊙(:⊃(Fst|Snd))
 ⍤:≍, 81 ApplyMapRow 79 52_50_48
 ---
 
+# det är ju här allt krångel sitter.
+# vet väl knappt vad jag gör med alla dessa deshapes och fixes.
 # num MapSection
 TranslateWithMapSection ← (
-  ⊙(♭⊐▽ ♭⊐⊠MatchesMapRow ¤ ⊙.) .
+  # &s "TranslateWithMapSection 1"
+  ⊙(⊐▽ ♭ ⊐⊠MatchesMapRow ¤ ⊙.) .
   # Any source numbers that aren't mapped correspond to the same destination number.
   # jag borde asserta på att det inte är fler än en som mappar
   # just nu räknar jag innehållet i raden jag fick, (dst, src, rng)...
-  (∘|ApplyMapRow) ≥1⧻,
+  # &s "TranslateWithMapSection 2"
+  # =1 ⸮ ⧻,
+  # ⍤..
+  ⧻,
+  ⍤"bork"≤1.
+  (∘|ApplyMapRow ⊙♭)
+  # &s "TranslateWithMapSection 3"
 )
 
-# TranslateWithMapSection Seed ⊡1M
-
 Seeds ← ⊔⊢M
+# &s Seeds
+
+SeedRanges ← (
+  Seeds
+  ↯⊂:2 ÷2⧻.
+)
+&s SeedRanges
+&s ⊏⍏. SeedRanges
+
+RangedSeeds ← (
+  SeedRanges
+  ↙2
+  ⊐≡(
+    +⇡ :⊃(Fst|Snd)
+  )
+  ⊐/⊂
+  &s $"Shape: _" △.
+  ⬚100↙100
+  # &s $"Shape: _" △.
+)
+# &s $"Shape: _" △RangedSeeds
+# &s RangedSeeds
+# ⍤.0
+
+# &s ⊔⊡1M
+# &s ⍜(⍉↘1⍉)(⊏⍏.) ⊔⊡1M
 
 # jag borde byta ordning, så att seed är underst, blir nog enklare överallt, då fokus är på att dra ett seed genom processen, inte att dra en matris/sektion
-Seeds
-♭⊠TranslateWithMapSection :⊡1M
-♭⊠TranslateWithMapSection :⊡2M
-♭⊠TranslateWithMapSection :⊡3M
-♭⊠TranslateWithMapSection :⊡4M
-♭⊠TranslateWithMapSection :⊡5M
-♭⊠TranslateWithMapSection :⊡6M
-♭⊠TranslateWithMapSection :⊡7M
+(Seeds|RangedSeeds) 1
+# &s .
+♭⊠TranslateWithMapSection :⊡1M &s "phase 1"
+♭⊠TranslateWithMapSection :⊡2M &s "phase 2"
+♭⊠TranslateWithMapSection :⊡3M &s "phase 3"
+♭⊠TranslateWithMapSection :⊡4M &s "phase 4"
+♭⊠TranslateWithMapSection :⊡5M &s "phase 5"
+♭⊠TranslateWithMapSection :⊡6M &s "phase 6"
+♭⊠TranslateWithMapSection :⊡7M &s "phase 7"
 /↧
 
-#!!! Any source numbers that aren't mapped correspond to the same destination number. !!!
+≡(|1
+  ⊃(Snd|Fst)
+  ⍥(
+    +1
+
+    # &s TranslateWithMapSection :⊡1M
+  )
+) SeedRanges
