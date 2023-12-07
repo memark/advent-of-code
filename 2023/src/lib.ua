@@ -5,6 +5,7 @@ Compare ← |2 ±-
 ⍤∶≍, ¯1 Compare 5 3
 ---
 
+SplitBy ← ⊜□≠,
 SplitByDelimiter ← ⊜□≠,
 ---
 ---
