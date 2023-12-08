@@ -55,7 +55,7 @@ FindLRLeaf ← |3 (
 # ⍤:≍, "Only accepts L/R. Got: X" ⍣(FindLRLeaf)($"_") @X "DDD" ["AAA"_"BBB"_"CCC" "DDD"_"EEE"_"FFF" "GGG"_"HHH"_"III"]
 ---
 
-FollowInstruction ← (
+FollowInstruction ← |4.4 (
   ⊙⊙,
   ⊙.
   ⊙(+1)
