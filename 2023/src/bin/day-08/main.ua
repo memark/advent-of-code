@@ -71,10 +71,7 @@ FollowInstruction ← |4.4 (
 
 SolvePartOne ← (
   SplitBy@\n
-  ⊃(
-    ≡ParseNode↘1
-  | ⊔⊢
-  )
+  ⊃(≡ParseNode↘1|⊔⊢)
   "AAA" 0
   ⍢(FollowInstruction)(Not≍"ZZZ")
   ⊙;⊙;;
@@ -103,31 +100,25 @@ ArrayToStack ← ⊃(⊔⊡0|⊔⊡1|⊔⊡2|⊔⊡3)
 
 SolvePartTwo ← (
   SplitBy@\n
-  ⊃(
-    ≡ParseNode↘1
-  | ⊔⊢
-  )
-  # "11A"
+  ⊃(≡ParseNode↘1|⊔⊢)
   0
-  ,
-  ≡⊢▽≡(=@A⊢⇌⊢). # get the ghosts
-  ⊙¤ ⊙⊙¤ ⊙⊙⊙¤   # fix all lower values
+  ≡⊢▽≡(=@A⊢⇌⊢). , # get the ghosts
+  # &s. ¤⊡0 # use only one
+  ⊙¤ ⊙⊙¤ ⊙⊙⊙¤ # fix all lower values
   ≡StackToArray
 
-  ≡(StackToArray FollowInstruction ArrayToStack)
-  ≡(StackToArray FollowInstruction ArrayToStack)
-  ≡(StackToArray FollowInstruction ArrayToStack)
-  ≡(StackToArray FollowInstruction ArrayToStack)
-  ≡(StackToArray FollowInstruction ArrayToStack)
-  ≡(StackToArray FollowInstruction ArrayToStack)
+  ⍢(
+    ≡(StackToArray FollowInstruction ArrayToStack)
+    (;|&s$"Iteration: _") =0◿100. ⊔⊡1⊡0. # print the iteration
+  )(
+    ≡(=@Z⊢⇌⊔⊢)
+    (;|&s$"Ends: _") >0. /+. # print number of ending Zs
+    -:1 /And
+  )
 
-  # evaluate
-  /And.≡(=@Z⊢⇌⊔⊢)
-
-  # ⍢(⸮ FollowInstruction)(Not≍"11Z")
-  # ⊙;⊙;;
+  ArrayToStack ⊢
+  ⊙⊙;⊙⊙;
+  ;;
 )
-SolvePartTwo &fras "example_3"
-
-# =@Z⊢⇌."AAA"
-# =@Z⊢⇌."AAZ"
+# SolvePartTwo &fras "example_3"
+SolvePartTwo &fras "input"
