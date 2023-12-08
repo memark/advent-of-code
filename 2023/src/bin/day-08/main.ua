@@ -76,7 +76,7 @@ SolvePartOne ← (
   | ⊔⊢
   )
   "AAA" 0
-  ⍢(⸮ FollowInstruction)(Not≍"ZZZ")
+  ⍢(FollowInstruction)(Not≍"ZZZ")
   ⊙;⊙;;
 ) # ---
 # ⍤:≍, 2 SolvePartOne &fras "example_1"
@@ -98,16 +98,36 @@ SolvePartOne ← (
 # jag behöver en funktion som tar alla fyra värdena och lägger i en array
 # samt en funktion som extraherar alla värdena från en array till stacken
 
+StackToArray ← ⊐[⊙⊙⊙∘]
+ArrayToStack ← ⊃(⊔⊡0|⊔⊡1|⊔⊡2|⊔⊡3)
+
 SolvePartTwo ← (
   SplitBy@\n
   ⊃(
     ≡ParseNode↘1
   | ⊔⊢
   )
-  "11A"
-  # ≡⊢▽≡(=@A⊢⇌⊢). . # get only ghosts
-  :0
-  ⊐[⊙⊙⊙∘]
-  ⊃(⊔⊡0|⊔⊡1|⊔⊡2|⊔⊡3)
+  # "11A"
+  0
+  ,
+  ≡⊢▽≡(=@A⊢⇌⊢). # get the ghosts
+  ⊙¤ ⊙⊙¤ ⊙⊙⊙¤   # fix all lower values
+  ≡StackToArray
+
+  ≡(StackToArray FollowInstruction ArrayToStack)
+  ≡(StackToArray FollowInstruction ArrayToStack)
+  ≡(StackToArray FollowInstruction ArrayToStack)
+  ≡(StackToArray FollowInstruction ArrayToStack)
+  ≡(StackToArray FollowInstruction ArrayToStack)
+  ≡(StackToArray FollowInstruction ArrayToStack)
+
+  # evaluate
+  /And.≡(=@Z⊢⇌⊔⊢)
+
+  # ⍢(⸮ FollowInstruction)(Not≍"11Z")
+  # ⊙;⊙;;
 )
 SolvePartTwo &fras "example_3"
+
+# =@Z⊢⇌."AAA"
+# =@Z⊢⇌."AAZ"
