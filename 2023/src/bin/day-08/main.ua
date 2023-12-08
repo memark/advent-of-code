@@ -1,0 +1,79 @@
+Lib ← &i "../../lib.ua"
+  SplitBy ← Lib "SplitBy"
+  StartsWith ← Lib "StartsWith"
+  Trim ← Lib "Trim"
+
+Fst ← ⊡0
+Snd ← ⊡1
+Trd ← ⊡2
+
+And ← ↧
+Or ← ↥
+Not ← -:1
+
+# SolvePartTwo ← x SplitLines
+# ---
+# ⍤:≍, x SolvePartTwo &fras "example_1"
+# ⍤:≍, x SolvePartTwo &fras "input"
+# ---
+
+# &p $"Part 2: _" SolvePartTwo &fras "input"
+
+# ---
+
+ParseNode ← ≡⊔↘1regex"(.*) = \\((.*), (.*)\\)" ⊔
+
+# num instructions
+GetInstr ← ⊡◿⧻,
+---
+⍤:≍, @R GetInstr 5 "LLR"
+---
+
+# Mid Nodes
+FindNodeIndex ← |2 ⊗1∊ ⊙≡(↙1)
+---
+⍤:≍, 1 FindNodeIndex "DDD" ["AAA"_"BBB"_"CCC" "DDD"_"EEE"_"FFF" "GGG"_"HHH"_"III"]
+⍤:≍, 1 FindNodeIndex "BBB" ["AAA"_"BBB"_"BBB" "BBB"_"AAA"_"ZZZ" "ZZZ"_"ZZZ"_"ZZZ"]
+---
+
+# Mid Nodes
+FindLeaves ← |2 ↘1 ⊡ FindNodeIndex ⊙.
+---
+⍤:≍, "EEE"_"FFF" FindLeaves "DDD" ["AAA"_"BBB"_"CCC" "DDD"_"EEE"_"FFF" "GGG"_"HHH"_"III"]
+---
+
+# L/R Mid Nodes
+FindLRLeaf ← |3 (
+  ⊙FindLeaves
+  ⍤$"\nExpected: L/R\nActual:   _":∊, "LR" .
+  ⊗:"LR"
+  ⊡
+)
+---
+⍤:≍, "EEE" FindLRLeaf @L "DDD" ["AAA"_"BBB"_"CCC" "DDD"_"EEE"_"FFF" "GGG"_"HHH"_"III"]
+# TODO: Fix
+# ⍤:≍, "Only accepts L/R. Got: X" ⍣(FindLRLeaf)($"_") @X "DDD" ["AAA"_"BBB"_"CCC" "DDD"_"EEE"_"FFF" "GGG"_"HHH"_"III"]
+---
+
+FollowInstruction ← (
+  ⊙⊙,
+  ⊙.
+  ⊙(+1)
+  ⊙⊙GetInstr
+  ⊙:
+  ⊙⊙⊙.
+  ⊙:
+  :
+  ⊙:
+  ⊙FindLRLeaf
+  :
+)
+
+SolvePartOne ← ⊙;⊙;; ⍢(FollowInstruction)(Not≍"ZZZ") "AAA" 0 ⊃(≡(ParseNode) ↘1|⊔Fst) SplitBy@\n
+# ---
+⍤:≍, 2 SolvePartOne &fras "example_1"
+⍤:≍, 6 SolvePartOne &fras "example_2"
+⍤:≍, 16343 SolvePartOne &fras "input"
+# ---
+
+&p $"Part 1: _" SolvePartOne &fras "input"
