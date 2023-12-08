@@ -69,11 +69,45 @@ FollowInstruction ← |4.4 (
   :
 )
 
-SolvePartOne ← ⊙;⊙;; ⍢(FollowInstruction)(Not≍"ZZZ") "AAA" 0 ⊃(≡(ParseNode) ↘1|⊔Fst) SplitBy@\n
-# ---
-⍤:≍, 2 SolvePartOne &fras "example_1"
-⍤:≍, 6 SolvePartOne &fras "example_2"
-⍤:≍, 16343 SolvePartOne &fras "input"
+SolvePartOne ← (
+  SplitBy@\n
+  ⊃(
+    ≡ParseNode↘1
+  | ⊔⊢
+  )
+  "AAA" 0
+  ⍢(⸮ FollowInstruction)(Not≍"ZZZ")
+  ⊙;⊙;;
+) # ---
+# ⍤:≍, 2 SolvePartOne &fras "example_1"
+# ⍤:≍, 6 SolvePartOne &fras "example_2"
+# ⍤:≍, 16343 SolvePartOne &fras "input"
 # ---
 
-&p $"Part 1: _" SolvePartOne &fras "input"
+# &p $"Part 1: _" SolvePartOne &fras "input"
+
+# ---
+# del två då. jag ska köra ett gäng simuleringar samtidigt.
+# de som slutar med A ska gå till nåt som slutar med Z.
+# sen ska jag kolla hur många omgångar det tar innan alla samtidigt slutar på Z.
+
+# en optimering längre fram kan vara att skriva upp periodiciteten på resp start.
+
+# jag behöver köra varje ghost för sej och sedan jämför hur långt de kommit
+
+# jag behöver en funktion som tar alla fyra värdena och lägger i en array
+# samt en funktion som extraherar alla värdena från en array till stacken
+
+SolvePartTwo ← (
+  SplitBy@\n
+  ⊃(
+    ≡ParseNode↘1
+  | ⊔⊢
+  )
+  "11A"
+  # ≡⊢▽≡(=@A⊢⇌⊢). . # get only ghosts
+  :0
+  ⊐[⊙⊙⊙∘]
+  ⊃(⊔⊡0|⊔⊡1|⊔⊡2|⊔⊡3)
+)
+SolvePartTwo &fras "example_3"
