@@ -22,37 +22,32 @@ Not ← -:1
 
 # ---
 
-SplitBy@\n &fras "example_1"
-≡(⊐≡parse ⊐SplitBy@ )
+PredictionForRow ← (
+  # make start row look like the rest
+  ¤□
+  # calc the rows going down
+  ⍢(
+    ⊂: □≡(-⊃(⊢|⊢⇌))◫2⊔ ⊡¯1 .
+  )(
+    # not all zeroes?
+    ≠0/+⊔⊡¯1
+  )
+  # extrapolate new last value going up
+  # TODO: borde kunna använda omvända windows här också!
+  ⍢(
+    ⊐⊃(⊡¯1⊔⊡¯1|⊡¯1⊔⊡¯2|⊔⊡¯2|↘¯2)
+    ⊂:+
+    ⊂:□
+  )(>1⧻)
+  # take last value
+  ⊡¯1⊔⊢
+)
 
-# ⍢()(⇌)
+SolvePartOne ← /+ ≡PredictionForRow ≡(⊐≡parse ⊐SplitBy@ ) SplitBy@\n
+---
+⍤:≍, 114 SolvePartOne &fras "example_1"
+# ⍤:≍, x SolvePartOne &fras "input"
+---
 
-⊡2
-≡(-⊃(⊢|⊢⇌)) ◫2 ⊃∘□
-≡(-⊃(⊢|⊢⇌)) ◫2 ⊃∘□
-≡(-⊃(⊢|⊢⇌)) ◫2 ⊃∘□
-≡(-⊃(⊢|⊢⇌)) ◫2 ⊃∘□
-≡(-⊃(⊢|⊢⇌)) ◫2 ⊃∘□
-□
-⊂⊂⊂⊂⊂
-⇌
-dump∘
-
-# /(;⸮)¤
-
-# "0 3 6 9 12 15"
-# SplitBy@
-# ⊜□≠, @
-
-# ⊂:+ ∩(⊡¯1) ⊙.
-# ⊂:+ ∩(⊡¯1) ⊙.
-
-# ⍢(
-#   ⊐⊃(⊡¯1⊔⊡¯1|⊡¯1⊔⊡¯2|⊔⊡¯2|↘¯2)
-#   ⊂:+
-#   ⊂:□
-# )(>1⧻)
-
-# ↙2
-
-# ⊂:□ ⊂:+ ⊐⊃(⊡¯1⊔⊡¯1|⊡¯1⊔⊡¯2|⊔⊡¯2|↘¯2)
+&p $"Part 2: _" SolvePartOne &fras "input"
+# 1581680965 too high
