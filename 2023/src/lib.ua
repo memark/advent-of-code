@@ -15,6 +15,7 @@ SplitLines ← ⊜□≠, @\n
 ⍤:≍, {"hej" "hoj"} SplitLines "hej\n\nhoj"
 ⍤:≍, {"hej" "hoj"} SplitLines "hej\nhoj\n\n"
 ⍤:≍, {"hej" "hoj"} SplitLines "\n\nhej\nhoj"
+⍤:≍, {"heja" "hoj"} SplitLines "\n\nheja\nhoj"
 ---
 
 StartsWith ← =1⊢⌕
@@ -28,7 +29,7 @@ Trim ← ▽×⍜(⊟⇌)≡\↥.≠@ .
 ---
 
 # https://old.aplwiki.com/SieveOfEratosthenes
-PrimesLessThan ← ▽ =2/+=0⍉◿¤. .⇡
+PrimesLessThan ← ▽ =2/+=0⍉rows◿¤. .⇡
 ---
 ⍤:≍, 2_3_5_7 PrimesLessThan 10
 ⍤:≍, 2_3_5_7 PrimesLessThan 11
