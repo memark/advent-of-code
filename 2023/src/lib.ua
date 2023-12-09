@@ -26,3 +26,34 @@ StartsWith ← =1⊢⌕
 Trim ← ▽×⍜(⊟⇌)≡\↥.≠@ .
 ---
 ---
+
+# https://old.aplwiki.com/SieveOfEratosthenes
+PrimesLessThan ← ▽ =2/+=0⍉≡◿¤. .⇡
+---
+⍤:≍, 2_3_5_7 PrimesLessThan 10
+⍤:≍, 2_3_5_7 PrimesLessThan 11
+⍤:≍, 2_3_5_7_11 PrimesLessThan 12
+---
+
+PrimeFactors ← ▽: ⊙(=0◿) . PrimesLessThan .
+---
+⍤:≍, ¤5 PrimeFactors 25
+⍤:≍, 2_3_17 PrimeFactors 102
+---
+
+SetIntersection ← ⊝▽∊,
+---
+⍤:≍, 2_3 SetIntersection 1_2_3 2_3_4_2
+---
+
+# Greatest Common Divisor
+GCD ← /×SetIntersection ∩PrimeFactors
+---
+⍤:≍, 15 GCD 30 75
+---
+
+# LeastCommonMultiple
+LCM ← ÷⊃(GCD|×)
+---
+⍤:≍, 150 LCM 30 75
+---
