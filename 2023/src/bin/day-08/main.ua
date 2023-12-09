@@ -95,6 +95,9 @@ SolvePartOne ← (
 # jag behöver en funktion som tar alla fyra värdena och lägger i en array
 # samt en funktion som extraherar alla värdena från en array till stacken
 
+# kan det vara så att den första Z inte är den jag ska fokusera på.
+# kanske istället skriva ut en lista av alla Z-iterationer per start?
+
 StackToArray ← ⊐[⊙⊙⊙∘]
 ArrayToStack ← ⊃(⊔⊡0|⊔⊡1|⊔⊡2|⊔⊡3)
 
@@ -103,17 +106,21 @@ SolvePartTwo ← (
   ⊃(≡ParseNode↘1|⊔⊢)
   0
   ≡⊢▽≡(=@A⊢⇌⊢). , # get the ghosts
-  # &s. ¤⊡0 # use only one
-  ⊙¤ ⊙⊙¤ ⊙⊙⊙¤ # fix all lower values
+  &s. ¤⊡5         # use only one
+  ⊙¤ ⊙⊙¤ ⊙⊙⊙¤     # fix all lower values
   ≡StackToArray
 
   ⍢(
     ≡(StackToArray FollowInstruction ArrayToStack)
-    (;|&s$"Iteration: _") =0◿100. ⊔⊡1⊡0. # print the iteration
+    # (;|&s$"Iteration: _") =0◿1000. ⊔⊡1⊡0. # print the iteration
   )(
     ≡(=@Z⊢⇌⊔⊢)
-    (;|&s$"Ends: _") >0. /+. # print number of ending Zs
+    (
+      ;
+    | ⊙(&s⊔⊡1⊡0.) ;$"Ends: _"
+    ) >0. /+. # print number of ending Zs
     -:1 /And
+    # 1;
   )
 
   ArrayToStack ⊢
@@ -122,3 +129,9 @@ SolvePartTwo ← (
 )
 # SolvePartTwo &fras "example_3"
 SolvePartTwo &fras "input"
+
+# gångrade ihop alla, 24949657966202865000000000 too high
+# rätt svar var 15299095336639
+
+# primtal <10
+# ▽ =2 /+ =0 ⍉ ≡◿ ¤.. +1⇡ -1 10
