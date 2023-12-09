@@ -28,17 +28,19 @@ PredictionForRow ← (
   # calc the rows going down
   ⍢(
     ⊂: □≡(-⊃(⊢|⊢⇌))◫2⊔ ⊡¯1 .
-  )(
-    # not all zeroes?
+  | # not all zeroes?
     ≠0/+⊔⊡¯1
   )
+  &s.
   # extrapolate new last value going up
   # TODO: borde kunna använda omvända windows här också!
   ⍢(
     ⊐⊃(⊡¯1⊔⊡¯1|⊡¯1⊔⊡¯2|⊔⊡¯2|↘¯2)
     ⊂:+
     ⊂:□
-  )(>1⧻)
+  | >1⧻
+  )
+  &s.
   # take last value
   ⊡¯1⊔⊢
 )
@@ -49,5 +51,5 @@ SolvePartOne ← /+ ≡PredictionForRow ≡(⊐≡parse ⊐SplitBy@ ) SplitBy@\n
 # ⍤:≍, x SolvePartOne &fras "input"
 ---
 
-&p $"Part 2: _" SolvePartOne &fras "input"
+# &p $"Part 1: _" SolvePartOne &fras "input"
 # 1581680965 too high
