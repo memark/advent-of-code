@@ -1,3 +1,5 @@
+# Uiua 0.6.1
+
 Compare ← |2 ±-
 ---
 ⍤:≍, 1 Compare 3 5
@@ -5,17 +7,8 @@ Compare ← |2 ±-
 ⍤:≍, ¯1 Compare 5 3
 ---
 
-SplitBy ← ⊜□≠,
-SplitByDelimiter ← ⊜□≠,
+SplitBy ← |2 ⊜∘≠,
 ---
----
-
-SplitLines ← ⊜□≠, @\n
----
-⍤:≍, {"hej" "hoj"} SplitLines "hej\n\nhoj"
-⍤:≍, {"hej" "hoj"} SplitLines "hej\nhoj\n\n"
-⍤:≍, {"hej" "hoj"} SplitLines "\n\nhej\nhoj"
-⍤:≍, {"heja" "hoj"} SplitLines "\n\nheja\nhoj"
 ---
 
 StartsWith ← =1⊢⌕
@@ -29,7 +22,7 @@ Trim ← ▽×⍜(⊟⇌)≡\↥.≠@ .
 ---
 
 # https://old.aplwiki.com/SieveOfEratosthenes
-PrimesLessThan ← ▽ =2/+=0⍉rows◿¤. .⇡
+PrimesLessThan ← ▽ =2/+=0⍉◿¤. .⇡
 ---
 ⍤:≍, 2_3_5_7 PrimesLessThan 10
 ⍤:≍, 2_3_5_7 PrimesLessThan 11
