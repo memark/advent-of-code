@@ -5,7 +5,7 @@ Lib ← &i "../../lib.ua"
 
 # c n => n
 F ← |2 ◿256 ×17 + -@\0
-# s n => s n
+# s n => s-1 n
 G ← |2.2 :F ⊙: ⊃(⊢|↘1)
 # s => n
 H ← |1 ;⍢(G|>0⧻) :0
@@ -20,4 +20,27 @@ SolvePartOne ← |1 (
 ⍤:≍, 516804 SolvePartOne &fras "input"
 ---
 
-&p $"Part 1: _" SolvePartOne &fras "input"
+# &p $"Part 1: _" SolvePartOne &fras "input"
+
+"rn=1"
+≠, @=
+⊜□
+
+# &fras "example_1"
+# ⊜□≠, @,
+
+# ▽≡(⊐∊@=).
+# ⊐≡(?□? ⊜□ ?≠, ?@=?)
+
+# "rn=1"
+# ⊜□≠, @=
+# ∊@=
+# "cm-"
+# ∊@=
+
+{⊃∘H ."rn"}
+{⊃∘H ."cm"}
+{⊃∘H ."qp"}
+{⊃∘H ."pc"}
+
+# känns som det börjar bli dags att rapportera den där partition-"buggen"
