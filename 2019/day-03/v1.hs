@@ -1,3 +1,5 @@
+-- https://adventofcode.com/2019/day/3
+
 import qualified Data.Char as Char
 import qualified Data.List as List
 import qualified Data.Set as Set
