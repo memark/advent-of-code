@@ -2,16 +2,15 @@
 
 SplitBy ← |2 ⊜□≠,
 
-PredictionForRow ← (
+PredictionForRowEnd ← (
   # make start row look like the rest
   ¤□
   # calc the rows going down
   ⍢(
     ⊂: □≡(-⊃(⊢|⊢⇌))◫2°□⊡¯1 .
-  | # not all zeroes?
-    ≠0◇/+⊡¯1
+  | # not ALL zeroes?
+    ≠0◇/+≠0⊡¯1
   )
-  &s.
   # extrapolate new last value going up
   # TODO: borde kunna använda omvända windows här också!
   ⍢(
@@ -20,19 +19,17 @@ PredictionForRow ← (
     ⊂:□
   | >1⧻
   )
-  &s.
   # take last value
   °□◇⊡¯1◇⊢
 )
 
-SolvePartOne ← /+ ≡PredictionForRow ≡(⋕◇SplitBy@ ) SplitBy@\n
+SolvePartOne ← /+ ≡PredictionForRowEnd ≡(⋕◇SplitBy@ ) SplitBy@\n
 ---
 ⍤:≍, 114 SolvePartOne &fras "example_1"
-# ⍤:≍, x SolvePartOne &fras "input"
+⍤:≍, 1581679977 SolvePartOne &fras "input"
 ---
 
-# &p $"Part 1: _" SolvePartOne &fras "input"
-# 1581680965 too high
+&p $"Part 1: _" SolvePartOne &fras "input"
 
 # SolvePartTwo ← x SplitLines
 # ---
