@@ -1,5 +1,7 @@
 # Uiua 0.13.0
 
+~ "../lib.ua" ~ LeastCommonLetter MostCommonLetter
+
 SolveWithSort! ← (
   ⊜∘⊸≠@\n
   ⍜⍉(
