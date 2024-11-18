@@ -17,3 +17,14 @@ LeastCommonLetter ← (
 ┌─╴test
   ⍤⤙≍ @b LeastCommonLetter "aaabbccc"
 └─╴
+
+# matrix ? x y
+CreateZeroMatrix ← ↯⊙⊚:
+
+# matrix ? x y
+CreateOneMatrix ← =0↯⊙⊚:
+
+CreateTextFromMatrix ← (
+  +@\s×-@\s@*
+  /⊂≡⊂:¤@\n
+)
