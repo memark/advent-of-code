@@ -1,50 +1,46 @@
 # https://adventofcode.com/2024/day/7
 
-# uiua 0.14.0-dev.7
+# uiua 0.15.0-dev.1
 # Experimental!
 
-# res ? [expr]
-EvalMany ← (
-  &runc ⊂{"uiua" "eval" "--no-color"} □/◇$"_\n_"
-  ⋅⊙◌ # keep stdout
+🗄 ← (
   ⊜□⊸≠@\n
+  ≡◇(↘₁♭₁regex "(\\d*): (.*)")
+  ≡⊃(□◇⊜⋕⊸≠@\s⊣|⋕⊢)
 )
-┌─╴test
-  ⍤⤙≍ {"9" "6"} EvalMany{"* 3 3" "+ 3 3"}
-└─╴
 
 # permutations ? length chars
 Permute ← ⧅(1◌◌)
-┌─╴test
+┌─╴🧪
   ⍤⤙≍ ["++" "+*" "*+" "**"] Permute 2 "+*"
 └─╴
 
-# combs ? ops nums
-Combine ← (
-  ⊙≡(□$"_")
-  ⊙¤
-  ≡(/◇$"_ _"⊂↘1)
+# ba ? a b
+Join ← ⋕⊂:∩°⋕
+┌─╴🧪
+  ⍤⤙≍ 3412 Join 12 34
+└─╴
+
+# res ? nums ops
+TryPerm ← (
+  °⊂ # extract first num
+  :⊙::
+  ∧(⨬(×|+|Join) ⊗:"+*|")
 )
 
-# bool ? testvalue nums
-TryEquation ← /∨= ⍜:(≡⋕EvalMany Combine Permute :"+*" ⊸⧻)
-┌─╴test
-  ⍤⤙≍ 1 TryEquation 3267 [81 40 27]
-  ⍤⤙≍ 0 TryEquation 3267 [80 40 27]
-  ⍤⤙≍ 1 TryEquation 292 [11 6 16 20]
-└─╴
+# bool ? ops nums testvalue
+EvalEquation ← /∨= ≡⌞TryPerm :Permute : ⊙(-₁⊸⧻)
 
-🐪 ← (
-  ⊜(♭₁regex "(\\d*): (.*)")⊸≠@\n
-  ≡⊃(□◇⊜⋕⊸≠@\s⊡₂|⋕⊡₁)
-  ≡°⊟wait≡pool(
-    &pf@> :⟜TryEquation:°□ &pf@<
-  )
-  &p""
-  /+▽)
+Solve! ← /+▽ °⊟⍉wait≡pool⍜:⟜◇(EvalEquation ^0 :)
 
-┌─╴test
+🐪 ← Solve!"+*" 🗄
+┌─╴🧪
   ⍤⤙≍ 3749 🐪 &fras"example.txt"
+  ⍤⤙≍ 3119088655389 🐪 &fras"input.txt"
 └─╴
 
-# ⧅(1◌◌) :"+*" 3, är detta bra?
+🐫 ← Solve!"+*|" 🗄
+┌─╴🧪
+  ⍤⤙≍ 11387 🐫 &fras"example.txt"
+  ⍤⤙≍ 264184041398847 🐫 &fras"input.txt"
+└─╴
