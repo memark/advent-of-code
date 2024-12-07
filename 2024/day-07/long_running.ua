@@ -7,14 +7,14 @@
 EvalMany ← (
   □/◇$"_\n_"
   #   &runc ⊂{"uiua" "eval" "--no-color"}
-  □⟜&fwa $"/Volumes/RAMDisk/temp_.uax"tag °□
+  □⟜&fwa $"/Volumes/RAMDisk/long-running/temp_.uax"tag °□
   &runc ⊂{"uiua" "run" "--no-color" "--no-format"}
   ⋅⊙◌ # keep stdout
   ⊜□⊸≠@\n
   #   ["1"]◌ # hack
 )
 ┌─╴test
-  #   ⍤⤙≍ {"9" "6"} EvalMany{"* 3 3" "+ 3 3"}
+  ⍤⤙≍ {"9" "6"} EvalMany{"* 3 3" "+ 3 3"}
 └─╴
 
 # utan filer tog del ett
@@ -70,7 +70,7 @@ C ← ⋕⊂∩°⋕
 TryEquationNew ← /∨= ⍜:(
   Combine Permute :"C+*" ⊸⧻
   ≡(□⍜⊜∘≡⋅"⋕⊂∩°⋕" ⊸⦷"C") # handle ||
-  ≡⋕EvalMany
+  ≡⋕?₁EvalMany
 )
 ┌─╴test
   #   ⍤⤙≍ 1 TryEquationNew 3267 [81 40 27]
@@ -95,4 +95,5 @@ TryEquationNew ← /∨= ⍜:(
 # ⟜&fwa °⋕tag "+ 3 3"
 # &fras
 
-🐪 &fras"input.txt"
+# 🐪 &fras"example.txt"
+🐫 &fras"input.txt"
