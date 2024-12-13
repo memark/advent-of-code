@@ -26,9 +26,6 @@ N ← ⊂⟜¯⋯1_2
 
 # Solve! ← /+^0 ≡(⧻ 👨‍💻‼🔜 ≍ °⊟₂) HeadsAndFeet
 
-&fras"example_1a.txt"
-⊜∘⊸≠@\n
-
 # ta först fram regionerna
 # starta på valfri A, se vilka övriga A jag kan nå
 # kanske genom dijkstra mellan alla par av A?
@@ -39,34 +36,32 @@ N ← ⊂⟜¯⋯1_2
 # räkna sen ut pris
 
 # bool ? coordPair matrix
-CoordPairBelongsToSameRegion ← (
+PathsBetweenCoordPair ← (
   °⊟
-  ?
   ⊙◌path(
-    ⊙⊙. # always keep matrix at bottom of stack
-
-    #   ⊃(△|∘)
-    #   #   +N¤.
-    #   #   ⊙⊙(◡⊡)
-    #   #   ⊙:
-    #   #   ◌◌◌
+    ⊙⊙.               # always retain matrix at bottom of stack
     ⊃(⊡⊙⋅∘|+N¤|¤△⋅⋅∘) # crop neis shape ? curr goal matrix
     ⊙(▽⤚≡🏰)           # crop withinBoundsNeis ? crop neis shape
     ⊃(▽=⊙⤚⊡)          # validNeis ? crop withinBoundsNeis matrix
   )(≍
   )
-  ⧻
 )
 
-⊚⊸⌕@C
-⧅<2
+# ⊚⊸⌕@C . ⊜∘⊸≠@\n &fras"example_1a.txt"
+⊚⊸⌕@X . ⊜∘⊸≠@\n &fras"example_1b.txt"
 
-# hack
-?
-# CoordPairBelongsToSameRegion ⊡2
+⧅≤ 2
 
-▽⤚≡CoordPairBelongsToSameRegion⊙¤
+⤚≡(⊃⧻□PathsBetweenCoordPair) ⊙¤
 
-# kanske lättare att ta med hela listan av C in i funktionen?
-# och bara kolla om grannarna tillhör den listan?
-# det kan jag iofs refaktorera senare
+# ok, nu har jag fått fram vilka crops som hänger ihop.
+# hur använder jag det för att få fram vilka regioner som finns?
+# jag måste på nåt sätt titta på alla paths samtidigt för att täcka upp alla rutor
+# det är väl iofs inte nåt problem, bara att slå ihop alla patharrayerna
+# men VILKA är det jag ska slå ihop?
+
+# parvägar som delar någon enda koordinat kan slås ihop
+
+# gruppera koordinatparen baserat på lägsta koordinaten.
+# slå ihop alla vägar som hittades.
+# dedup på dessa sammanslagna borde ge alla regioner.
