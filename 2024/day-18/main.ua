@@ -63,13 +63,15 @@ G ← F ⊃(⋅⊙∘|↙⊙⋅⋅∘)
 
 # G 21
 
-⋅⋅($"_,_"°⊟⇌⊡3032)
-# 65,6 correct
+# $"_,_"°⊟⇌⊡20
 
 # man skulle kunna se det som iterationer där datan isf inte hänger ihop
 # men lika gärna bara göra rows på en range, tror jag börjar med det
 # 🐫 ← |2 ⊙⋅⋅◌ ⍢⊓+₁(:⊙⊙◌ ◡🔂)⋅⋅(¬🎄) 0 🔢
 
-# ⨬(+1024 ⇡ -1024 3450|+1⇡25)Example
-# ◌wait≡pool(&p$"_: _"⟜G) ∩₃¤
+⨬(⍜-⇡ 1024 3450|+1⇡25)Example
+◌wait≡pool(&p$"_: _"⟜G) ⊙∩₃¤
+
+# ⋅⋅($"_,_"°⊟⇌⊡3032)
+# 65,6 correct
 # G 3033
