@@ -2,13 +2,13 @@
 
 # uiua v0.14.0-rc.3
 
-&fras"example.txt"
+&fras"input.txt"
 ⊜□⊸≠@\n
 ⊃(⍚(▽⊸≠@\s)⊜□⊸≠@,°□⊢|↘₁)
 :
 °□
 ⊙¤
-≡(
+wait≡pool(
   °□
   :
   ⧅⋅⋅1⧻,
