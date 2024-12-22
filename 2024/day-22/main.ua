@@ -68,7 +68,26 @@ ProcessOneInitial ← (
 # ProcessOneInitial 123
 
 # man kan diskutera om sequences hör till det enskilda numret eller till nästa steg
-# kanske blir det tydligare när jag är klar även med följande steg.
+# kanske blir det tydligare när jag är klar även med följande delar.
+
+# ? sequence changes prices
+EvaluateSequence ← (
+  ⌕?
+  ?₁
+  ≡(□?⊚)
+
+  ?₁
+  ▽⊸≡(>0⧻°□)
+  # □▽≡(□?>0⊸⧻°□?)
+  ?₁
+  ≡(⊢°□)
+  ?₁
+  ≡+₄
+  ?₁
+  ?
+  ≡⊡
+  ?₁
+)
 
 &fras"example_2a.txt"
 ⊜⋕⊸≠@\n
@@ -79,15 +98,19 @@ ProcessOneInitial ← (
 ◴⍆♭₋₁
 dump△
 ?
-⊙¤
-?
-≡(⌕)
-?
-≡≡(□⊚)
-?
-≡(/+ ∵(/+°□) °□)
-?
-?△
+⊙¤⊙⊙¤
+≡EvaluateSequence
+◌
+# ⊙¤
+# ?
+# ≡(⌕)
+# ?
+# ≡≡(□⊚)
+# ?
+# ≡(/+ ∵(/+°□) °□)
+# ?
+# ?△
+
 # ≡(?⊣⊚)
 # ⊙¤
 # ?
@@ -99,3 +122,8 @@ dump△
 
 # ⊙◌
 # ≡(⊡+₁)
+
+# ok, kanske dags att tänka/strukturera om lite grand här.
+# jag behöver en funktion som tar emot en enda sekvens,
+# letar efter denna i changes-arrayen,
+# och vid träff väljer ut priset.
