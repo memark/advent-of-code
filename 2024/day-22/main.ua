@@ -29,20 +29,19 @@
 
 🐪 ← /+wait≡pool⍥₂₀₀₀🎖 ⊜⋕⊸≠@\n
 ┌─╴🧪
-  ⍤⤙≍ 37327623 🐪 &fras"example.txt"
+  ⍤⤙≍ 37327623 🐪 &fras"example_1a.txt"
   #   ⍤⤙≍ 16299144133 🐪 &fras"input.txt"
 └─╴
 
-# &fras"example.txt"
+# &fras"example_1a.txt"
 # ⊜⋕⊸≠@\n
-123
-?₁↘₋₁⇌[⍥₁₀⊸🎖] # numbers
-?₁≡◿₁₀        # prices
-?₁⊸⧈-         # changes
-?₁⊸⧈∘4        # sequences
+# 123
+# ?₁⇌[⍥⊸🎖9] # numbers
+# ?₁≡◿₁₀    # prices
+# ?₁⊸⧈-     # changes
+# ?₁⊸⧈∘4    # sequences
 
-[¯1 ¯1 0 2]
-⊸(≡/∨⦷)
+# ⊸(≡/∨⦷) [¯1 ¯1 0 2]
 
 # ta fram alla värdena i egna arrayer enligt ovan
 # när det är flera starttal, får de väl ligga som subarrayer
@@ -57,3 +56,46 @@
 # hitta matchningar,
 # räkna ut score,
 # summera
+
+# sequences changes prices ? initialNumber
+ProcessOneInitial ← (
+  ⇌[⍥⊸🎖9]
+  ≡◿₁₀ # prices
+  ⊸⧈-  # changes
+  ⊸⧈∘4 # sequences
+)
+
+# ProcessOneInitial 123
+
+# man kan diskutera om sequences hör till det enskilda numret eller till nästa steg
+# kanske blir det tydligare när jag är klar även med följande steg.
+
+&fras"example_2a.txt"
+⊜⋕⊸≠@\n
+# ↙2
+# [123]
+≡ProcessOneInitial
+# dump△
+◴⍆♭₋₁
+dump△
+?
+⊙¤
+?
+≡(⌕)
+?
+≡≡(□⊚)
+?
+≡(/+ ∵(/+°□) °□)
+?
+?△
+# ≡(?⊣⊚)
+# ⊙¤
+# ?
+# ≡(/↥)
+# ?
+# ⊙¤
+# ?
+# ≡⊡
+
+# ⊙◌
+# ≡(⊡+₁)
