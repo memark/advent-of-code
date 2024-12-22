@@ -58,7 +58,7 @@
 # summera
 
 # sequences changes prices ? initialNumber
-ProcessOneInitial ← (
+ProcessOneInitial ← memo(
   ⇌[⍥⊸🎖2000]
   ≡◿₁₀ # prices
   ⊸⧈-  # changes
@@ -67,59 +67,22 @@ ProcessOneInitial ← (
 
 # ProcessOneInitial 123
 
-# man kan diskutera om sequences hör till det enskilda numret eller till nästa steg
-# kanske blir det tydligare när jag är klar även med följande delar.
-
 # bananas ? sequence changes prices
-EvaluateSequence ← (
+EvaluateSequence ← memo(
   ⌕
   ≡↻₋₄
   ≡(□⊚)
-  # ?
   ≡(⨬(0|⊡⊢) ±⊸⧻ °□)
-  # ?
-  # ▽⊸≡(>0⧻°□)
-  # ≡(⊢°□)
-  # ≡⊡
 )
 
-&fras"example_2a.txt"
+# &fras"example_2a.txt"
+&fras"input.txt"
 ⊜⋕⊸≠@\n
-# ↙2
-# [123]
-≡ProcessOneInitial
-# dump△
+≡(&pf@. ProcessOneInitial)
 ◴⍆♭₋₁
 dump△
-# ?
 ⊙¤⊙⊙¤
-≡EvaluateSequence
+wait≡pool(&pf@. EvaluateSequence)
 ≡/+
 /↥
-
-# ⊙¤
-# ?
-# ≡(⌕)
-# ?
-# ≡≡(□⊚)
-# ?
-# ≡(/+ ∵(/+°□) °□)
-# ?
-# ?△
-
-# ≡(?⊣⊚)
-# ⊙¤
-# ?
-# ≡(/↥)
-# ?
-# ⊙¤
-# ?
-# ≡⊡
-
-# ⊙◌
-# ≡(⊡+₁)
-
-# ok, kanske dags att tänka/strukturera om lite grand här.
-# jag behöver en funktion som tar emot en enda sekvens,
-# letar efter denna i changes-arrayen,
-# och vid träff väljer ut priset.
+# 1896, correct
