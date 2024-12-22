@@ -59,7 +59,7 @@
 
 # sequences changes prices ? initialNumber
 ProcessOneInitial ← (
-  ⇌[⍥⊸🎖9]
+  ⇌[⍥⊸🎖2000]
   ≡◿₁₀ # prices
   ⊸⧈-  # changes
   ⊸⧈∘4 # sequences
@@ -70,23 +70,17 @@ ProcessOneInitial ← (
 # man kan diskutera om sequences hör till det enskilda numret eller till nästa steg
 # kanske blir det tydligare när jag är klar även med följande delar.
 
-# ? sequence changes prices
+# bananas ? sequence changes prices
 EvaluateSequence ← (
-  ⌕?
-  ?₁
-  ≡(□?⊚)
-
-  ?₁
-  ▽⊸≡(>0⧻°□)
-  # □▽≡(□?>0⊸⧻°□?)
-  ?₁
-  ≡(⊢°□)
-  ?₁
-  ≡+₄
-  ?₁
-  ?
-  ≡⊡
-  ?₁
+  ⌕
+  ≡↻₋₄
+  ≡(□⊚)
+  # ?
+  ≡(⨬(0|⊡⊢) ±⊸⧻ °□)
+  # ?
+  # ▽⊸≡(>0⧻°□)
+  # ≡(⊢°□)
+  # ≡⊡
 )
 
 &fras"example_2a.txt"
@@ -97,10 +91,12 @@ EvaluateSequence ← (
 # dump△
 ◴⍆♭₋₁
 dump△
-?
+# ?
 ⊙¤⊙⊙¤
 ≡EvaluateSequence
-◌
+≡/+
+/↥
+
 # ⊙¤
 # ?
 # ≡(⌕)
