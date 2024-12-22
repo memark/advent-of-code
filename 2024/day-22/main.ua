@@ -58,7 +58,7 @@
 # summera
 
 # sequences changes prices ? initialNumber
-ProcessOneInitial ← memo(
+ProcessOneInitial ← (
   ⇌[⍥⊸🎖2000]
   ≡◿₁₀ # prices
   ⊸⧈-  # changes
@@ -68,11 +68,9 @@ ProcessOneInitial ← memo(
 # ProcessOneInitial 123
 
 # bananas ? sequence changes prices
-EvaluateSequence ← memo(
+EvaluateSequence ← (
   ⌕
-  ≡↻₋₄
-  ≡(□⊚)
-  ≡(⨬(0|⊡⊢) ±⊸⧻ °□)
+  ≡(⨬(0|⊡⊢) ±⊸⧻ ⊚ ↻₋₄)
 )
 
 # &fras"example_2a.txt"
@@ -86,3 +84,6 @@ wait≡pool(&pf@. EvaluateSequence)
 ≡/+
 /↥
 # 1896, correct
+
+# optimeringsidéer
+# - bara hitta första träffen på varje sekvens (dvs inte find)
