@@ -1,4 +1,49 @@
+# https://adventofcode.com/2024/day/20
+
+# uiua 0.15.0-dev.1
+# Experimental!
+
+# # shortest ? maze
+# ? maze
+TryMaze ← (
+  ⊸⊃($s♭⊚=@S|$e♭⊚=@E) # get s and e
+  path(
+    ⊙◌         # drop e
+    ≡⌟+A₂      # get neighbors
+    ▽⤚≡⌟(≠@#⊡) # filter out #
+  )≍           # match
+  □
+)
+
+# kan nog skrivas om med dubbel 'under'
+GetCheats ← (
+  ⊸=@#
+  ↘₁↘₋₁
+  ⍜⍉(↘₁↘₋₁)
+  +₁ ⊚
+)
+
 &fras"example.txt"
+$m⊜∘⊸≠@\n
+
+⟜TryMaze
+GetCheats
+# ↙1↘6
+≡⌟⍜⊡⋅@.
+≡TryMaze
+⊂:
+
+⍚⊢ # get one of the shortest
+# ⍚(⨬@\s@!°⊚) # visualize
+≡◇⧻ # get lengths
+⟜/↥ # get max length
+-   # get diffs
+⍆   # sort
+▽⊸≠0
+
+⊸⊛
+# ⊕⧻
+⊕([⊃⧻⊢])
 
 # The map consists of track (.) - including the start (S) and end (E) positions (both of which also count as track) - and walls (#).
 
