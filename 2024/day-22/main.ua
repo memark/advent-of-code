@@ -33,36 +33,12 @@
   #   ⍤⤙≍ 16299144133 🐪 &fras"input.txt"
 └─╴
 
-# &fras"example_1a.txt"
-# ⊜⋕⊸≠@\n
-# 123
-# ?₁⇌[⍥⊸🎖9] # numbers
-# ?₁≡◿₁₀    # prices
-# ?₁⊸⧈-     # changes
-# ?₁⊸⧈∘4    # sequences
-
-# ⊸(≡/∨⦷) [¯1 ¯1 0 2]
-
-# ta fram alla värdena i egna arrayer enligt ovan
-# när det är flera starttal, får de väl ligga som subarrayer
-# bättre att ha en viss sorts värden i en egen array,
-# och dela upp resp array i subarrays baserat på starttal
-
-# ta fram alla möjliga sekvenser (finns för minst ett starttal)
-# slå ihop för alla starttal
-# glöm inte att ta dedup på dessa
-
-# gå igenom sekvenserna en efter en,
-# hitta matchningar,
-# räkna ut score,
-# summera
-
 # sequences changes prices ? initialNumber
 ProcessOneInitial ← (
-  ⇌[⍥⊸🎖2000]
-  ≡◿₁₀ # prices
-  ⊸⧈-  # changes
-  ⊸⧈∘4 # sequences
+  $numbers ⇌[⍥⊸🎖2000]
+  $prices ≡◿₁₀
+  $changes ⊸⧈-
+  $sequences ⊸⧈∘4
 )
 
 # ProcessOneInitial 123
@@ -70,19 +46,20 @@ ProcessOneInitial ← (
 # bananas ? sequence changes prices
 EvaluateSequence ← (
   ⌕
-  ≡(⨬(0|⊡⊢) ±⊸⧻ ⊚ ↻₋₄)
+  ≡(⨬(0|⊡⊢) >₀⊸⧻ ⊚ ↻₋₄)
 )
 
-# &fras"example_2a.txt"
-&fras"input.txt"
+&fras"example_2a.txt"
+# &fras"input.txt"
 ⊜⋕⊸≠@\n
-≡(&pf@. ProcessOneInitial)
+≡(
+  # &pf@.
+  ProcessOneInitial)
 ◴⍆♭₋₁
-dump△
-⊙¤⊙⊙¤
-wait≡pool(&pf@. EvaluateSequence)
-≡/+
-/↥
+/↥ ≡(
+  # &pf@.
+  /+EvaluateSequence
+) ⊙∩¤
 # 1896, correct
 
 # optimeringsidéer
