@@ -16,15 +16,14 @@ TryMaze ← (
   □            # box
 )
 
-# kan nog skrivas om med dubbel 'under'
 GetCheats ← (
-  =@#
   ↘₁↘₋₁
   ⍜⍉(↘₁↘₋₁)
+  =@#
   +₁⊚
 )
 
-&fras"input.txt"
+&fras"example.txt"
 $m⊜∘⊸≠@\n
 ⟜TryMaze
 ⊸GetCheats
@@ -32,17 +31,14 @@ $m⊜∘⊸≠@\n
 ≡⌟⍜⊡⋅@.
 wait≡pool(&pf@. TryMaze)
 # wait≡pool(TryMaze)
-⊂:
+⊂: # join original with cheat versions
 
-# ⍚⊢ # get one of the shortest
 # ⍚(⨬@\s@!°⊚) # visualize
 ≡◇⧻ # get lengths
 ⟜/↥ # get max length
 -   # get diffs
-# ⍆   # sort
-# ▽⊸≠0
-▽⊸≥₁₀₀
 ⊸⧻
+# ∩◌
 
 # ⊕[⊃⧻⊢] ⊸⊛
 
