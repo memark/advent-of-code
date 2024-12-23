@@ -12,7 +12,8 @@ TryMaze ← (
     ≡⌟+A₂      # get neighbors
     ▽⤚≡⌟(≠@#⊡) # filter out #
   )≍           # match
-  □
+  ⊢            # get shortest
+  □            # box
 )
 
 # kan nog skrivas om med dubbel 'under'
@@ -20,30 +21,30 @@ GetCheats ← (
   ⊸=@#
   ↘₁↘₋₁
   ⍜⍉(↘₁↘₋₁)
-  +₁ ⊚
+  +₁⊚
 )
 
-&fras"example.txt"
+&fras"input.txt"
 $m⊜∘⊸≠@\n
-
 ⟜TryMaze
 GetCheats
-# ↙1↘6
+# ↙200
 ≡⌟⍜⊡⋅@.
-≡TryMaze
+wait≡pool(&pf@. TryMaze)
+# wait≡pool(TryMaze)
 ⊂:
 
-⍚⊢ # get one of the shortest
+# ⍚⊢ # get one of the shortest
 # ⍚(⨬@\s@!°⊚) # visualize
 ≡◇⧻ # get lengths
 ⟜/↥ # get max length
 -   # get diffs
-⍆   # sort
-▽⊸≠0
+# ⍆   # sort
+# ▽⊸≠0
+▽⊸≥₁₀₀
+⊸⧻
 
-⊸⊛
-# ⊕⧻
-⊕([⊃⧻⊢])
+# ⊕[⊃⧻⊢] ⊸⊛
 
 # The map consists of track (.) - including the start (S) and end (E) positions (both of which also count as track) - and walls (#).
 
