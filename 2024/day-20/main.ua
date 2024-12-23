@@ -18,7 +18,7 @@ TryMaze ← (
 
 # kan nog skrivas om med dubbel 'under'
 GetCheats ← (
-  ⊸=@#
+  =@#
   ↘₁↘₋₁
   ⍜⍉(↘₁↘₋₁)
   +₁⊚
@@ -27,7 +27,7 @@ GetCheats ← (
 &fras"input.txt"
 $m⊜∘⊸≠@\n
 ⟜TryMaze
-GetCheats
+⊸GetCheats
 # ↙200
 ≡⌟⍜⊡⋅@.
 wait≡pool(&pf@. TryMaze)
