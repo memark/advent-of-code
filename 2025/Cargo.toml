@@ -15,7 +15,12 @@ path = "src/day-02/main.rs"
 name = "day-03"
 path = "src/day-03/main.rs"
 
+[[bin]]
+name = "day-04"
+path = "src/day-04/main.rs"
+
 [dependencies]
 itertools = "0.14.0"
 pretty_assertions = "1.4.1"
+rayon = "1.11.0"
 rstest = "0.26.1"
