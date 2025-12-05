@@ -17,6 +17,7 @@ version = "0.1.0"
 dependencies = [
  "itertools",
  "pretty_assertions",
+ "ranges",
  "rayon",
  "rstest",
 ]
@@ -198,6 +199,12 @@ checksum = "a338cc41d27e6cc6dce6cefc13a0729dfbb81c262b1f519331575dd80ef3067f"
 dependencies = [
  "proc-macro2",
 ]
+
+[[package]]
+name = "ranges"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "350932f7e8b2d0333d2537f42671a837473576c00e128fbee84c819ea08783b5"
 
 [[package]]
 name = "rayon"
